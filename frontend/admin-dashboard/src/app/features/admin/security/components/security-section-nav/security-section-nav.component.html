@@ -1,0 +1,37 @@
+<nav [class]="navClass()" [attr.aria-label]="locale.isRtl() ? 'أقسام الأمان' : 'Security sections'">
+  @for (tab of tabs; track tab.id) {
+    <button
+      type="button"
+      [class]="itemClass(tab.id)"
+      [attr.aria-selected]="activeTab() === tab.id"
+      role="tab"
+      (click)="selectTab(tab.id)"
+    >
+      <span [class]="itemHeadClass()">
+        <span [class]="iconClass(tab.id)">
+          <ng-icon [name]="tab.icon" size="13" />
+        </span>
+        <span [class]="labelClass()">{{ label(tab) }}</span>
+        @if (tab.badge; as count) {
+          <span [class]="badgeClass(tab.id)">{{ count }}</span>
+        }
+      </span>
+    </button>
+  }
+</nav>
+
+@if (subPanels().length) {
+  <div [class]="subNavClass()" role="tablist">
+    @for (panel of subPanels(); track panel.id) {
+      <button
+        type="button"
+        role="tab"
+        [class]="subItemClass(panel.id)"
+        [attr.aria-selected]="activeSubPanel() === panel.id"
+        (click)="selectSubPanel(panel.id)"
+      >
+        <span [class]="subLabelClass()">{{ subLabel(panel) }}</span>
+      </button>
+    }
+  </div>
+}

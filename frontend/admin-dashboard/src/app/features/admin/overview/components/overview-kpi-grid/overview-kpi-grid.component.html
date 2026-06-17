@@ -1,0 +1,5 @@
+<div class="mm-overview-kpi-grid">
+  @for (kpi of visibleKpis(); track kpi.id) {
+    <mm-overview-stat-card [metric]="kpi" />
+  }
+</div>

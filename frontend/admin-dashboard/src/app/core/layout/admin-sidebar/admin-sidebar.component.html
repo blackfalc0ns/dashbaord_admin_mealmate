@@ -1,0 +1,202 @@
+<aside class="mm-sb" [class.mm-sb--collapsed]="collapsed()">
+  <!-- Header -->
+  <header class="mm-sb-header">
+    <div class="mm-sb-header__layer mm-sb-header__layer--open">
+      <div class="mm-sb-header__brand">
+        <img
+          class="mm-sb-header__logo"
+          [src]="brandLogoSrc"
+          alt="MealMate"
+          width="132"
+          height="26"
+        />
+        <button
+          type="button"
+          class="mm-sb-toggle"
+          (click)="toggleCollapsed()"
+          [attr.aria-label]="locale.isRtl() ? 'طي القائمة' : 'Collapse sidebar'"
+        >
+          <ng-icon name="lucidePanelLeftClose" class="size-4 rtl:rotate-180" />
+        </button>
+      </div>
+    </div>
+
+    <div class="mm-sb-header__layer mm-sb-header__layer--rail">
+      <div class="mm-sb-header__rail-logo">
+        <img
+          [src]="brandIconSrc"
+          alt="MealMate"
+          width="36"
+          height="36"
+        />
+      </div>
+      <button
+        type="button"
+        class="mm-sb-toggle mm-sb-toggle--rail"
+        (click)="toggleCollapsed()"
+        [attr.aria-label]="locale.isRtl() ? 'فتح القائمة' : 'Expand sidebar'"
+      >
+        <ng-icon name="lucidePanelLeftOpen" class="size-4 rtl:rotate-180" />
+      </button>
+    </div>
+  </header>
+
+  <!-- Profile -->
+  <div class="mm-sb-profile">
+    <div class="mm-sb-profile__avatar" aria-hidden="true">M</div>
+    @if (showDetails()) {
+      <div class="mm-sb-profile__meta">
+        <div class="mm-sb-profile__status">
+          <span class="mm-sb-profile__dot"></span>
+          <span>{{ onlineLabel() }}</span>
+        </div>
+        <p class="mm-sb-profile__name">{{ adminLabel() }}</p>
+        <p class="mm-sb-profile__sub">{{ shiftLabel() }}</p>
+      </div>
+    }
+  </div>
+
+  <!-- Navigation -->
+  <nav class="mm-sb-nav" aria-label="Admin navigation">
+    @for (section of navSections; track section.id) {
+      <section class="mm-sb-section" [class.mm-sb-section--rail]="collapsed()">
+        @if (showDetails()) {
+          <h2 class="mm-sb-section__title" [class.mm-sb-section__title--rtl]="locale.isRtl()">
+            {{ sectionLabel(section) }}
+          </h2>
+        } @else if (collapsed() && !$first) {
+          <div class="mm-sb-section__rail-rule" aria-hidden="true"></div>
+        }
+
+        <ul class="mm-sb-list">
+          @for (item of section.items; track item.id) {
+            <li
+              class="mm-sb-list__item"
+              (mouseenter)="showFlyout(item.id)"
+              (mouseleave)="hideFlyout()"
+            >
+              @if (item.children?.length) {
+                <button
+                  type="button"
+                  [class]="navItemClass(item)"
+                  [attr.title]="collapsed() ? label(item) : null"
+                  (click)="onNavGroupClick(item)"
+                >
+                  <span class="mm-sb-item__icon">
+                    <ng-icon [name]="item.icon" class="size-[1.05rem]" />
+                  </span>
+                  @if (showNavBadges && collapsed() && hasCollapsedBadge(item)) {
+                    <span class="mm-sb-item__badge-dot" aria-hidden="true"></span>
+                  }
+                  @if (showDetails()) {
+                    <span class="mm-sb-item__label">{{ label(item) }}</span>
+                    @if (showNavBadges && groupBadgeTotal(item) > 0) {
+                      <span [class]="groupBadgeClasses(item)">{{ formatBadge(groupBadgeTotal(item)) }}</span>
+                    }
+                    <ng-icon
+                      [name]="isGroupExpanded(item.id) ? 'lucideChevronDown' : 'lucideChevronRight'"
+                      class="mm-sb-item__chevron rtl:rotate-180"
+                    />
+                  }
+                </button>
+
+                @if (showDetails() && isGroupExpanded(item.id)) {
+                  <ul class="mm-sb-sublist" role="list">
+                    @for (child of item.children; track child.id) {
+                      <li>
+                        <a
+                          [routerLink]="child.route!"
+                          routerLinkActive="mm-sb-subitem--active"
+                          [routerLinkActiveOptions]="{ exact: isExactNavRoute(child.route) }"
+                          class="mm-sb-subitem"
+                          (click)="closeMobileNav()"
+                        >
+                          <span class="mm-sb-subitem__label">{{ label(child) }}</span>
+                          @if (showNavBadges && child.badge) {
+                            <span [class]="badgeClasses(child.badge)">{{ formatBadge(child.badge) }}</span>
+                          }
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                }
+
+                @if (isFlyoutOpen(item.id)) {
+                  <div [class]="flyoutClass()">
+                    <p class="mm-sb-flyout__heading">{{ label(item) }}</p>
+                    <ul class="mm-sb-flyout__list" role="list">
+                      @for (child of item.children; track child.id) {
+                        <li>
+                          <a
+                            [routerLink]="child.route!"
+                            routerLinkActive="mm-sb-flyout__link--active"
+                            [routerLinkActiveOptions]="{ exact: isExactNavRoute(child.route) }"
+                            class="mm-sb-flyout__link"
+                            (click)="hideFlyout(); closeMobileNav()"
+                          >
+                            <span>{{ label(child) }}</span>
+                            @if (showNavBadges && child.badge) {
+                              <span [class]="badgeClasses(child.badge)">{{ formatBadge(child.badge) }}</span>
+                            }
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+              } @else if (item.route) {
+                <a
+                  [routerLink]="item.route"
+                  routerLinkActive="mm-sb-item--active"
+                  [routerLinkActiveOptions]="{ exact: isExactNavRoute(item.route) }"
+                  [class]="navItemClass(item)"
+                  [attr.title]="collapsed() ? label(item) : null"
+                  (click)="closeMobileNav()"
+                >
+                  <span class="mm-sb-item__icon">
+                    <ng-icon [name]="item.icon" class="size-[1.05rem]" />
+                  </span>
+                  @if (showDetails()) {
+                    <span class="mm-sb-item__label">{{ label(item) }}</span>
+                  }
+                </a>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  </nav>
+
+  <!-- Footer -->
+  <footer class="mm-sb-footer" [class.mm-sb-footer--rail]="collapsed()">
+    @if (showDetails() && !collapsed()) {
+      <a [routerLink]="quickAction.route" class="mm-sb-cta">
+        <span class="mm-sb-cta__icon">
+          <ng-icon [name]="quickAction.icon" class="size-[1.05rem]" />
+        </span>
+        <span class="mm-sb-cta__copy">
+          <span class="mm-sb-cta__title">{{ label(quickAction) }}</span>
+          <span class="mm-sb-cta__hint">{{ quickActionHint() }}</span>
+        </span>
+        <ng-icon name="lucideChevronRight" class="mm-sb-cta__arrow rtl:rotate-180" />
+      </a>
+    } @else {
+      <a
+        [routerLink]="quickAction.route"
+        class="mm-sb-cta mm-sb-cta--icon"
+        [attr.title]="label(quickAction)"
+      >
+        <ng-icon [name]="quickAction.icon" class="size-[1.05rem]" />
+      </a>
+    }
+
+    <mm-sidebar-logout-button
+      [label]="logoutLabel()"
+      [hint]="logoutHint()"
+      [collapsed]="collapsed()"
+      [showDetails]="showDetails()"
+      (logout)="logout()"
+    />
+  </footer>
+</aside>

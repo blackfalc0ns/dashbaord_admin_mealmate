@@ -1,0 +1,20 @@
+<z-card
+  class="mm-overview-timeline"
+  [zTitle]="locale.isRtl() ? 'الجدول الزمني التشغيلي' : 'Operational timeline'"
+  [zDescription]="locale.isRtl() ? 'من −72h حتى التسليم' : 'From −72h through delivery'"
+>
+  <ol class="mm-overview-timeline__list">
+    @for (item of items(); track item.id; let last = $last) {
+      <li class="mm-overview-timeline__item" [class.mm-overview-timeline__item--last]="last">
+        <div class="mm-overview-timeline__dot"></div>
+        <div class="mm-overview-timeline__content">
+          <div class="mm-overview-timeline__row">
+            <strong>{{ label(item) }}</strong>
+            <span class="mm-overview-timeline__offset">{{ offset(item) }}</span>
+          </div>
+          <p>{{ description(item) }}</p>
+        </div>
+      </li>
+    }
+  </ol>
+</z-card>

@@ -1,0 +1,11 @@
+<div class="mm-overview-section-intro">
+  <div class="mm-overview-section-intro__head">
+    <h2 class="mm-overview-section-intro__title">{{ title() }}</h2>
+    <p class="mm-overview-section-intro__desc">{{ description() }}</p>
+  </div>
+  <ul class="mm-overview-section-intro__highlights">
+    @for (item of highlights(); track item) {
+      <li>{{ item }}</li>
+    }
+  </ul>
+</div>

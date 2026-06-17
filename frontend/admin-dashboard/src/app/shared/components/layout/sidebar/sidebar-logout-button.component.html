@@ -1,0 +1,18 @@
+<button
+  type="button"
+  class="mm-sb-logout"
+  [class.mm-sb-logout--rail]="isCompact()"
+  [attr.title]="isCompact() ? label() : null"
+  [attr.aria-label]="label()"
+  (click)="logout.emit()"
+>
+  <span class="mm-sb-logout__icon" aria-hidden="true">
+    <ng-icon name="lucideLogOut" class="size-[1.05rem]" />
+  </span>
+  @if (showDetails() && !collapsed()) {
+    <span class="mm-sb-logout__copy">
+      <span class="mm-sb-logout__label">{{ label() }}</span>
+      <span class="mm-sb-logout__hint">{{ hint() }}</span>
+    </span>
+  }
+</button>

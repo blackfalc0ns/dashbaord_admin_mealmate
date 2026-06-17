@@ -1,0 +1,19 @@
+<z-card
+  class="mm-overview-quick-links"
+  [zTitle]="locale.isRtl() ? 'اختصارات سريعة' : 'Quick links'"
+  [zDescription]="locale.isRtl() ? 'الانتقال المباشر للأقسام الأكثر استخداماً' : 'Jump to frequently used sections'"
+>
+  <div class="mm-overview-quick-links__grid">
+    @for (link of links(); track link.id) {
+      <a class="mm-overview-quick-link" [routerLink]="link.route">
+        <span class="mm-overview-quick-link__icon">
+          <ng-icon [name]="link.icon" size="18" />
+        </span>
+        <span class="mm-overview-quick-link__label">{{ label(link) }}</span>
+        @if (link.badge) {
+          <span class="mm-overview-quick-link__badge">{{ link.badge }}</span>
+        }
+      </a>
+    }
+  </div>
+</z-card>

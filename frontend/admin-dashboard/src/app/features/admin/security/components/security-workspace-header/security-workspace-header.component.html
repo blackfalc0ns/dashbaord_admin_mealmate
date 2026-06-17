@@ -1,0 +1,57 @@
+<mm-shell-card [class]="shellClass()">
+  <div [class]="accentClass()" aria-hidden="true"></div>
+
+  <div [class]="heroClass()">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="min-w-0 flex-1">
+        <mm-breadcrumb
+          [homeLabel]="panelLabel()"
+          [items]="breadcrumbItems()"
+          (homeClick)="goHome()"
+        />
+        <h1 class="mt-2 text-2xl font-black text-slate-900 tracking-tight">{{ pageTitle() }}</h1>
+        <p class="mt-1 text-sm text-slate-500 leading-relaxed">{{ pageDescription() }}</p>
+      </div>
+      <div class="shrink-0">
+        <button type="button" [class]="actionClass()">
+          <span [class]="actionIconClass()" aria-hidden="true">
+            <ng-icon name="lucidePlus" size="12" />
+          </span>
+          <span>{{ quickActionLabel() }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div [class]="metaRowClass()">
+    <span [class]="chipClass('live')">
+      <span [class]="chipMarkClass()" aria-hidden="true"></span>
+      {{ locale.isRtl() ? 'نطاق عالمي — Super Admin' : 'Global scope — Super Admin' }}
+    </span>
+    <span [class]="chipClass('muted')">
+      <ng-icon name="lucideShieldCheck" size="11" class="text-emerald-600" />
+      {{ locale.isRtl() ? 'آخر تدقيق: منذ 12 دقيقة' : 'Last audit: 12 min ago' }}
+    </span>
+    @if (context().pendingReview; as count) {
+      <span [class]="chipClass('warn')">
+        {{ locale.isRtl() ? count + ' للمراجعة' : count + ' to review' }}
+      </span>
+    }
+    @if (page(); as workspacePage) {
+      <span [class]="chipClass('eyebrow')">{{ t(workspacePage.eyebrowAr, workspacePage.eyebrowEn) }}</span>
+      <span [class]="chipClass('role')">{{ t(workspacePage.roleChipAr, workspacePage.roleChipEn) }}</span>
+      <span [class]="chipClass('scope')">{{ t(workspacePage.scopeChipAr, workspacePage.scopeChipEn) }}</span>
+    }
+  </div>
+
+  <div [class]="navSectionClass()">
+    <mm-security-section-nav
+      [activeTab]="activeTab()"
+      [activeAccessPanel]="accessPanel()"
+      [activeUsersPanel]="usersPanel()"
+      (tabChange)="tabChange.emit($event)"
+      (accessPanelChange)="accessPanelChange.emit($event)"
+      (usersPanelChange)="usersPanelChange.emit($event)"
+    />
+  </div>
+</mm-shell-card>

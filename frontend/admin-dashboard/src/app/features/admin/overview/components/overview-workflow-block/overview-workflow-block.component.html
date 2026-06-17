@@ -1,0 +1,31 @@
+<z-card class="mm-overview-wf-block">
+  <div class="mm-overview-wf-block__head">
+    <span class="mm-overview-wf-block__ref">{{ block().featureRef }}</span>
+    <h3 class="mm-overview-wf-block__title">{{ title() }}</h3>
+  </div>
+  <p class="mm-overview-wf-block__goal">{{ goal() }}</p>
+
+  <div class="mm-overview-wf-block__section">
+    <h4>{{ stepsHeading() }}</h4>
+    <ol class="mm-overview-wf-block__list">
+      @for (step of steps(); track step) {
+        <li>{{ step }}</li>
+      }
+    </ol>
+  </div>
+
+  <div class="mm-overview-wf-block__section">
+    <h4>{{ rulesHeading() }}</h4>
+    <ul class="mm-overview-wf-block__list mm-overview-wf-block__list--rules">
+      @for (rule of rules(); track rule) {
+        <li>{{ rule }}</li>
+      }
+    </ul>
+  </div>
+
+  @if (block().route && routeLabel(); as label) {
+    <a card-footer class="mm-overview-wf-block__link" [routerLink]="block().route">
+      {{ label }} →
+    </a>
+  }
+</z-card>

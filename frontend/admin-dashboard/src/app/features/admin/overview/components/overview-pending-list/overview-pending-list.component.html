@@ -1,0 +1,35 @@
+<z-card
+  class="mm-overview-pending"
+  [zTitle]="locale.isRtl() ? 'طلبات قيد المراجعة' : 'Pending review queue'"
+  [zDescription]="locale.isRtl() ? 'آخر طلبات الاعتماد المعلّقة' : 'Latest pending approval requests'"
+>
+  <ul class="mm-overview-pending__list">
+    @for (item of items(); track item.id) {
+      <li>
+        <a class="mm-overview-pending__row" [routerLink]="item.route">
+          <div class="mm-overview-pending__identity">
+            <strong class="mm-overview-pending__name">{{ name(item) }}</strong>
+            <span
+              class="mm-overview-pending__type"
+              [class.mm-overview-pending__type--restaurant]="isRestaurant(item)"
+            >
+              {{ type(item) }}
+            </span>
+          </div>
+          <span class="mm-overview-pending__submitted">{{ submitted(item) }}</span>
+          <span
+            class="mm-overview-pending__status"
+            [class.mm-overview-pending__status--success]="statusTone(item) === 'success'"
+            [class.mm-overview-pending__status--warning]="statusTone(item) === 'warning'"
+            [class.mm-overview-pending__status--danger]="statusTone(item) === 'danger'"
+          >
+            {{ status(item) }}
+          </span>
+          <span class="mm-overview-pending__action">
+            {{ locale.isRtl() ? 'مراجعة' : 'Review' }}
+          </span>
+        </a>
+      </li>
+    }
+  </ul>
+</z-card>

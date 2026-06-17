@@ -1,0 +1,23 @@
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
+  <div class="flex w-full flex-col gap-3">
+    <mm-security-workspace-header
+      [activeTab]="activeTab()"
+      [accessPanel]="accessPanel()"
+      [usersPanel]="usersPanel()"
+      [page]="activeTab() === 'overview' ? null : activePage()"
+      (tabChange)="onTabChange($event)"
+      (accessPanelChange)="onAccessPanelChange($event)"
+      (usersPanelChange)="onUsersPanelChange($event)"
+    />
+
+    <div role="tabpanel" class="min-w-0">
+      @if (activeTab() === 'overview') {
+        <mm-security-overview-panel (tabChange)="onOverviewJump($event)" />
+      } @else {
+        @if (activePage(); as page) {
+          <mm-security-workspace-panel [page]="page" />
+        }
+      }
+    </div>
+  </div>
+</section>

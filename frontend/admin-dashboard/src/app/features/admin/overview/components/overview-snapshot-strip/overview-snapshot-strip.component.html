@@ -1,0 +1,14 @@
+<div class="mm-overview-snapshot">
+  @for (metric of metrics(); track metric.id) {
+    <a
+      class="mm-overview-snapshot__item"
+      [class.mm-overview-snapshot__item--danger]="metric.tone === 'danger'"
+      [class.mm-overview-snapshot__item--warning]="metric.tone === 'warning'"
+      [class.mm-overview-snapshot__item--success]="metric.tone === 'success'"
+      [routerLink]="metric.route"
+    >
+      <span class="mm-overview-snapshot__value">{{ metric.displayValue }}</span>
+      <span class="mm-overview-snapshot__label">{{ label(metric) }}</span>
+    </a>
+  }
+</div>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MealMate — تسجيل دخول المسؤول</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="login.css" />
+  </head>
+  <body>
+  <!-- Static preview — mirrors admin-login-page component -->
+  <div class="login-shell">
+    <div class="login-shell__bg" aria-hidden="true">
+      <div class="login-shell__orb login-shell__orb--1"></div>
+      <div class="login-shell__orb login-shell__orb--2"></div>
+      <div class="login-shell__orb login-shell__orb--3"></div>
+      <div class="login-shell__grid"></div>
+    </div>
+
+    <button type="button" class="login-shell__lang" id="langBtn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" />
+        <path d="M3 12h18M12 3c2.5 2.8 4 6 4 9s-1.5 6.2-4 9M12 3c-2.5 2.8-4 6-4 9s1.5 6.2 4 9" stroke="currentColor" stroke-width="1.5" />
+      </svg>
+      <span>English</span>
+    </button>
+
+    <main class="login-card">
+      <aside class="login-card__brand">
+        <div class="brand__glow" aria-hidden="true"></div>
+        <div class="brand__ring" aria-hidden="true"></div>
+        <div class="brand__logo-wrap">
+          <div class="brand__logo">
+            <svg class="brand__logo-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <path d="M14 34V18l10 8 10-8v16" stroke="url(#logoGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M10 14h28" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" />
+              <defs>
+                <linearGradient id="logoGrad" x1="14" y1="18" x2="34" y2="34">
+                  <stop stop-color="#22a34f" />
+                  <stop offset="1" stop-color="#0f5c2c" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <span class="brand__name">MealMate</span>
+        </div>
+        <div class="brand__content">
+          <span class="brand__badge"><span class="brand__badge-dot"></span>مركز العمليات</span>
+          <h2 class="brand__title">إدارة النظام المركزية</h2>
+          <p class="brand__desc">الوصول المتقدم لشبكة MealMate. يرجى تأكيد الهوية للوصول إلى لوحة التحكم الفنية ومراقبة العمليات.</p>
+        </div>
+        <div class="brand__security">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3 4 7v5c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V7l-8-4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>بروتوكول أمان مشفر نشط</span>
+        </div>
+      </aside>
+
+      <section class="login-card__form">
+        <header class="form__header">
+          <h1 class="form__title">تسجيل دخول المسؤول</h1>
+          <p class="form__subtitle">قم بإدخال بيانات الاعتماد للوصول إلى النظام</p>
+        </header>
+        <form class="form" id="loginForm">
+          <div class="form__field">
+            <label class="form__label" for="identifier">المعرف (البريد أو الهاتف)</label>
+            <div class="form__input-wrap">
+              <input id="identifier" class="form__input" type="text" value="admin@mealmate.com" autocomplete="username" />
+              <span class="form__input-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="form__field">
+            <div class="form__label-row">
+              <label class="form__label" for="password">مفتاح الوصول</label>
+              <a class="form__link" href="#">نسيت المفتاح؟</a>
+            </div>
+            <div class="form__input-wrap">
+              <input id="password" class="form__input form__input--password" type="password" placeholder="••••••••••••" autocomplete="current-password" />
+              <button type="button" class="form__toggle-pw" id="togglePw" aria-label="إظهار كلمة المرور">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+              </button>
+              <span class="form__input-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 11V8a4 4 0 1 1 8 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </span>
+            </div>
+          </div>
+          <label class="form__checkbox">
+            <input type="checkbox" />
+            <span class="form__checkbox-box" aria-hidden="true"></span>
+            <span>حفظ الجلسة على هذه المحطة</span>
+          </label>
+          <button type="submit" class="form__submit" id="submitBtn">
+            <span class="form__submit-text">تهيئة الاتصال</span>
+            <span class="form__submit-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </button>
+        </form>
+        <footer class="form__sysinfo">
+          <span><strong>LOG:</strong> ACTIVE</span>
+          <span class="form__sysinfo-divider"></span>
+          <span><strong>IP:</strong> 192.168.1.1</span>
+          <span class="form__sysinfo-divider"></span>
+          <span><strong>SYS:</strong> MACOS</span>
+        </footer>
+      </section>
+    </main>
+
+    <footer class="login-shell__footer">
+      <span>© 2024 MealMate Operations.</span>
+      <span>جميع الحقوق محفوظة.</span>
+      <span class="login-shell__footer-secure">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="1.5"/></svg>
+        اتصال آمن
+      </span>
+    </footer>
+  </div>
+  <script src="login.js"></script>
+  </body>
+</html>

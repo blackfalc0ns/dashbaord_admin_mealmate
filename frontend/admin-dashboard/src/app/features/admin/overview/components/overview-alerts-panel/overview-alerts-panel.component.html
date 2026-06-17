@@ -1,0 +1,60 @@
+<div class="mm-overview-alerts-grid" [class.mm-overview-alerts-grid--single]="!showAlerts() || !showActivities()">
+  @if (showAlerts()) {
+    <z-card
+      class="mm-overview-alerts-card"
+      [zTitle]="locale.isRtl() ? 'تنبيهات حرجة' : 'Critical alerts'"
+      [zDescription]="compact() ? '' : (locale.isRtl() ? 'تحتاج تدخل فوري' : 'Require immediate action')"
+    >
+      <ul class="mm-overview-alerts-list">
+        @for (alert of visibleAlerts(); track alert.id) {
+          <li>
+            <a
+              class="mm-overview-alert"
+              [class.mm-overview-alert--critical]="alert.severity === 'critical'"
+              [class.mm-overview-alert--warning]="alert.severity === 'warning'"
+              [routerLink]="alert.route"
+            >
+              <div class="mm-overview-alert__head">
+                <span class="mm-overview-alert__title">{{ alertTitle(alert) }}</span>
+                <span class="mm-overview-alert__time">{{ alertTime(alert) }}</span>
+              </div>
+              @if (!compact()) {
+                <p class="mm-overview-alert__desc">{{ alertDescription(alert) }}</p>
+              }
+            </a>
+          </li>
+        }
+      </ul>
+    </z-card>
+  }
+
+  @if (showActivities()) {
+    <z-card
+      class="mm-overview-alerts-card"
+      [zTitle]="locale.isRtl() ? 'آخر النشاط' : 'Recent activity'"
+      [zDescription]="compact() ? '' : (locale.isRtl() ? 'آخر الإجراءات على المنصة' : 'Latest platform actions')"
+    >
+      <ul [class]="activityListClass()">
+        @for (item of visibleActivities(); track item.id; let last = $last) {
+          <li class="relative">
+            @if (!last) {
+              <span [class]="activityRailClass()" aria-hidden="true"></span>
+            }
+            <a [class]="activityLinkClass()" [routerLink]="item.route">
+              <span [class]="activityIconClass(activityTone(item))">
+                <ng-icon [name]="activityIcon(item)" [size]="compact() ? '13' : '14'" />
+              </span>
+              <span class="min-w-0 flex-1">
+                <span [class]="activityTextClass()">{{ activityText(item) }}</span>
+                <span [class]="activityTimeClass()">{{ activityTime(item) }}</span>
+              </span>
+              <span [class]="activityChevronClass()" aria-hidden="true">
+                <ng-icon name="lucideChevronLeft" size="14" class="block rtl:rotate-180" />
+              </span>
+            </a>
+          </li>
+        }
+      </ul>
+    </z-card>
+  }
+</div>

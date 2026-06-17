@@ -1,0 +1,48 @@
+<z-card
+  class="mm-overview-domain h-full min-h-0"
+  [class.mm-overview-domain--compact]="compact()"
+  [zTitle]="title()"
+  [zDescription]="compact() ? description() : undefined"
+>
+  <ul
+    class="mm-overview-domain__list"
+    [class.mm-overview-domain__list--compact]="compact()"
+  >
+    @for (metric of panel().metrics; track metric.labelAr) {
+      <li class="mm-overview-domain__item">
+        <a class="mm-overview-domain__link" [routerLink]="metric.route">
+          <div class="mm-overview-domain__row">
+            <span class="mm-overview-domain__label">{{ metricLabel(metric) }}</span>
+            <span
+              class="mm-overview-domain__value"
+              [class.mm-overview-domain__value--danger]="metric.tone === 'danger'"
+              [class.mm-overview-domain__value--warning]="metric.tone === 'warning'"
+              [class.mm-overview-domain__value--success]="metric.tone === 'success'"
+            >
+              {{ metricValue(metric) }}
+            </span>
+          </div>
+          @if (metric.max) {
+            <div class="mm-overview-domain__bar">
+              <span
+                class="mm-overview-domain__bar-fill"
+                [class.mm-overview-domain__bar-fill--danger]="metric.tone === 'danger'"
+                [class.mm-overview-domain__bar-fill--warning]="metric.tone === 'warning'"
+                [class.mm-overview-domain__bar-fill--success]="metric.tone === 'success'"
+                [style.width.%]="barPercent(metric.value, metric.max)"
+              ></span>
+            </div>
+          }
+        </a>
+      </li>
+    }
+  </ul>
+  @if (footerNote(); as note) {
+    <p class="mm-overview-domain__note">{{ note }}</p>
+  }
+  @if (!compact()) {
+    <a card-footer class="mm-overview-domain__footer" [routerLink]="panel().route">
+      {{ locale.isRtl() ? 'فتح القسم' : 'Open section' }} →
+    </a>
+  }
+</z-card>

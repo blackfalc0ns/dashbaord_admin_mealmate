@@ -1,0 +1,5 @@
+<div class="mm-overview-wf-grid">
+  @for (block of visibleBlocks(); track block.id) {
+    <mm-overview-workflow-block [block]="block" />
+  }
+</div>

@@ -1,0 +1,44 @@
+@if (embedded()) {
+  <div class="mm-overview-period__tabs mm-overview-period__tabs--embedded" role="tablist">
+    @for (period of periods; track period) {
+      <button
+        type="button"
+        role="tab"
+        class="mm-overview-period__tab"
+        [class.mm-overview-period__tab--active]="selected() === period"
+        [attr.aria-selected]="selected() === period"
+        (click)="select(period)"
+      >
+        {{ label(period) }}
+      </button>
+    }
+  </div>
+} @else {
+  <div class="mm-overview-toolbar">
+    <div class="mm-overview-toolbar__meta">
+      <h1 class="mm-overview-toolbar__title">
+        {{ locale.isRtl() ? 'النظرة العامة' : 'Overview' }}
+      </h1>
+      <div class="mm-overview-toolbar__chips">
+        <span class="mm-overview-toolbar__country">{{ countryLabel() }}</span>
+        @if (updatedAt()) {
+          <span class="mm-overview-toolbar__updated">{{ updatedAt() }}</span>
+        }
+      </div>
+    </div>
+    <div class="mm-overview-period__tabs" role="tablist">
+      @for (period of periods; track period) {
+        <button
+          type="button"
+          role="tab"
+          class="mm-overview-period__tab"
+          [class.mm-overview-period__tab--active]="selected() === period"
+          [attr.aria-selected]="selected() === period"
+          (click)="select(period)"
+        >
+          {{ label(period) }}
+        </button>
+      }
+    </div>
+  </div>
+}

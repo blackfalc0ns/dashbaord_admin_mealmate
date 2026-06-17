@@ -1,0 +1,24 @@
+<div class="mm-admin-shell-canvas">
+  @if (layout.showBackdrop()) {
+    <button
+      type="button"
+      class="mm-admin-shell-backdrop"
+      [attr.aria-label]="'Close menu'"
+      (click)="closeMobileNav()"
+    ></button>
+  }
+
+  <mm-admin-sidebar />
+
+  <div class="mm-admin-shell-main">
+    <mm-admin-header class="shrink-0" />
+
+    @if (!hidePageToolbar()) {
+      <mm-admin-page-toolbar class="shrink-0" />
+    }
+
+    <main class="mm-admin-shell-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

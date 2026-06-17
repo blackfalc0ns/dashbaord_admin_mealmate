@@ -1,0 +1,20 @@
+<mm-shell-card class="mm-admin-toolbar-card">
+  <mm-breadcrumb
+    [homeLabel]="panelLabel()"
+    [items]="breadcrumbItems()"
+    (homeClick)="goHome()"
+  />
+
+  <mm-page-heading [title]="pageTitle()" [description]="pageDescription()">
+    <a
+      page-heading-action
+      class="mm-page-heading__action"
+      [routerLink]="'/admin/operations/72h-rule/exceptions'"
+    >
+      <span class="flex size-5 items-center justify-center rounded-full bg-white/20 text-base leading-none">
+        +
+      </span>
+      <span>{{ quickActionLabel() }}</span>
+    </a>
+  </mm-page-heading>
+</mm-shell-card>

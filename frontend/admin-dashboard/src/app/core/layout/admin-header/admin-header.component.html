@@ -1,0 +1,65 @@
+<mm-shell-card>
+  <div class="mm-admin-header-bar">
+    <div class="mm-admin-header-start">
+      @if (layout.isMobile()) {
+        <button
+          type="button"
+          class="mm-admin-header-icon-btn md:hidden"
+          (click)="openMobileNav()"
+          [attr.aria-label]="menuLabel()"
+        >
+          <ng-icon name="lucideMenu" class="size-5" />
+        </button>
+        <img
+          class="h-7 w-auto shrink-0 object-contain md:hidden"
+          [src]="mobileIconSrc"
+          alt="MealMate"
+          width="28"
+          height="28"
+        />
+      }
+
+      <img
+        class="mm-admin-header-wordmark hidden h-7 w-auto shrink-0 object-contain md:block"
+        [src]="brandLogoSrc"
+        alt="MealMate"
+        width="140"
+        height="28"
+      />
+      <span class="mm-admin-header-divider hidden md:block" aria-hidden="true"></span>
+      <p class="mm-admin-header-title">{{ panelLabel() }}</p>
+    </div>
+
+    <div class="mm-admin-header-actions">
+      <span class="mm-admin-header-date hidden xl:inline-flex">
+        {{ todayLabel() }}
+      </span>
+
+      <button
+        type="button"
+        class="mm-admin-header-icon-btn"
+        [attr.aria-label]="locale.isRtl() ? 'الإشعارات' : 'Notifications'"
+      >
+        <ng-icon name="lucideBell" class="size-[1.05rem]" />
+        <span class="mm-admin-header-notify-dot" aria-hidden="true"></span>
+      </button>
+
+      <button
+        type="button"
+        class="mm-admin-header-lang-btn"
+        (click)="locale.toggle()"
+      >
+        <ng-icon name="lucideGlobe" class="size-3.5 shrink-0 text-emerald-600" />
+        <span>{{ langSwitchLabel() }}</span>
+      </button>
+
+      <div class="mm-admin-header-profile hidden sm:flex">
+        <span class="mm-admin-header-avatar">M</span>
+        <div class="min-w-0 leading-tight">
+          <p class="truncate text-xs font-bold text-slate-800">{{ adminName() }}</p>
+          <p class="truncate text-[0.65rem] text-slate-500">{{ adminRole() }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</mm-shell-card>

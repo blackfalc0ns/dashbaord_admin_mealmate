@@ -1,0 +1,22 @@
+<nav
+  [class]="navClass()"
+  [attr.aria-label]="locale.isRtl() ? 'أقسام اللوحة' : 'Dashboard sections'"
+>
+  @for (tab of tabs; track tab.id) {
+    <button
+      type="button"
+      [class]="itemClass(tab.id)"
+      [attr.aria-selected]="activeId() === tab.id"
+      role="tab"
+      (click)="select(tab.id)"
+    >
+      <span [class]="iconClass(tab.id)">
+        <ng-icon [name]="tab.icon" [size]="embedded() ? '13' : '15'" />
+      </span>
+      <span [class]="labelClass()">{{ label(tab) }}</span>
+      @if (badgeCount(tab.id); as count) {
+        <span [class]="badgeClass(tab.id)">{{ count }}</span>
+      }
+    </button>
+  }
+</nav>

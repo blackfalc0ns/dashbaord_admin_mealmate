@@ -1,0 +1,28 @@
+<table class="mm-table">
+  <thead>
+    <tr>
+      <th>العميل</th>
+      <th>المطعم</th>
+      <th>التوصيل</th>
+      <th>الحالة</th>
+      <th>مهلة التأكيد</th>
+      @if (mode === 'overdue') {
+        <th>إجراءات</th>
+      }
+    </tr>
+  </thead>
+  <tbody>
+    @for (row of rows; track row.orderId) {
+      <tr>
+        <td>{{ row.customerDisplayName }}</td>
+        <td>{{ row.restaurantName }}</td>
+        <td>{{ row.deliveryDate }}</td>
+        <td><mm-order-status-badge [phase]="row.phase" /></td>
+        <td>{{ row.confirmationDeadlineAt ?? '—' }}</td>
+        @if (mode === 'overdue') {
+          <td><!-- open replacement / reassign --></td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>

@@ -1,0 +1,8 @@
+<div
+  class="mm-overview-domain-grid h-full min-h-0"
+  [class.mm-overview-domain-grid--inline]="inline()"
+>
+  @for (panel of visiblePanels(); track panel.id) {
+    <mm-overview-domain-panel [panel]="panel" [compact]="compact()" />
+  }
+</div>

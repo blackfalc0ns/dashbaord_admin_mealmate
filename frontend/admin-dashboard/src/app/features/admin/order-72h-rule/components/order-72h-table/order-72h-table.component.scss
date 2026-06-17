@@ -1,0 +1,11 @@
+.mm-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mm-table th,
+.mm-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--mm-border, #e0e0e0);
+  text-align: right;
+}

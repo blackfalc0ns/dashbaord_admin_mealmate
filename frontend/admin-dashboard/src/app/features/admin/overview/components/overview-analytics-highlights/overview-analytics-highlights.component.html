@@ -1,0 +1,25 @@
+<div class="mm-overview-analytics-highlights">
+  @for (item of highlights(); track item.id) {
+    <div
+      class="mm-overview-analytics-highlights__item"
+      [class.mm-overview-analytics-highlights__item--success]="item.tone === 'success'"
+      [class.mm-overview-analytics-highlights__item--warning]="item.tone === 'warning'"
+      [class.mm-overview-analytics-highlights__item--danger]="item.tone === 'danger'"
+    >
+      <div class="mm-overview-analytics-highlights__head">
+        <span class="mm-overview-analytics-highlights__label">{{ label(item) }}</span>
+        @if (item.deltaPercent !== undefined) {
+          <span
+            class="mm-overview-analytics-highlights__delta"
+            [class.mm-overview-analytics-highlights__delta--up]="item.deltaPercent >= 0"
+            [class.mm-overview-analytics-highlights__delta--down]="item.deltaPercent < 0"
+          >
+            {{ item.deltaPercent >= 0 ? '+' : '' }}{{ item.deltaPercent }}%
+          </span>
+        }
+      </div>
+      <strong class="mm-overview-analytics-highlights__value">{{ item.value }}</strong>
+      <span class="mm-overview-analytics-highlights__hint">{{ hint(item) }}</span>
+    </div>
+  }
+</div>

@@ -1,0 +1,161 @@
+@if (mode() === 'analytics' && chartGroups(); as groups) {
+  <div class="mm-overview-analytics">
+    @for (group of groups; track group.key) {
+      <section
+        class="mm-overview-analytics__group"
+        [class.mm-overview-analytics__group--merged]="isMergedGroup(group)"
+      >
+        @if (isMergedGroup(group)) {
+          <header class="mm-overview-analytics__merged-head">
+            <div class="mm-overview-analytics__merged-split">
+              @for (part of mergedTitleParts(group); track part) {
+                <div class="mm-overview-analytics__merged-split-col">
+                  <span class="mm-overview-analytics__merged-chip">{{ part }}</span>
+                </div>
+              }
+            </div>
+          </header>
+        } @else {
+          <h3 class="mm-overview-analytics__group-title">{{ group.title }}</h3>
+        }
+        <div class="mm-overview-analytics__grid" [class]="groupGridClass(group)">
+          @for (panel of group.charts; track panel.id) {
+            @let cfg = chartConfig(panel);
+            <z-card
+              class="mm-overview-chart-card mm-overview-chart-card--analytics"
+              [class.mm-overview-chart-card--full]="isFullWidth(panel, group)"
+              [class.mm-overview-chart-card--donut]="panel.chartType === 'donut'"
+              [class.mm-overview-chart-card--in-merged]="isMergedGroup(group)"
+              [zTitle]="title(panel)"
+              [zDescription]="description(panel)"
+            >
+              <div class="mm-overview-chart-card__body">
+                <mm-apex-chart
+                  [series]="cfg.series"
+                  [chart]="cfg.chart"
+                  [xaxis]="cfg.xaxis"
+                  [yaxis]="cfg.yaxis"
+                  [stroke]="cfg.stroke"
+                  [fill]="cfg.fill"
+                  [grid]="cfg.grid"
+                  [legend]="cfg.legend"
+                  [tooltip]="cfg.tooltip"
+                  [plotOptions]="cfg.plotOptions"
+                  [dataLabels]="cfg.dataLabels"
+                  [markers]="cfg.markers"
+                  [labels]="cfg.labels ?? []"
+                  [colors]="cfg.colors"
+                />
+              </div>
+              @if (panel.stats?.length) {
+                <div class="mm-overview-chart-stats">
+                  @for (stat of panel.stats; track stat.labelAr) {
+                    <div
+                      class="mm-overview-chart-stat"
+                      [class.mm-overview-chart-stat--success]="stat.tone === 'success'"
+                      [class.mm-overview-chart-stat--warning]="stat.tone === 'warning'"
+                      [class.mm-overview-chart-stat--danger]="stat.tone === 'danger'"
+                    >
+                      <span class="mm-overview-chart-stat__label">{{ statLabel(stat) }}</span>
+                      <strong class="mm-overview-chart-stat__value">{{ stat.value }}</strong>
+                    </div>
+                  }
+                </div>
+              }
+              <a
+                card-footer
+                [class]="detailsLinkClass(true, isMergedGroup(group))"
+                [routerLink]="panel.route"
+              >
+                <span>{{ detailsLabel() }}</span>
+                <span [class]="detailsLinkIconClass(true)">
+                  <ng-icon name="lucideArrowRight" size="12" class="block rtl:rotate-180" />
+                </span>
+              </a>
+            </z-card>
+          }
+        </div>
+      </section>
+    }
+  </div>
+} @else {
+  <div [class]="chartsShellClass()">
+    <div [class]="chartsRowClass()">
+      @for (panel of largeCharts(); track panel.id) {
+        @let cfg = chartConfig(panel);
+        <z-card
+          [class]="chartCardClass(panel)"
+          [zTitle]="title(panel)"
+          [zDescription]="density() === 'compact' ? '' : description(panel)"
+        >
+          <div [class]="chartBodyClass(panel)">
+            <mm-apex-chart
+              [series]="cfg.series"
+              [chart]="cfg.chart"
+              [xaxis]="cfg.xaxis"
+              [yaxis]="cfg.yaxis"
+              [stroke]="cfg.stroke"
+              [fill]="cfg.fill"
+              [grid]="cfg.grid"
+              [legend]="cfg.legend"
+              [tooltip]="cfg.tooltip"
+              [plotOptions]="cfg.plotOptions"
+              [dataLabels]="cfg.dataLabels"
+              [markers]="cfg.markers"
+              [labels]="cfg.labels ?? []"
+              [colors]="cfg.colors"
+            />
+          </div>
+          @if (density() !== 'compact') {
+            <a card-footer [class]="detailsLinkClass(false, false)" [routerLink]="panel.route">
+              <span>{{ detailsLabel() }}</span>
+              <span [class]="detailsLinkIconClass(false)">
+                <ng-icon name="lucideArrowRight" size="12" class="block rtl:rotate-180" />
+              </span>
+            </a>
+          }
+        </z-card>
+      }
+    </div>
+
+    @if (smallCharts().length) {
+      <div class="mm-overview-charts__row">
+        @for (panel of smallCharts(); track panel.id) {
+          @let cfg = chartConfig(panel);
+          <z-card
+            [class]="chartCardClass(panel)"
+            [zTitle]="title(panel)"
+            [zDescription]="density() === 'compact' ? '' : description(panel)"
+          >
+            <div [class]="chartBodyClass(panel)">
+              <mm-apex-chart
+                [series]="cfg.series"
+                [chart]="cfg.chart"
+                [xaxis]="cfg.xaxis"
+                [yaxis]="cfg.yaxis"
+                [stroke]="cfg.stroke"
+                [fill]="cfg.fill"
+                [grid]="cfg.grid"
+                [legend]="cfg.legend"
+                [tooltip]="cfg.tooltip"
+                [plotOptions]="cfg.plotOptions"
+                [dataLabels]="cfg.dataLabels"
+                [markers]="cfg.markers"
+                [labels]="cfg.labels ?? []"
+                [colors]="cfg.colors"
+              />
+            </div>
+            @if (density() !== 'compact') {
+              <a card-footer [class]="detailsLinkClass(false, false)" [routerLink]="panel.route">
+                <span>{{ detailsLabel() }}</span>
+                <span [class]="detailsLinkIconClass(false)">
+                  <ng-icon name="lucideArrowRight" size="12" class="block rtl:rotate-180" />
+                </span>
+              </a>
+            }
+          </z-card>
+        }
+      </div>
+    }
+  </div>
+}

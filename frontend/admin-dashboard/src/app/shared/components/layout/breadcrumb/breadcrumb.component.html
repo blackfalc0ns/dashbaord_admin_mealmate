@@ -1,0 +1,13 @@
+<nav class="mm-breadcrumb-nav" aria-label="Breadcrumb">
+  <button type="button" class="mm-breadcrumb-home" (click)="homeClick.emit()">
+    <ng-icon [name]="homeIcon()" class="size-3.5" />
+    <span>{{ homeLabel() }}</span>
+  </button>
+
+  @for (item of items(); track $index) {
+    <ng-icon [name]="'lucideChevronRight'" class="mm-breadcrumb-separator" aria-hidden="true" />
+    <span [class]="item.active ? 'mm-breadcrumb-item mm-breadcrumb-item--active' : 'mm-breadcrumb-item'">
+      {{ item.label }}
+    </span>
+  }
+</nav>

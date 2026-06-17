@@ -1,0 +1,12 @@
+<section class="mm-page">
+  <mm-page-state
+    [viewState]="facade.state.page.viewState"
+    [errorMessage]="facade.state.page.errorMessage ?? ''"
+    emptyMessage="لا توجد تأكيدات متأخرة"
+    (retry)="onRetry()"
+  />
+
+  @if (facade.state.page.viewState === 'success') {
+    <mm-order-72h-table [rows]="facade.state.overdueRows" mode="overdue" />
+  }
+</section>

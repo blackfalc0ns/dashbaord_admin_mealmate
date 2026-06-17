@@ -1,0 +1,10 @@
+<div class="mm-page-heading">
+  <div class="min-w-0 flex-1">
+    <h1 class="mm-page-heading__title">{{ title() }}</h1>
+    @if (description()) {
+      <p class="mm-page-heading__description">{{ description() }}</p>
+    }
+  </div>
+
+  <ng-content select="[page-heading-action]" />
+</div>

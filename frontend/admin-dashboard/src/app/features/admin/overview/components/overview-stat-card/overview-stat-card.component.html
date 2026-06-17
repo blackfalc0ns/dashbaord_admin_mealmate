@@ -1,0 +1,28 @@
+<a class="mm-overview-stat" [routerLink]="metric().route">
+  <div class="mm-overview-stat__head">
+    <span class="mm-overview-stat__icon">
+      <ng-icon [name]="metric().icon" size="15" />
+    </span>
+    <span
+      class="mm-overview-stat__delta"
+      [class.mm-overview-stat__delta--up]="deltaPositive()"
+      [class.mm-overview-stat__delta--down]="!deltaPositive()"
+    >
+      {{ deltaPositive() ? '+' : '' }}{{ metric().deltaPercent }}%
+    </span>
+  </div>
+  <p class="mm-overview-stat__label">{{ label() }}</p>
+  <p class="mm-overview-stat__value">{{ metric().displayValue }}</p>
+  <div class="mm-overview-stat__spark">
+    <mm-apex-chart
+      [series]="sparkSeries()"
+      [chart]="sparkChart"
+      [colors]="sparkColors"
+      [stroke]="{ curve: 'smooth', width: 2 }"
+      [fill]="{
+        type: 'gradient',
+        gradient: { opacityFrom: 0.35, opacityTo: 0.05 },
+      }"
+    />
+  </div>
+</a>

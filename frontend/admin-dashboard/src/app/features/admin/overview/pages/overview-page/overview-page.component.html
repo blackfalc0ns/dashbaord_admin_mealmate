@@ -1,0 +1,238 @@
+<section class="mm-page mm-overview">
+  <mm-page-state
+    [viewState]="pageState().viewState"
+    [errorMessage]="pageState().errorMessage ?? ''"
+    emptyMessage="لا توجد بيانات للوحة النظرة العامة"
+    (retry)="onRetry()"
+  />
+
+  @if (pageState().viewState !== 'error') {
+    <mm-overview-page-header
+      [selected]="filter().period"
+      [countryLabel]="countryLabel()"
+      [updatedAt]="updatedAt()"
+      [activeTab]="activeTab()"
+      [tabBadges]="tabBadges()"
+      (periodChange)="onPeriodChange($event)"
+      (tabChange)="onTabChange($event)"
+    />
+  }
+
+  @if (pageState().viewState === 'success' && data(); as dashboard) {
+    <div class="mm-overview-tab-panel" role="tabpanel">
+      @switch (activeTab()) {
+        @case ('summary') {
+          <div class="mm-overview-summary">
+            <mm-overview-kpi-grid
+              [kpis]="dashboard.kpis"
+              [kpiIds]="[
+                'active-subs',
+                'revenue',
+                'new-customers',
+                'avg-order-value',
+                'on-time-delivery',
+                'customer-rating',
+                'active-restaurants',
+                'platform-profit'
+              ]"
+            />
+
+            <div class="mm-overview-summary__charts">
+              <mm-overview-charts-section
+                [charts]="dashboard.charts"
+                [chartIds]="['orders-trend', 'revenue-breakdown']"
+                layout="grid"
+              />
+            </div>
+
+            <div class="mm-overview-summary__quad items-stretch">
+              <mm-overview-domain-panels
+                [panels]="dashboard.domainPanels"
+                [panelIds]="['accounts']"
+                [compact]="true"
+                [inline]="true"
+              />
+              <mm-overview-domain-panels
+                [panels]="dashboard.domainPanels"
+                [panelIds]="['finance']"
+                [compact]="true"
+                [inline]="true"
+              />
+              <mm-overview-charts-section
+                [charts]="dashboard.charts"
+                [chartIds]="['subscriptions-donut']"
+                layout="grid"
+                density="compact"
+                [inline]="true"
+              />
+              <mm-overview-domain-panels
+                [panels]="dashboard.domainPanels"
+                [panelIds]="['support']"
+                [compact]="true"
+                [inline]="true"
+              />
+            </div>
+
+            <mm-overview-alerts-panel
+              [alerts]="dashboard.alerts"
+              [activities]="dashboard.activities"
+              [compact]="true"
+            />
+          </div>
+        }
+
+        @case ('analytics') {
+          <div class="mm-overview-analytics-tab">
+            <mm-overview-analytics-highlights [highlights]="dashboard.analyticsHighlights" />
+            <mm-overview-charts-section
+              [charts]="dashboard.charts"
+              [chartIds]="analyticsChartIds"
+              mode="analytics"
+            />
+          </div>
+        }
+
+        @case ('operations') {
+          <div class="mm-overview-operations-tab">
+            <mm-overview-analytics-highlights [highlights]="dashboard.operationsHighlights" />
+            <div class="mm-overview-operations__workspace">
+              <mm-overview-ops-queue [items]="dashboard.operationsQueue" />
+              <div class="mm-overview-operations__metrics">
+                <mm-overview-domain-panels
+                  [panels]="dashboard.domainPanels"
+                  [panelIds]="['operations']"
+                  [compact]="true"
+                />
+              </div>
+            </div>
+            <mm-overview-charts-section
+              [charts]="dashboard.charts"
+              [chartIds]="operationsChartIds"
+              mode="analytics"
+            />
+          </div>
+        }
+
+        @case ('accounts') {
+          <div class="mm-overview-accounts-tab">
+            <mm-overview-analytics-highlights [highlights]="dashboard.accountsHighlights" />
+            <div class="mm-overview-accounts__workspace">
+              <mm-overview-pending-list [items]="dashboard.pendingItems" />
+              <div class="mm-overview-accounts__metrics">
+                <mm-overview-domain-panels
+                  [panels]="dashboard.domainPanels"
+                  [panelIds]="['accounts']"
+                  [compact]="true"
+                />
+              </div>
+            </div>
+            <mm-overview-charts-section
+              [charts]="dashboard.charts"
+              [chartIds]="accountsChartIds"
+              mode="analytics"
+            />
+          </div>
+        }
+
+        @case ('subscriptions') {
+          <div class="mm-overview-subscriptions-tab">
+            <mm-overview-analytics-highlights [highlights]="dashboard.subscriptionsHighlights" />
+            <div class="mm-overview-subscriptions__workspace">
+              <mm-overview-ops-queue
+                [items]="dashboard.subscriptionsInsights"
+                titleAr="تنبيهات الاشتراك"
+                titleEn="Subscription alerts"
+                descriptionAr="إنذارات التسعير والتجديد"
+                descriptionEn="Pricing and renewal warnings"
+              />
+              <div class="mm-overview-subscriptions__metrics">
+                <mm-overview-domain-panels
+                  [panels]="dashboard.domainPanels"
+                  [panelIds]="['subscriptions']"
+                  [compact]="true"
+                />
+              </div>
+            </div>
+            <mm-overview-charts-section
+              [charts]="dashboard.charts"
+              [chartIds]="subscriptionsChartIds"
+              mode="analytics"
+            />
+          </div>
+        }
+
+        @case ('finance') {
+          <div class="mm-overview-finance-tab">
+            <mm-overview-analytics-highlights [highlights]="dashboard.financeHighlights" />
+            <div class="mm-overview-finance__workspace">
+              <mm-overview-ops-queue
+                [items]="dashboard.financeInsights"
+                titleAr="يتطلب مراجعة مالية"
+                titleEn="Finance review queue"
+                descriptionAr="إلغاءات وتسويات واسترداد"
+                descriptionEn="Cancellations, settlements, and refunds"
+              />
+              <div class="mm-overview-finance__metrics">
+                <mm-overview-domain-panels
+                  [panels]="dashboard.domainPanels"
+                  [panelIds]="['finance']"
+                  [compact]="true"
+                />
+              </div>
+            </div>
+            <mm-overview-charts-section
+              [charts]="dashboard.charts"
+              [chartIds]="financeChartIds"
+              mode="analytics"
+            />
+          </div>
+        }
+
+        @case ('support') {
+          <div class="mm-overview-support-tab">
+            <mm-overview-analytics-highlights [highlights]="dashboard.supportHighlights" />
+            <div class="mm-overview-support__workspace">
+              <div class="mm-overview-support__columns">
+                <mm-overview-ops-queue
+                  [items]="dashboard.supportInsights"
+                  titleAr="قضايا الدعم"
+                  titleEn="Support issues"
+                  descriptionAr="شكاوى وتعديلات محفظة"
+                  descriptionEn="Complaints and wallet adjustments"
+                />
+                <div class="mm-overview-support__metrics">
+                  <mm-overview-domain-panels
+                    [panels]="dashboard.domainPanels"
+                    [panelIds]="['support']"
+                    [compact]="true"
+                  />
+                </div>
+              </div>
+            </div>
+            <mm-overview-charts-section
+              [charts]="dashboard.charts"
+              [chartIds]="supportChartIds"
+              mode="analytics"
+            />
+          </div>
+        }
+
+        @case ('alerts') {
+          <div class="mm-overview-alerts-tab">
+            <mm-overview-analytics-highlights [highlights]="dashboard.alertsHighlights" />
+            <mm-overview-alerts-panel
+              [alerts]="dashboard.alerts"
+              [activities]="dashboard.activities"
+            />
+            <mm-overview-charts-section
+              [charts]="dashboard.charts"
+              [chartIds]="alertsChartIds"
+              mode="analytics"
+            />
+            <mm-overview-quick-links [links]="dashboard.quickLinks" />
+          </div>
+        }
+      }
+    </div>
+  }
+</section>

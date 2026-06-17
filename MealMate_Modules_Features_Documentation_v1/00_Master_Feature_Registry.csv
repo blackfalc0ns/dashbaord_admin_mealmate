@@ -1,0 +1,133 @@
+﻿Feature ID,Module ID,Module Arabic,Feature Arabic,Feature English,Origin
+F001,M01,إدارة الحسابات والوصول,تسجيل ودخول العميل والـ Onboarding,"Customer Registration, Login & Onboarding",OLD
+F002,M01,إدارة الحسابات والوصول,تسجيل واعتماد المطعم,Restaurant Registration & Approval,OLD
+F003,M01,إدارة الحسابات والوصول,تسجيل واعتماد السائق,Driver Registration & Approval,OLD
+F004,M01,إدارة الحسابات والوصول,تسجيل وربط المؤثر,Influencer Registration & Account Linking,OLD
+F005,M01,إدارة الحسابات والوصول,إدارة مستخدمي الأدمن,Admin Users Management,OLD
+F006,M01,إدارة الحسابات والوصول,الأدوار والصلاحيات والنطاقات,"Roles, Permissions & Scopes (RBAC)",OLD
+F007,M01,إدارة الحسابات والوصول,التحقق من الوثائق,Document Verification,OLD
+F008,M01,إدارة الحسابات والوصول,سجل التدقيق العام,System Audit Log,OLD
+F009,M02,البرامج والاشتراكات,إدارة البرامج الغذائية,Nutrition Programs Management,OLD
+F010,M02,البرامج والاشتراكات,إدارة الباقات,Bundles Management,OLD
+F011,M02,البرامج والاشتراكات,تسعير باقات المطاعم,Restaurant Bundle Pricing,OLD
+F012,M02,البرامج والاشتراكات,تصنيف المطاعم الديناميكي,Dynamic Restaurant Classification,OLD
+F013,M02,البرامج والاشتراكات,تسعير اشتراك العميل,Customer Subscription Pricing,OLD
+F014,M02,البرامج والاشتراكات,إنشاء الاشتراك,Subscription Creation,OLD
+F015,M02,البرامج والاشتراكات,الاشتراك العائلي,Family Subscription,OLD
+F016,M02,البرامج والاشتراكات,أكواد الخصم والإحالة,"Promo, Referral & Discount Codes",OLD
+F017,M02,البرامج والاشتراكات,ترقية تصنيف الاشتراك,Subscription Tier Upgrade,OLD
+F018,M02,البرامج والاشتراكات,تجديد الاشتراك,Subscription Renewal,OLD
+F019,M03,التقويم والوجبات,إنشاء تقويم الاشتراك,Subscription Calendar Generation,OLD
+F020,M03,التقويم والوجبات,اختيار المطعم اليومي,Daily Restaurant Selection,OLD
+F021,M03,التقويم والوجبات,اختيار الوجبة,Daily Meal Selection,OLD
+F022,M03,التقويم والوجبات,قاعدة قفل 72 ساعة,72-Hour Lock Rule,OLD
+F023,M03,التقويم والوجبات,الاختيار التلقائي,Automatic Selection,OLD
+F024,M03,التقويم والوجبات,قاعدة التنويع والحد الأقصى,Restaurant Diversification Limit,OLD
+F025,M03,التقويم والوجبات,الحساسية والتفضيلات,"Allergies, Dislikes & Preferences",OLD
+F026,M03,التقويم والوجبات,تغيير الوجبات,Meal Change Management,OLD
+F027,M03,التقويم والوجبات,تجميد الاشتراك,Subscription Freeze,OLD
+F028,M04,المطاعم والتشغيل,إدارة القوائم والوجبات,Menu & Meal Management,OLD
+F029,M04,المطاعم والتشغيل,إدارة أسعار المطعم,Restaurant Price Management,OLD
+F030,M04,المطاعم والتشغيل,المناطق المخدومة,Restaurant Service Regions,OLD
+F031,M04,المطاعم والتشغيل,الطاقة الاستيعابية اليومية,Daily Capacity Management,OLD
+F032,M04,المطاعم والتشغيل,حالة Busy التلقائية,Busy Status Automation,OLD
+F033,M04,المطاعم والتشغيل,الطلبات اليومية للمطعم,Restaurant Daily Orders,OLD
+F034,M04,المطاعم والتشغيل,تأكيد طلبات نافذة 72 ساعة,Restaurant 72h Confirmation,OLD
+F035,M04,المطاعم والتشغيل,الفواتير والباركود وملصقات الوجبات,"Invoices, Barcodes & Meal Labels",OLD
+F036,M04,المطاعم والتشغيل,تسليم الطلب للسائق,Order Handover to Driver,OLD
+F037,M04,المطاعم والتشغيل,إدارة سائقي المطعم,Restaurant Drivers Management,OLD
+F038,M04,المطاعم والتشغيل,تقييم المطعم والوجبة,Restaurant & Meal Ratings,OLD
+F039,M04,المطاعم والتشغيل,إنهاء تعاقد المطعم,Restaurant Contract Termination,OLD
+F040,M05,السائق والتوصيل,ملف السائق ووثائقه,Driver Profile & Documents,OLD
+F041,M05,السائق والتوصيل,نطاق استقبال الطلبات,Geographic Order Reception Range,OLD
+F042,M05,السائق والتوصيل,تعيين الطلب للسائق,Driver Order Assignment,OLD
+F043,M05,السائق والتوصيل,مسح الباركود عند الاستلام,Pickup Barcode Scan,OLD
+F044,M05,السائق والتوصيل,التتبع اللحظي,Real-Time Delivery Tracking,OLD
+F045,M05,السائق والتوصيل,الاتصال الآمن,Safe Contact,OLD
+F046,M05,السائق والتوصيل,قاعدة الاتصال عند 3 كم,Three-Kilometer Call Rule,OLD
+F047,M05,السائق والتوصيل,حالة Hold,Delivery Hold,OLD
+F048,M05,السائق والتوصيل,المحاولة الثانية,Second Delivery Attempt,OLD
+F049,M05,السائق والتوصيل,تأكيد التسليم بالمسح,Delivery Confirmation Scan,OLD
+F050,M05,السائق والتوصيل,تقييم السائق,Driver Rating,OLD
+F051,M05,السائق والتوصيل,إحصائيات وأداء السائق,Driver Performance Statistics,OLD
+F052,M06,الشكاوى والدعم,إنشاء شكوى,Complaint Creation,OLD
+F053,M06,الشكاوى والدعم,صور إثبات الشكوى,Complaint Evidence Photos,OLD
+F054,M06,الشكاوى والدعم,تصنيف الشكوى,Complaint Classification,OLD
+F055,M06,الشكاوى والدعم,مراجعة الأدمن للشكوى,Admin Complaint Review,OLD
+F056,M06,الشكاوى والدعم,رد المطعم على الشكوى,Restaurant Complaint Response,OLD
+F057,M06,الشكاوى والدعم,تحديد المسؤولية,Responsibility Decision,OLD
+F058,M06,الشكاوى والدعم,تعويض العميل,Customer Compensation,OLD
+F059,M06,الشكاوى والدعم,خصم قيمة البوكس من المطعم,Restaurant Box Deduction,OLD
+F060,M06,الشكاوى والدعم,إضافة يوم مجاني,Free Day Compensation,OLD
+F061,M06,الشكاوى والدعم,تذاكر الدعم,Support Tickets,OLD
+F062,M07,النظام المالي والمحاسبي المركزي,شجرة الحسابات,Chart of Accounts,NEW
+F063,M07,النظام المالي والمحاسبي المركزي,الإعدادات المالية المركزية,Central Financial Settings,NEW
+F064,M07,النظام المالي والمحاسبي المركزي,القيود المحاسبية التلقائية,Automatic Journal Entries,NEW
+F065,M07,النظام المالي والمحاسبي المركزي,الإيراد المؤجل,Deferred Revenue,NEW
+F066,M07,النظام المالي والمحاسبي المركزي,الاعتراف اليومي بالإيراد,Daily Revenue Recognition,NEW
+F067,M07,النظام المالي والمحاسبي المركزي,مستحقات المطاعم,Restaurant Payables,NEW
+F068,M07,النظام المالي والمحاسبي المركزي,مستحقات المؤثرين,Influencer Payables,NEW
+F069,M07,النظام المالي والمحاسبي المركزي,بوابات الدفع,Payment Gateways,NEW
+F070,M07,النظام المالي والمحاسبي المركزي,الضرائب,Taxes,NEW
+F071,M07,النظام المالي والمحاسبي المركزي,المصروفات التشغيلية,Operating Expenses,NEW
+F072,M07,النظام المالي والمحاسبي المركزي,التسويات المالية,Financial Settlements,NEW
+F073,M07,النظام المالي والمحاسبي المركزي,التقارير المالية,Financial Reports,NEW
+F074,M07,النظام المالي والمحاسبي المركزي,سجل التدقيق المالي,Financial Audit Trail,NEW
+F075,M08,النظام المالي للعميل,المحفظة النقدية,Customer Cash Wallet,NEW
+F076,M08,النظام المالي للعميل,المحفظة الترويجية,Customer Promotional Wallet,NEW
+F077,M08,النظام المالي للعميل,سجل حركات المحفظة,Wallet Transactions Ledger,NEW
+F078,M08,النظام المالي للعميل,دفع الاشتراك من المحفظة,Subscription Payment from Wallet,NEW
+F079,M08,النظام المالي للعميل,إلغاء الاشتراك,Subscription Cancellation,NEW
+F080,M08,النظام المالي للعميل,حساب الاسترداد,Refund Calculation,NEW
+F081,M08,النظام المالي للعميل,رسوم الإلغاء,Cancellation Fees,NEW
+F082,M08,النظام المالي للعميل,طلب سحب العميل,Customer Withdrawal Request,NEW
+F083,M08,النظام المالي للعميل,البيانات البنكية للعميل,Customer Bank Details,NEW
+F084,M08,النظام المالي للعميل,سجل المدفوعات والاستردادات,Payments & Refund History,NEW
+F085,M09,النظام المالي للمطعم,حساب مستحق الوجبة,Meal Payable Calculation,NEW
+F086,M09,النظام المالي للمطعم,عمولة المطعم,Restaurant Commission,NEW
+F087,M09,النظام المالي للمطعم,خصومات الشكاوى,Complaint Deductions,NEW
+F088,M09,النظام المالي للمطعم,الفاتورة الشهرية للمطعم,Restaurant Monthly Invoice,NEW
+F089,M09,النظام المالي للمطعم,الدفعة الجزئية,Restaurant Partial Payment,NEW
+F090,M09,النظام المالي للمطعم,سداد مستحقات المطعم,Restaurant Payout,NEW
+F091,M09,النظام المالي للمطعم,إيصال التحويل,Transfer Receipt,NEW
+F092,M09,النظام المالي للمطعم,كشف حساب المطعم,Restaurant Account Statement,NEW
+F093,M09,النظام المالي للمطعم,تقارير المطعم المالية,Restaurant Financial Reports,NEW
+F094,M10,نظام المؤثرين,ربط المؤثر بحساب العميل,Link Influencer to Customer Account,NEW
+F095,M10,نظام المؤثرين,كود المؤثر,Influencer Code,NEW
+F096,M10,نظام المؤثرين,حساب عمولة المؤثر,Influencer Commission Calculation,NEW
+F097,M10,نظام المؤثرين,شروط استحقاق العمولة,Commission Eligibility Rules,NEW
+F098,M10,نظام المؤثرين,تأثير الإلغاء على العمولة,Cancellation Impact on Commission,NEW
+F099,M10,نظام المؤثرين,لوحة أرباح المؤثر,Influencer Earnings Dashboard,NEW
+F100,M10,نظام المؤثرين,طلب تحصيل المؤثر,Influencer Withdrawal Request,NEW
+F101,M10,نظام المؤثرين,اعتماد تحصيل المؤثر,Influencer Withdrawal Approval,NEW
+F102,M10,نظام المؤثرين,سجل مدفوعات المؤثر,Influencer Payout History,NEW
+F103,M11,الحملات التشاركية,إنشاء الحملة التشاركية,Collaborative Campaign Creation,NEW
+F104,M11,الحملات التشاركية,توزيع خصم الحملة,Campaign Discount Split,NEW
+F105,M11,الحملات التشاركية,برامج الحملة,Campaign Programs,NEW
+F106,M11,الحملات التشاركية,باقات الحملة,Campaign Bundles,NEW
+F107,M11,الحملات التشاركية,فتح انضمام المطاعم,Open Restaurant Enrollment,NEW
+F108,M11,الحملات التشاركية,انضمام المطعم للحملة,Restaurant Campaign Enrollment,NEW
+F109,M11,الحملات التشاركية,طاقة المطعم داخل الحملة,Restaurant Campaign Capacity,NEW
+F110,M11,الحملات التشاركية,سقف مشتركي الحملة,Campaign Subscriber Cap,NEW
+F111,M11,الحملات التشاركية,مراجعة طاقة الحملة,Campaign Capacity Review,NEW
+F112,M11,الحملات التشاركية,اعتماد مطاعم الحملة,Campaign Restaurant Approval,NEW
+F113,M11,الحملات التشاركية,إطلاق الحملة,Campaign Launch,NEW
+F114,M11,الحملات التشاركية,إيقاف الحملة مؤقتًا,Campaign Pause,NEW
+F115,M11,الحملات التشاركية,زيادة سقف المشتركين,Increase Campaign Subscriber Cap,NEW
+F116,M11,الحملات التشاركية,الحسابات المالية للحملة,Campaign Accounting,NEW
+F117,M11,الحملات التشاركية,تقارير الحملة,Campaign Reports,NEW
+F118,M12,لوحة تحكم الأدمن,نظرة عامة للوحة الأدمن,Admin Dashboard Overview,OLD
+F119,M12,لوحة تحكم الأدمن,الاعتمادات المعلقة,Pending Approvals,OLD
+F120,M12,لوحة تحكم الأدمن,متابعة التشغيل,Operations Monitoring,OLD
+F121,M12,لوحة تحكم الأدمن,متابعة نافذة 72 ساعة,72h Operations Monitoring,OLD
+F122,M12,لوحة تحكم الأدمن,متابعة حالات Busy,Busy Monitoring,OLD
+F123,M12,لوحة تحكم الأدمن,متابعة حالات Hold,Hold Cases Monitoring,OLD
+F124,M12,لوحة تحكم الأدمن,مركز الشكاوى,Complaints Center,OLD
+F125,M12,لوحة تحكم الأدمن,لوحة المالية,Finance Dashboard,OLD
+F126,M12,لوحة تحكم الأدمن,تنبيهات الربحية,Profitability Alerts,OLD
+F127,M12,لوحة تحكم الأدمن,التقارير,Admin Reports,OLD
+F128,M12,لوحة تحكم الأدمن,إعدادات النظام,System Settings,OLD
+F129,M12,لوحة تحكم الأدمن,إدارة الأدوار والصلاحيات,Roles & Permissions Administration,OLD
+F130,M12,لوحة تحكم الأدمن,عرض سجلات التدقيق,Audit Logs Viewer,OLD
+F131,M12,لوحة تحكم الأدمن,مركز الإشعارات,Notifications Center,OLD
+F132,M12,لوحة تحكم الأدمن,لوحة مؤشرات الأداء,KPI Dashboard,OLD

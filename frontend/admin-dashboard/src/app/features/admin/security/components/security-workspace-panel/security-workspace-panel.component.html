@@ -1,0 +1,642 @@
+<div [class]="shellClass()">
+  <!-- Success Toast Alert -->
+  @if (showSuccessToast()) {
+    <div class="fixed top-5 start-1/2 -translate-x-1/2 z-[100] flex items-center gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-extrabold text-emerald-800 shadow-xl animate-bounce">
+      <ng-icon name="lucideShieldCheck" size="16" class="text-emerald-600" />
+      <span>{{ locale.isRtl() ? 'تم حفظ التغييرات الأمنية بنجاح وتحديث الصلاحيات!' : 'Security changes saved successfully!' }}</span>
+    </div>
+  }
+
+  <!-- Stats Grid -->
+  <section [class]="statsGridClass()">
+    @for (stat of page().stats; track stat.labelEn) {
+      <article [class]="statCardClass(stat.tone)" class="relative overflow-hidden group transition-all duration-200 hover:shadow-md hover:border-slate-300">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <p class="text-[0.68rem] font-extrabold text-slate-400 uppercase tracking-wider">{{ statLabel(stat) }}</p>
+            <strong class="mt-1.5 block text-2xl font-black text-slate-900 tracking-tight">{{ stat.value }}</strong>
+          </div>
+          <span [class]="dotClass(stat.tone)" class="size-2.5 rounded-full ring-4 ring-slate-100 transition-transform group-hover:scale-110"></span>
+        </div>
+        <p class="mt-2.5 text-[0.68rem] font-bold text-slate-500 flex items-center gap-1">
+          <span class="size-1 rounded-full bg-slate-300"></span>
+          {{ statHelper(stat) }}
+        </p>
+      </article>
+    }
+  </section>
+
+  <!-- Separate Filters Card -->
+  <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.25)] flex flex-col gap-3.5">
+    <div class="grid gap-3 md:grid-cols-[minmax(16rem,1fr)_auto] md:items-center">
+      <!-- Search Input -->
+      <div class="flex min-h-8 max-w-md min-w-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 text-[0.68rem] font-bold text-slate-500 shadow-sm transition-all duration-150 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100">
+        <ng-icon name="lucideSearch" size="12" class="shrink-0 text-slate-400" />
+        <input
+          type="text"
+          class="w-full bg-transparent border-0 p-0 text-[0.68rem] font-bold text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-0"
+          [placeholder]="locale.isRtl() ? 'بحث سريع...' : 'Quick search...'"
+          [value]="searchQuery()"
+          (input)="onSearchChange($event)"
+        />
+      </div>
+
+      <!-- Dropdown Filters -->
+      @if (page().sideItems.length) {
+        <div class="flex flex-wrap gap-2">
+          @for (item of page().sideItems; track item.titleEn) {
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-[0.68rem] font-extrabold text-slate-700 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/30"
+            >
+              <ng-icon name="lucideFilter" size="11" class="text-slate-400" />
+              <span>{{ panelTitle(item) }}:</span>
+              <strong class="text-emerald-700">{{ panelMeta(item) }}</strong>
+              <ng-icon name="lucideChevronRight" size="10" class="text-slate-400 rotate-90" />
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Quick Segmented Filters -->
+    @if (page().leadItems.length) {
+      <div class="flex flex-wrap items-center gap-2 border-t border-slate-100/70 pt-3.5">
+        <span class="text-[0.625rem] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+          <ng-icon name="lucideSlidersHorizontal" size="11" />
+          {{ t(page().leadPanelTitleAr, page().leadPanelTitleEn) }}:
+        </span>
+        <div class="flex flex-wrap gap-1.5">
+          <!-- 'All' Segment -->
+          <button
+            type="button"
+            (click)="activeTypeFilter.set('all')"
+            [class]="activeTypeFilter() === 'all' ? 'border-emerald-200 bg-emerald-50 text-emerald-800 shadow-sm' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'"
+            class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[0.68rem] font-bold transition-all duration-150"
+          >
+            {{ locale.isRtl() ? 'الكل' : 'All' }}
+          </button>
+
+          <!-- Dynamic Segments -->
+          @for (item of page().leadItems; track item.titleEn) {
+            @if (item.filterKey; as filterKey) {
+              <button
+                type="button"
+                (click)="toggleTypeFilter(filterKey)"
+                [class]="activeTypeFilter() === filterKey ? 'border-emerald-200 bg-emerald-50 text-emerald-800 shadow-sm' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'"
+                class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[0.68rem] font-bold transition-all duration-150"
+              >
+                <span class="size-1.5 rounded-full" [ngClass]="dotClass(item.tone)"></span>
+                <span>{{ panelTitle(item) }}</span>
+                @if (panelValue(item); as value) {
+                  <strong class="font-black opacity-90">({{ value }})</strong>
+                }
+              </button>
+            }
+          }
+        </div>
+      </div>
+    }
+  </section>
+
+  <!-- Table Shell (Unified Card) -->
+  <div [class]="tableShellClass()" class="border border-slate-200/80 shadow-md bg-white">
+    <!-- Table Header with Title & Secondary Actions -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-100 px-5 py-4">
+      <div>
+        <h3 class="text-base font-black text-slate-900 tracking-tight">{{ t(page().tableTitleAr, page().tableTitleEn) }}</h3>
+        <p class="mt-1 text-xs text-slate-500 leading-relaxed">{{ t(page().tableDescriptionAr, page().tableDescriptionEn) }}</p>
+      </div>
+      @if (page().actions.length) {
+        <div class="flex flex-wrap gap-1.5">
+          @for (action of page().actions; track action.labelEn) {
+            <button type="button" class="inline-flex min-h-8 items-center justify-center rounded-lg border border-slate-200 bg-white px-3.5 text-xs font-extrabold text-slate-700 transition-all duration-150 hover:border-emerald-200 hover:bg-emerald-50/50 hover:text-emerald-800 active:scale-95">
+              {{ actionLabel(action) }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- The Table -->
+    <div class="px-5 pt-4">
+      <div [class]="tableWrapClass()" class="border border-slate-150 rounded-xl overflow-hidden shadow-sm bg-white">
+        <table class="w-full min-w-[54rem] border-collapse">
+          <thead>
+            <tr class="bg-slate-50/80">
+              @for (column of page().columns; track column.key) {
+                <th [class]="tableHeadCellClass()" class="text-slate-500 font-extrabold text-[0.72rem] tracking-wider py-3 px-4 border-b border-slate-200">
+                  <div class="flex items-center gap-1.5">
+                    <span>{{ columnLabel(column) }}</span>
+                    <ng-icon name="lucideArrowUpDown" size="10" class="text-slate-300 hover:text-slate-500 cursor-pointer" />
+                  </div>
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of paginatedRows(); track row.id) {
+              <tr
+                [ngClass]="tableRowClass(row.tone)"
+                (click)="selectRow(row)"
+                class="border-b border-slate-100 hover:bg-slate-50/80 cursor-pointer transition-colors duration-150"
+              >
+                @for (column of page().columns; track column.key) {
+                  <td [class]="tableCellClass()" class="py-3.5 px-4 text-slate-700 font-medium">
+                    @if (isStatusColumn(column.key)) {
+                      <span [class]="statusPillClass(row.tone)" class="shadow-sm font-extrabold">
+                        {{ cell(row, column.key) }}
+                      </span>
+                    } @else {
+                      <span class="block max-w-52 truncate text-slate-800 font-bold">{{ cell(row, column.key) }}</span>
+                    }
+                  </td>
+                }
+              </tr>
+            }
+            @if (paginatedRows().length === 0) {
+              <tr>
+                <td [attr.colspan]="page().columns.length" class="py-10 text-center">
+                  <div class="flex flex-col items-center justify-center gap-2 text-slate-400">
+                    <ng-icon name="lucideShieldAlert" size="24" class="text-amber-500" />
+                    <p class="text-sm font-bold">{{ locale.isRtl() ? 'لا توجد نتائج مطابقة للبحث' : 'No matching records found' }}</p>
+                    <button type="button" (click)="searchQuery.set(''); activeTypeFilter.set('all')" class="mt-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50">
+                      {{ locale.isRtl() ? 'إعادة تعيين الفلاتر' : 'Reset filters' }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-5 py-4 border-t border-slate-100 bg-slate-50/30 mt-4 rounded-b-2xl">
+      <!-- Info -->
+      <div class="text-xs font-bold text-slate-500 flex items-center gap-2">
+        <span>{{ locale.isRtl() ? 'يعرض' : 'Showing' }}</span>
+        <strong class="text-slate-800 font-black">{{ showingStart() }}-{{ showingEnd() }}</strong>
+        <span>{{ locale.isRtl() ? 'من أصل' : 'of' }}</span>
+        <strong class="text-slate-800 font-black">{{ totalRows() }}</strong>
+        <span>{{ locale.isRtl() ? 'سجل' : 'records' }}</span>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex flex-wrap items-center gap-4">
+        <!-- Page Size Selector -->
+        <div class="flex items-center gap-2 border-e border-slate-200 pe-4">
+          <span class="text-[0.68rem] font-bold text-slate-400">{{ locale.isRtl() ? 'عرض:' : 'Show:' }}</span>
+          <div class="inline-flex rounded-lg border border-slate-200 bg-white p-0.5 shadow-sm">
+            @for (size of [3, 5, 10]; track size) {
+              <button
+                type="button"
+                (click)="setPageSize(size)"
+                [class]="pageSize() === size ? 'bg-emerald-50 text-emerald-800 font-black' : 'text-slate-500 hover:bg-slate-50'"
+                class="rounded-md px-2 py-1 text-[0.68rem] font-bold transition-all duration-150"
+              >
+                {{ size }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Page Buttons -->
+        <div class="flex items-center gap-1">
+          <!-- First Page -->
+          <button
+            type="button"
+            (click)="setPage(1)"
+            [disabled]="currentPage() === 1"
+            class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white"
+          >
+            <ng-icon name="lucideChevronsRight" size="14" class="rtl:block hidden" />
+            <ng-icon name="lucideChevronsLeft" size="14" class="rtl:hidden block" />
+          </button>
+
+          <!-- Prev Page -->
+          <button
+            type="button"
+            (click)="prevPage()"
+            [disabled]="currentPage() === 1"
+            class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white"
+          >
+            <ng-icon name="lucideChevronRight" size="14" class="rtl:block hidden" />
+            <ng-icon name="lucideChevronLeft" size="14" class="rtl:hidden block" />
+          </button>
+
+          <!-- Page Numbers -->
+          <div class="flex items-center gap-1">
+            @for (pageNo of pagesArray(); track pageNo) {
+              <button
+                type="button"
+                (click)="setPage(pageNo)"
+                [class]="currentPage() === pageNo ? 'bg-emerald-600 text-white border-emerald-600 font-black shadow-sm shadow-emerald-100' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'"
+                class="inline-flex size-8 items-center justify-center rounded-lg border text-xs font-bold transition-all duration-150"
+              >
+                {{ pageNo }}
+              </button>
+            }
+          </div>
+
+          <!-- Next Page -->
+          <button
+            type="button"
+            (click)="nextPage()"
+            [disabled]="currentPage() === totalPages()"
+            class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white"
+          >
+            <ng-icon name="lucideChevronLeft" size="14" class="rtl:block hidden" />
+            <ng-icon name="lucideChevronRight" size="14" class="rtl:hidden block" />
+          </button>
+
+          <!-- Last Page -->
+          <button
+            type="button"
+            (click)="setPage(totalPages())"
+            [disabled]="currentPage() === totalPages()"
+            class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white"
+          >
+            <ng-icon name="lucideChevronsLeft" size="14" class="rtl:block hidden" />
+            <ng-icon name="lucideChevronsRight" size="14" class="rtl:hidden block" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Centered Modal for Row Details -->
+  @if (selectedRow(); as row) {
+    <!-- Backdrop -->
+    <div class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-200" (click)="closeDrawer()">
+      <!-- Modal Container -->
+      <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden transition-all duration-300 transform scale-100" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" (click)="$event.stopPropagation()">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-slate-50/50">
+          <div>
+            <h3 class="text-base font-black text-slate-900">{{ locale.isRtl() ? 'تفاصيل ومعلومات الصلاحيات' : 'Details & Permissions' }}</h3>
+            <p class="mt-1 text-xs text-slate-400">{{ locale.isRtl() ? 'عرض شامل ومفصل للمعلومات والصلاحيات المرتبطة.' : 'Comprehensive view of associated info and permissions.' }}</p>
+          </div>
+          <button type="button" (click)="closeDrawer()" class="inline-flex size-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition">
+            <ng-icon name="lucideX" size="16" />
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+          <!-- Visual Badge and Title -->
+          <div class="flex items-center gap-4 bg-emerald-50/30 rounded-2xl p-5 border border-emerald-100/50">
+            <div class="inline-flex size-14 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-4 ring-emerald-50/50">
+              <ng-icon name="lucideShield" size="24" />
+            </div>
+            <div class="min-w-0 flex-1 text-start">
+              <h4 class="text-base font-black text-slate-900">{{ selectedRowTitle() }}</h4>
+              <p class="text-xs text-slate-500 mt-1">{{ selectedRowSubtitle() }}</p>
+            </div>
+            <span [class]="statusPillClass(row.tone)" class="font-extrabold shadow-sm px-3 py-1 text-xs">
+              {{ selectedRowStatus() }}
+            </span>
+          </div>
+
+          @if (isEditing()) {
+            <!-- EDIT MODE FORM -->
+            <div class="space-y-5">
+              <!-- 1. Edit User Account -->
+              @if (selectedRowType() === 'user') {
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div class="space-y-1.5 text-start">
+                    <label class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{{ locale.isRtl() ? 'الدور الوظيفي' : 'Assigned Role' }}</label>
+                    <select [value]="editUserRole()" (change)="editUserRole.set($any($event.target).value)" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400">
+                      <option value="عميل">{{ locale.isRtl() ? 'عميل' : 'Customer' }}</option>
+                      <option value="مطعم">{{ locale.isRtl() ? 'مطعم' : 'Restaurant' }}</option>
+                      <option value="سائق">{{ locale.isRtl() ? 'سائق' : 'Driver' }}</option>
+                      <option value="أدمن">{{ locale.isRtl() ? 'أدمن' : 'Admin' }}</option>
+                    </select>
+                  </div>
+                  <div class="space-y-1.5 text-start">
+                    <label class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{{ locale.isRtl() ? 'نطاق الوصول' : 'Access Scope' }}</label>
+                    <select [value]="editUserScope()" (change)="editUserScope.set($any($event.target).value)" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400">
+                      <option value="Egypt / Cairo">Egypt / Cairo</option>
+                      <option value="Egypt / Giza">Egypt / Giza</option>
+                      <option value="Egypt / Cairo East">Egypt / Cairo East</option>
+                      <option value="Egypt / New Cairo">Egypt / New Cairo</option>
+                    </select>
+                  </div>
+                  <div class="space-y-1.5 text-start">
+                    <label class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{{ locale.isRtl() ? 'حالة الحساب' : 'Account Status' }}</label>
+                    <select [value]="editUserStatus()" (change)="editUserStatus.set($any($event.target).value)" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400">
+                      <option value="نشط">{{ locale.isRtl() ? 'نشط' : 'Active' }}</option>
+                      <option value="اشتراك مجمد">{{ locale.isRtl() ? 'اشتراك مجمد' : 'Suspended Subscription' }}</option>
+                      <option value="قيد المراجعة">{{ locale.isRtl() ? 'قيد المراجعة' : 'Under Review' }}</option>
+                      <option value="موقوف">{{ locale.isRtl() ? 'موقوف' : 'Suspended' }}</option>
+                    </select>
+                  </div>
+                  <div class="flex items-center gap-2 pt-6 text-start">
+                    <input type="checkbox" id="edit2fa" [checked]="editUser2FA()" (change)="editUser2FA.set($any($event.target).checked)" class="size-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer" />
+                    <label for="edit2fa" class="text-xs font-extrabold text-slate-700 cursor-pointer">{{ locale.isRtl() ? 'فرض المصادقة الثنائية (2FA)' : 'Require Two-Factor Auth (2FA)' }}</label>
+                  </div>
+                </div>
+              }
+
+              <!-- 2. Edit Role Permissions -->
+              @if (selectedRowType() === 'role') {
+                <div class="space-y-4 text-start">
+                  <h5 class="text-xs font-extrabold uppercase tracking-wider text-slate-400">{{ locale.isRtl() ? 'تعديل الصلاحيات الممنوحة لكل وحدة' : 'Edit Module Permissions' }}</h5>
+                  <div class="divide-y divide-slate-100 border border-slate-150 rounded-2xl overflow-hidden bg-white shadow-sm">
+                    @for (perm of editablePermissions(); track perm.module) {
+                      <div class="flex items-center justify-between p-4 text-xs gap-4">
+                        <span class="font-bold text-slate-700">{{ perm.module }}</span>
+                        <select [value]="perm.level" (change)="updatePermissionLevel(perm, $event)" class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400">
+                          <option value="Full Access (وصول كامل)">{{ locale.isRtl() ? 'وصول كامل' : 'Full Access' }} (100%)</option>
+                          <option value="Approve & Suspend (اعتماد وتجميد)">{{ locale.isRtl() ? 'اعتماد وتجميد' : 'Approve & Suspend' }} (80%)</option>
+                          <option value="Manage Scoped (إدارة النطاق)">{{ locale.isRtl() ? 'إدارة النطاق' : 'Manage Scoped' }} (70%)</option>
+                          <option value="View Only (عرض فقط)">{{ locale.isRtl() ? 'عرض فقط' : 'View Only' }} (20%)</option>
+                          <option value="No Access (لا يوجد صلاحية)">{{ locale.isRtl() ? 'لا يوجد صلاحية' : 'No Access' }} (0%)</option>
+                        </select>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- 3. Edit Permission Matrix -->
+              @if (selectedRowType() === 'matrix') {
+                <div class="space-y-4 text-start">
+                  <h5 class="text-xs font-extrabold uppercase tracking-wider text-slate-400">{{ locale.isRtl() ? 'تعديل مستويات الوصول للأدوار' : 'Edit Access Levels by Role' }}</h5>
+                  <div class="divide-y divide-slate-100 border border-slate-150 rounded-2xl overflow-hidden bg-white shadow-sm">
+                    @for (perm of editableMatrix(); track perm.role) {
+                      <div class="flex items-center justify-between p-4 text-xs gap-4">
+                        <span class="font-bold text-slate-700">{{ perm.role }}</span>
+                        <select [value]="perm.level" (change)="updateMatrixLevel(perm, $event)" class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400">
+                          <option value="Full">Full</option>
+                          <option value="Approve">Approve</option>
+                          <option value="Manage">Manage</option>
+                          <option value="Manage scoped">Manage scoped</option>
+                          <option value="Request">Request</option>
+                          <option value="View">View</option>
+                          <option value="-">-</option>
+                        </select>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- 4. Edit Scope Details -->
+              @if (selectedRowType() === 'scope') {
+                <div class="space-y-4 text-start">
+                  <h5 class="text-xs font-extrabold uppercase tracking-wider text-slate-400">{{ locale.isRtl() ? 'تعديل سياسات النطاق' : 'Edit Scope Policies' }}</h5>
+                  <div class="divide-y divide-slate-100 border border-slate-150 rounded-2xl overflow-hidden bg-white shadow-sm">
+                    @for (item of editableScope(); track item.title) {
+                      <div class="flex items-center justify-between p-4 text-xs gap-4">
+                        <span class="font-bold text-slate-700">{{ item.title }}</span>
+                        <select [value]="item.status" (change)="updateScopeStatus(item, $event)" class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400">
+                          <option value="Required">Required</option>
+                          <option value="Sensitive only">Sensitive only</option>
+                          <option value="Dual">Dual</option>
+                          <option value="Full">Full</option>
+                          <option value="Operational">Operational</option>
+                          <option value="No finance">No finance</option>
+                        </select>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- 5. Edit Invitation/Activity Details -->
+              @if (selectedRowType() === 'invite') {
+                <div class="space-y-4 text-start">
+                  <h5 class="text-xs font-extrabold uppercase tracking-wider text-slate-400">{{ locale.isRtl() ? 'تعديل بيانات الدعوة/النشاط' : 'Edit Invitation/Activity Details' }}</h5>
+                  <div class="divide-y divide-slate-100 border border-slate-150 rounded-2xl overflow-hidden bg-white shadow-sm">
+                    @for (item of editableInvite(); track item.title) {
+                      <div class="flex flex-col gap-1.5 p-4 text-xs">
+                        <label class="font-extrabold text-slate-500">{{ item.title }}</label>
+                        <input type="text" [value]="item.value" (input)="updateInviteValue(item, $event)" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400" />
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <!-- READ ONLY VIEW -->
+            <div class="grid gap-6 md:grid-cols-2">
+              <!-- Left Column: Key-Value Fields -->
+              <div class="space-y-3.5">
+                <h5 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                  {{ locale.isRtl() ? 'البيانات الأساسية' : 'Key Data' }}
+                </h5>
+                <div class="divide-y divide-slate-100 border border-slate-150 rounded-xl overflow-hidden bg-white shadow-sm">
+                  @for (field of selectedRowDetailsList(); track field.key) {
+                    <div class="flex items-center justify-between p-3.5 text-xs">
+                      <div class="flex items-center gap-2 text-slate-500 font-bold">
+                        <ng-icon [name]="field.icon" size="13" class="text-slate-400" />
+                        <span>{{ field.label }}</span>
+                      </div>
+                      <strong class="text-slate-800 font-extrabold max-w-44 truncate text-end">{{ field.value }}</strong>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Right Column: Dynamic View based on active page -->
+              <div>
+                <!-- 1. Role Permissions Breakdown -->
+                @if (selectedRowType() === 'role') {
+                  <div class="space-y-3.5">
+                    <h5 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                      <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                      {{ locale.isRtl() ? 'الصلاحيات الممنوحة للدور' : 'Granted Permissions' }}
+                    </h5>
+                    <div class="space-y-3 border border-slate-150 rounded-2xl p-4 bg-white shadow-sm">
+                      @for (perm of selectedRolePermissions(); track perm.module) {
+                        <div class="space-y-1.5">
+                          <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-700">{{ perm.module }}</span>
+                            <span class="font-extrabold text-[0.68rem]" [ngClass]="textClass(perm.tone)">{{ perm.level }}</span>
+                          </div>
+                          <!-- Progress Bar representing access level -->
+                          <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <div
+                              [class]="'h-full rounded-full transition-all duration-500'"
+                              [ngClass]="{
+                                'bg-rose-500': perm.tone === 'red',
+                                'bg-emerald-500': perm.tone === 'green' || perm.tone === 'berry',
+                                'bg-sky-500': perm.tone === 'blue',
+                                'bg-amber-500': perm.tone === 'warm',
+                                'bg-slate-300': perm.tone === 'slate'
+                              }"
+                              [style.width.%]="perm.progress"
+                            ></div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <!-- 2. Permission Matrix Breakdown -->
+                @if (selectedRowType() === 'matrix') {
+                  <div class="space-y-3.5">
+                    <h5 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                      <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                      {{ locale.isRtl() ? 'مستويات الوصول للأدوار' : 'Access Levels by Role' }}
+                    </h5>
+                    <div class="space-y-3 border border-slate-150 rounded-2xl p-4 bg-white shadow-sm">
+                      @for (perm of selectedMatrixPermissions(); track perm.role) {
+                        <div class="space-y-1.5">
+                          <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-700">{{ perm.role }}</span>
+                            <span class="font-extrabold text-[0.68rem]" [ngClass]="textClass(perm.tone)">{{ perm.level }}</span>
+                          </div>
+                          <!-- Progress Bar representing access level -->
+                          <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <div
+                              [class]="'h-full rounded-full transition-all duration-500'"
+                              [ngClass]="{
+                                'bg-rose-500': perm.tone === 'red',
+                                'bg-emerald-500': perm.tone === 'green' || perm.tone === 'berry',
+                                'bg-sky-500': perm.tone === 'blue',
+                                'bg-amber-500': perm.tone === 'warm',
+                                'bg-slate-300': perm.tone === 'slate'
+                              }"
+                              [style.width.%]="perm.progress"
+                            ></div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <!-- 3. Scope Details Breakdown -->
+                @if (selectedRowType() === 'scope') {
+                  <div class="space-y-3.5">
+                    <h5 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                      <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                      {{ locale.isRtl() ? 'تفاصيل سياسة النطاق' : 'Scope Policy Details' }}
+                    </h5>
+                    <div class="space-y-3 border border-slate-150 rounded-2xl p-4 bg-white shadow-sm">
+                      @for (item of selectedScopeDetails(); track item.title) {
+                        <div class="space-y-1">
+                          <div class="flex items-center justify-between text-xs">
+                            <strong class="font-bold text-slate-800">{{ item.title }}</strong>
+                            <span class="font-extrabold text-[0.68rem]" [ngClass]="textClass(item.tone)">{{ item.status }}</span>
+                          </div>
+                          <p class="text-[0.68rem] text-slate-500 leading-relaxed">{{ item.desc }}</p>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <!-- 4. User Security Posture -->
+                @if (selectedRowType() === 'user') {
+                  <div class="space-y-3.5">
+                    <h5 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                      <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                      {{ locale.isRtl() ? 'نظرة عامة على أمان الحساب' : 'Security Posture' }}
+                    </h5>
+                    <div class="space-y-3 border border-slate-150 rounded-2xl p-4 bg-white shadow-sm">
+                      <div class="flex items-center gap-3 text-xs">
+                        <div class="size-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                          <ng-icon name="lucideShieldCheck" size="16" />
+                        </div>
+                        <div>
+                          <strong class="block text-slate-800 font-extrabold">{{ locale.isRtl() ? 'المصادقة الثنائية (2FA)' : 'Two-Factor Auth' }}</strong>
+                          <span class="text-slate-500 font-medium text-[0.68rem]">{{ locale.isRtl() ? 'مفعلة ومحمية بالكامل' : 'Enabled and fully protected' }}</span>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-3 text-xs border-t border-slate-100 pt-3">
+                        <div class="size-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+                          <ng-icon name="lucideClock" size="16" />
+                        </div>
+                        <div>
+                          <strong class="block text-slate-800 font-extrabold">{{ locale.isRtl() ? 'جلسة العمل النشطة' : 'Active Session' }}</strong>
+                          <span class="text-slate-500 font-medium text-[0.68rem]">{{ locale.isRtl() ? 'آخر وصول من القاهرة، مصر' : 'Last access from Cairo, Egypt' }}</span>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-3 text-xs border-t border-slate-100 pt-3">
+                        <div class="size-8 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center shrink-0">
+                          <ng-icon name="lucideLock" size="16" />
+                        </div>
+                        <div>
+                          <strong class="block text-slate-800 font-extrabold">{{ locale.isRtl() ? 'مستوى حماية الحساب' : 'Account Protection' }}</strong>
+                          <span class="text-slate-500 font-medium text-[0.68rem]">{{ locale.isRtl() ? 'تشفير كامل للبيانات الحساسة' : 'Full end-to-end encryption' }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                <!-- 5. Invitation Details Breakdown -->
+                @if (selectedRowType() === 'invite') {
+                  <div class="space-y-3.5">
+                    <h5 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                      <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                      {{ locale.isRtl() ? 'تفاصيل حالة الدعوة' : 'Invitation Details' }}
+                    </h5>
+                    <div class="space-y-3 border border-slate-150 rounded-2xl p-4 bg-white shadow-sm">
+                      @for (item of selectedInviteDetails(); track item.title) {
+                        <div class="space-y-1">
+                          <div class="flex items-center justify-between text-xs">
+                            <strong class="font-bold text-slate-800">{{ item.title }}</strong>
+                            <span class="font-extrabold text-[0.68rem]" [ngClass]="textClass(item.tone)">{{ item.value }}</span>
+                          </div>
+                          <p class="text-[0.68rem] text-slate-500 leading-relaxed">{{ item.desc }}</p>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Security Rules & Policies (Drawer Fields) -->
+          @if (page().drawerFields.length) {
+            <div class="space-y-3 border-t border-slate-100 pt-5">
+              <h5 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                {{ locale.isRtl() ? 'القواعد والسياسات الأمنية المطبقة' : 'Security Rules & Policies' }}
+              </h5>
+              <div class="grid gap-3 md:grid-cols-2">
+                @for (field of page().drawerFields; track field.titleEn) {
+                  <div class="rounded-xl border border-slate-150 p-4 bg-slate-50/50" [ngClass]="statCardClass(field.tone)">
+                    <div class="flex items-center justify-between gap-2">
+                      <strong class="text-xs font-black text-slate-900">{{ panelTitle(field) }}</strong>
+                      <span [class]="badgeClass(field.tone)" class="font-extrabold text-[0.6rem] px-2 py-0.5">{{ panelMeta(field) }}</span>
+                    </div>
+                    <p class="mt-2 text-[0.68rem] leading-relaxed text-slate-600 font-medium">{{ panelDescription(field) }}</p>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Footer -->
+        <div class="border-t border-slate-100 px-6 py-4 bg-slate-50/50 flex items-center gap-2 justify-end">
+          @if (isEditing()) {
+            <button type="button" (click)="isEditing.set(false)" class="min-h-9 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 hover:bg-slate-100 transition active:scale-95">
+              {{ locale.isRtl() ? 'إلغاء' : 'Cancel' }}
+            </button>
+            <button type="button" (click)="saveChanges()" class="min-h-9 rounded-xl bg-emerald-600 px-4 text-xs font-extrabold text-white hover:bg-emerald-500 shadow-sm transition active:scale-95">
+              {{ locale.isRtl() ? 'حفظ التغييرات' : 'Save Changes' }}
+            </button>
+          } @else {
+            <button type="button" (click)="closeDrawer()" class="min-h-9 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 hover:bg-slate-100 transition active:scale-95">
+              {{ locale.isRtl() ? 'إغلاق' : 'Close' }}
+            </button>
+            <button type="button" (click)="startEditing()" class="min-h-9 rounded-xl bg-emerald-600 px-4 text-xs font-extrabold text-white hover:bg-emerald-500 shadow-sm transition active:scale-95">
+              {{ isSelectedRowRole() ? (locale.isRtl() ? 'تعديل صلاحيات الدور' : 'Edit Role Permissions') : (locale.isRtl() ? 'تعديل صلاحيات المستخدم' : 'Edit User Permissions') }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

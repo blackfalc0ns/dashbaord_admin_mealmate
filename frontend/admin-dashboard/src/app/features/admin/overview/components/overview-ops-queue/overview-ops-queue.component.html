@@ -1,0 +1,21 @@
+<z-card
+  class="mm-overview-ops-queue"
+  [zTitle]="cardTitle()"
+  [zDescription]="cardDescription()"
+>
+  <ul class="mm-overview-ops-queue__list">
+    @for (item of items(); track item.id) {
+      <li>
+        <a
+          class="mm-overview-ops-queue__item"
+          [class.mm-overview-ops-queue__item--critical]="item.severity === 'critical'"
+          [class.mm-overview-ops-queue__item--warning]="item.severity === 'warning'"
+          [routerLink]="item.route"
+        >
+          <span class="mm-overview-ops-queue__label">{{ label(item) }}</span>
+          <span class="mm-overview-ops-queue__time">{{ time(item) }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+</z-card>

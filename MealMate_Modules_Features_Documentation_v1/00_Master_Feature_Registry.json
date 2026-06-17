@@ -1,0 +1,1058 @@
+[
+  {
+    "feature_id": "F001",
+    "module_id": "M01",
+    "module_ar": "إدارة الحسابات والوصول",
+    "feature_ar": "تسجيل ودخول العميل والـ Onboarding",
+    "feature_en": "Customer Registration, Login & Onboarding",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F002",
+    "module_id": "M01",
+    "module_ar": "إدارة الحسابات والوصول",
+    "feature_ar": "تسجيل واعتماد المطعم",
+    "feature_en": "Restaurant Registration & Approval",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F003",
+    "module_id": "M01",
+    "module_ar": "إدارة الحسابات والوصول",
+    "feature_ar": "تسجيل واعتماد السائق",
+    "feature_en": "Driver Registration & Approval",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F004",
+    "module_id": "M01",
+    "module_ar": "إدارة الحسابات والوصول",
+    "feature_ar": "تسجيل وربط المؤثر",
+    "feature_en": "Influencer Registration & Account Linking",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F005",
+    "module_id": "M01",
+    "module_ar": "إدارة الحسابات والوصول",
+    "feature_ar": "إدارة مستخدمي الأدمن",
+    "feature_en": "Admin Users Management",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F006",
+    "module_id": "M01",
+    "module_ar": "إدارة الحسابات والوصول",
+    "feature_ar": "الأدوار والصلاحيات والنطاقات",
+    "feature_en": "Roles, Permissions & Scopes (RBAC)",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F007",
+    "module_id": "M01",
+    "module_ar": "إدارة الحسابات والوصول",
+    "feature_ar": "التحقق من الوثائق",
+    "feature_en": "Document Verification",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F008",
+    "module_id": "M01",
+    "module_ar": "إدارة الحسابات والوصول",
+    "feature_ar": "سجل التدقيق العام",
+    "feature_en": "System Audit Log",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F009",
+    "module_id": "M02",
+    "module_ar": "البرامج والاشتراكات",
+    "feature_ar": "إدارة البرامج الغذائية",
+    "feature_en": "Nutrition Programs Management",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F010",
+    "module_id": "M02",
+    "module_ar": "البرامج والاشتراكات",
+    "feature_ar": "إدارة الباقات",
+    "feature_en": "Bundles Management",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F011",
+    "module_id": "M02",
+    "module_ar": "البرامج والاشتراكات",
+    "feature_ar": "تسعير باقات المطاعم",
+    "feature_en": "Restaurant Bundle Pricing",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F012",
+    "module_id": "M02",
+    "module_ar": "البرامج والاشتراكات",
+    "feature_ar": "تصنيف المطاعم الديناميكي",
+    "feature_en": "Dynamic Restaurant Classification",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F013",
+    "module_id": "M02",
+    "module_ar": "البرامج والاشتراكات",
+    "feature_ar": "تسعير اشتراك العميل",
+    "feature_en": "Customer Subscription Pricing",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F014",
+    "module_id": "M02",
+    "module_ar": "البرامج والاشتراكات",
+    "feature_ar": "إنشاء الاشتراك",
+    "feature_en": "Subscription Creation",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F015",
+    "module_id": "M02",
+    "module_ar": "البرامج والاشتراكات",
+    "feature_ar": "الاشتراك العائلي",
+    "feature_en": "Family Subscription",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F016",
+    "module_id": "M02",
+    "module_ar": "البرامج والاشتراكات",
+    "feature_ar": "أكواد الخصم والإحالة",
+    "feature_en": "Promo, Referral & Discount Codes",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F017",
+    "module_id": "M02",
+    "module_ar": "البرامج والاشتراكات",
+    "feature_ar": "ترقية تصنيف الاشتراك",
+    "feature_en": "Subscription Tier Upgrade",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F018",
+    "module_id": "M02",
+    "module_ar": "البرامج والاشتراكات",
+    "feature_ar": "تجديد الاشتراك",
+    "feature_en": "Subscription Renewal",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F019",
+    "module_id": "M03",
+    "module_ar": "التقويم والوجبات",
+    "feature_ar": "إنشاء تقويم الاشتراك",
+    "feature_en": "Subscription Calendar Generation",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F020",
+    "module_id": "M03",
+    "module_ar": "التقويم والوجبات",
+    "feature_ar": "اختيار المطعم اليومي",
+    "feature_en": "Daily Restaurant Selection",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F021",
+    "module_id": "M03",
+    "module_ar": "التقويم والوجبات",
+    "feature_ar": "اختيار الوجبة",
+    "feature_en": "Daily Meal Selection",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F022",
+    "module_id": "M03",
+    "module_ar": "التقويم والوجبات",
+    "feature_ar": "قاعدة قفل 72 ساعة",
+    "feature_en": "72-Hour Lock Rule",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F023",
+    "module_id": "M03",
+    "module_ar": "التقويم والوجبات",
+    "feature_ar": "الاختيار التلقائي",
+    "feature_en": "Automatic Selection",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F024",
+    "module_id": "M03",
+    "module_ar": "التقويم والوجبات",
+    "feature_ar": "قاعدة التنويع والحد الأقصى",
+    "feature_en": "Restaurant Diversification Limit",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F025",
+    "module_id": "M03",
+    "module_ar": "التقويم والوجبات",
+    "feature_ar": "الحساسية والتفضيلات",
+    "feature_en": "Allergies, Dislikes & Preferences",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F026",
+    "module_id": "M03",
+    "module_ar": "التقويم والوجبات",
+    "feature_ar": "تغيير الوجبات",
+    "feature_en": "Meal Change Management",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F027",
+    "module_id": "M03",
+    "module_ar": "التقويم والوجبات",
+    "feature_ar": "تجميد الاشتراك",
+    "feature_en": "Subscription Freeze",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F028",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "إدارة القوائم والوجبات",
+    "feature_en": "Menu & Meal Management",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F029",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "إدارة أسعار المطعم",
+    "feature_en": "Restaurant Price Management",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F030",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "المناطق المخدومة",
+    "feature_en": "Restaurant Service Regions",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F031",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "الطاقة الاستيعابية اليومية",
+    "feature_en": "Daily Capacity Management",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F032",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "حالة Busy التلقائية",
+    "feature_en": "Busy Status Automation",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F033",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "الطلبات اليومية للمطعم",
+    "feature_en": "Restaurant Daily Orders",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F034",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "تأكيد طلبات نافذة 72 ساعة",
+    "feature_en": "Restaurant 72h Confirmation",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F035",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "الفواتير والباركود وملصقات الوجبات",
+    "feature_en": "Invoices, Barcodes & Meal Labels",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F036",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "تسليم الطلب للسائق",
+    "feature_en": "Order Handover to Driver",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F037",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "إدارة سائقي المطعم",
+    "feature_en": "Restaurant Drivers Management",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F038",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "تقييم المطعم والوجبة",
+    "feature_en": "Restaurant & Meal Ratings",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F039",
+    "module_id": "M04",
+    "module_ar": "المطاعم والتشغيل",
+    "feature_ar": "إنهاء تعاقد المطعم",
+    "feature_en": "Restaurant Contract Termination",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F040",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "ملف السائق ووثائقه",
+    "feature_en": "Driver Profile & Documents",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F041",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "نطاق استقبال الطلبات",
+    "feature_en": "Geographic Order Reception Range",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F042",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "تعيين الطلب للسائق",
+    "feature_en": "Driver Order Assignment",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F043",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "مسح الباركود عند الاستلام",
+    "feature_en": "Pickup Barcode Scan",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F044",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "التتبع اللحظي",
+    "feature_en": "Real-Time Delivery Tracking",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F045",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "الاتصال الآمن",
+    "feature_en": "Safe Contact",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F046",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "قاعدة الاتصال عند 3 كم",
+    "feature_en": "Three-Kilometer Call Rule",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F047",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "حالة Hold",
+    "feature_en": "Delivery Hold",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F048",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "المحاولة الثانية",
+    "feature_en": "Second Delivery Attempt",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F049",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "تأكيد التسليم بالمسح",
+    "feature_en": "Delivery Confirmation Scan",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F050",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "تقييم السائق",
+    "feature_en": "Driver Rating",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F051",
+    "module_id": "M05",
+    "module_ar": "السائق والتوصيل",
+    "feature_ar": "إحصائيات وأداء السائق",
+    "feature_en": "Driver Performance Statistics",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F052",
+    "module_id": "M06",
+    "module_ar": "الشكاوى والدعم",
+    "feature_ar": "إنشاء شكوى",
+    "feature_en": "Complaint Creation",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F053",
+    "module_id": "M06",
+    "module_ar": "الشكاوى والدعم",
+    "feature_ar": "صور إثبات الشكوى",
+    "feature_en": "Complaint Evidence Photos",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F054",
+    "module_id": "M06",
+    "module_ar": "الشكاوى والدعم",
+    "feature_ar": "تصنيف الشكوى",
+    "feature_en": "Complaint Classification",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F055",
+    "module_id": "M06",
+    "module_ar": "الشكاوى والدعم",
+    "feature_ar": "مراجعة الأدمن للشكوى",
+    "feature_en": "Admin Complaint Review",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F056",
+    "module_id": "M06",
+    "module_ar": "الشكاوى والدعم",
+    "feature_ar": "رد المطعم على الشكوى",
+    "feature_en": "Restaurant Complaint Response",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F057",
+    "module_id": "M06",
+    "module_ar": "الشكاوى والدعم",
+    "feature_ar": "تحديد المسؤولية",
+    "feature_en": "Responsibility Decision",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F058",
+    "module_id": "M06",
+    "module_ar": "الشكاوى والدعم",
+    "feature_ar": "تعويض العميل",
+    "feature_en": "Customer Compensation",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F059",
+    "module_id": "M06",
+    "module_ar": "الشكاوى والدعم",
+    "feature_ar": "خصم قيمة البوكس من المطعم",
+    "feature_en": "Restaurant Box Deduction",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F060",
+    "module_id": "M06",
+    "module_ar": "الشكاوى والدعم",
+    "feature_ar": "إضافة يوم مجاني",
+    "feature_en": "Free Day Compensation",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F061",
+    "module_id": "M06",
+    "module_ar": "الشكاوى والدعم",
+    "feature_ar": "تذاكر الدعم",
+    "feature_en": "Support Tickets",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F062",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "شجرة الحسابات",
+    "feature_en": "Chart of Accounts",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F063",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "الإعدادات المالية المركزية",
+    "feature_en": "Central Financial Settings",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F064",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "القيود المحاسبية التلقائية",
+    "feature_en": "Automatic Journal Entries",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F065",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "الإيراد المؤجل",
+    "feature_en": "Deferred Revenue",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F066",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "الاعتراف اليومي بالإيراد",
+    "feature_en": "Daily Revenue Recognition",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F067",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "مستحقات المطاعم",
+    "feature_en": "Restaurant Payables",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F068",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "مستحقات المؤثرين",
+    "feature_en": "Influencer Payables",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F069",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "بوابات الدفع",
+    "feature_en": "Payment Gateways",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F070",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "الضرائب",
+    "feature_en": "Taxes",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F071",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "المصروفات التشغيلية",
+    "feature_en": "Operating Expenses",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F072",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "التسويات المالية",
+    "feature_en": "Financial Settlements",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F073",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "التقارير المالية",
+    "feature_en": "Financial Reports",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F074",
+    "module_id": "M07",
+    "module_ar": "النظام المالي والمحاسبي المركزي",
+    "feature_ar": "سجل التدقيق المالي",
+    "feature_en": "Financial Audit Trail",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F075",
+    "module_id": "M08",
+    "module_ar": "النظام المالي للعميل",
+    "feature_ar": "المحفظة النقدية",
+    "feature_en": "Customer Cash Wallet",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F076",
+    "module_id": "M08",
+    "module_ar": "النظام المالي للعميل",
+    "feature_ar": "المحفظة الترويجية",
+    "feature_en": "Customer Promotional Wallet",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F077",
+    "module_id": "M08",
+    "module_ar": "النظام المالي للعميل",
+    "feature_ar": "سجل حركات المحفظة",
+    "feature_en": "Wallet Transactions Ledger",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F078",
+    "module_id": "M08",
+    "module_ar": "النظام المالي للعميل",
+    "feature_ar": "دفع الاشتراك من المحفظة",
+    "feature_en": "Subscription Payment from Wallet",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F079",
+    "module_id": "M08",
+    "module_ar": "النظام المالي للعميل",
+    "feature_ar": "إلغاء الاشتراك",
+    "feature_en": "Subscription Cancellation",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F080",
+    "module_id": "M08",
+    "module_ar": "النظام المالي للعميل",
+    "feature_ar": "حساب الاسترداد",
+    "feature_en": "Refund Calculation",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F081",
+    "module_id": "M08",
+    "module_ar": "النظام المالي للعميل",
+    "feature_ar": "رسوم الإلغاء",
+    "feature_en": "Cancellation Fees",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F082",
+    "module_id": "M08",
+    "module_ar": "النظام المالي للعميل",
+    "feature_ar": "طلب سحب العميل",
+    "feature_en": "Customer Withdrawal Request",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F083",
+    "module_id": "M08",
+    "module_ar": "النظام المالي للعميل",
+    "feature_ar": "البيانات البنكية للعميل",
+    "feature_en": "Customer Bank Details",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F084",
+    "module_id": "M08",
+    "module_ar": "النظام المالي للعميل",
+    "feature_ar": "سجل المدفوعات والاستردادات",
+    "feature_en": "Payments & Refund History",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F085",
+    "module_id": "M09",
+    "module_ar": "النظام المالي للمطعم",
+    "feature_ar": "حساب مستحق الوجبة",
+    "feature_en": "Meal Payable Calculation",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F086",
+    "module_id": "M09",
+    "module_ar": "النظام المالي للمطعم",
+    "feature_ar": "عمولة المطعم",
+    "feature_en": "Restaurant Commission",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F087",
+    "module_id": "M09",
+    "module_ar": "النظام المالي للمطعم",
+    "feature_ar": "خصومات الشكاوى",
+    "feature_en": "Complaint Deductions",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F088",
+    "module_id": "M09",
+    "module_ar": "النظام المالي للمطعم",
+    "feature_ar": "الفاتورة الشهرية للمطعم",
+    "feature_en": "Restaurant Monthly Invoice",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F089",
+    "module_id": "M09",
+    "module_ar": "النظام المالي للمطعم",
+    "feature_ar": "الدفعة الجزئية",
+    "feature_en": "Restaurant Partial Payment",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F090",
+    "module_id": "M09",
+    "module_ar": "النظام المالي للمطعم",
+    "feature_ar": "سداد مستحقات المطعم",
+    "feature_en": "Restaurant Payout",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F091",
+    "module_id": "M09",
+    "module_ar": "النظام المالي للمطعم",
+    "feature_ar": "إيصال التحويل",
+    "feature_en": "Transfer Receipt",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F092",
+    "module_id": "M09",
+    "module_ar": "النظام المالي للمطعم",
+    "feature_ar": "كشف حساب المطعم",
+    "feature_en": "Restaurant Account Statement",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F093",
+    "module_id": "M09",
+    "module_ar": "النظام المالي للمطعم",
+    "feature_ar": "تقارير المطعم المالية",
+    "feature_en": "Restaurant Financial Reports",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F094",
+    "module_id": "M10",
+    "module_ar": "نظام المؤثرين",
+    "feature_ar": "ربط المؤثر بحساب العميل",
+    "feature_en": "Link Influencer to Customer Account",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F095",
+    "module_id": "M10",
+    "module_ar": "نظام المؤثرين",
+    "feature_ar": "كود المؤثر",
+    "feature_en": "Influencer Code",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F096",
+    "module_id": "M10",
+    "module_ar": "نظام المؤثرين",
+    "feature_ar": "حساب عمولة المؤثر",
+    "feature_en": "Influencer Commission Calculation",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F097",
+    "module_id": "M10",
+    "module_ar": "نظام المؤثرين",
+    "feature_ar": "شروط استحقاق العمولة",
+    "feature_en": "Commission Eligibility Rules",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F098",
+    "module_id": "M10",
+    "module_ar": "نظام المؤثرين",
+    "feature_ar": "تأثير الإلغاء على العمولة",
+    "feature_en": "Cancellation Impact on Commission",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F099",
+    "module_id": "M10",
+    "module_ar": "نظام المؤثرين",
+    "feature_ar": "لوحة أرباح المؤثر",
+    "feature_en": "Influencer Earnings Dashboard",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F100",
+    "module_id": "M10",
+    "module_ar": "نظام المؤثرين",
+    "feature_ar": "طلب تحصيل المؤثر",
+    "feature_en": "Influencer Withdrawal Request",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F101",
+    "module_id": "M10",
+    "module_ar": "نظام المؤثرين",
+    "feature_ar": "اعتماد تحصيل المؤثر",
+    "feature_en": "Influencer Withdrawal Approval",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F102",
+    "module_id": "M10",
+    "module_ar": "نظام المؤثرين",
+    "feature_ar": "سجل مدفوعات المؤثر",
+    "feature_en": "Influencer Payout History",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F103",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "إنشاء الحملة التشاركية",
+    "feature_en": "Collaborative Campaign Creation",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F104",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "توزيع خصم الحملة",
+    "feature_en": "Campaign Discount Split",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F105",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "برامج الحملة",
+    "feature_en": "Campaign Programs",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F106",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "باقات الحملة",
+    "feature_en": "Campaign Bundles",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F107",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "فتح انضمام المطاعم",
+    "feature_en": "Open Restaurant Enrollment",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F108",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "انضمام المطعم للحملة",
+    "feature_en": "Restaurant Campaign Enrollment",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F109",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "طاقة المطعم داخل الحملة",
+    "feature_en": "Restaurant Campaign Capacity",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F110",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "سقف مشتركي الحملة",
+    "feature_en": "Campaign Subscriber Cap",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F111",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "مراجعة طاقة الحملة",
+    "feature_en": "Campaign Capacity Review",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F112",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "اعتماد مطاعم الحملة",
+    "feature_en": "Campaign Restaurant Approval",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F113",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "إطلاق الحملة",
+    "feature_en": "Campaign Launch",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F114",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "إيقاف الحملة مؤقتًا",
+    "feature_en": "Campaign Pause",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F115",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "زيادة سقف المشتركين",
+    "feature_en": "Increase Campaign Subscriber Cap",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F116",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "الحسابات المالية للحملة",
+    "feature_en": "Campaign Accounting",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F117",
+    "module_id": "M11",
+    "module_ar": "الحملات التشاركية",
+    "feature_ar": "تقارير الحملة",
+    "feature_en": "Campaign Reports",
+    "origin": "NEW"
+  },
+  {
+    "feature_id": "F118",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "نظرة عامة للوحة الأدمن",
+    "feature_en": "Admin Dashboard Overview",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F119",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "الاعتمادات المعلقة",
+    "feature_en": "Pending Approvals",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F120",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "متابعة التشغيل",
+    "feature_en": "Operations Monitoring",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F121",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "متابعة نافذة 72 ساعة",
+    "feature_en": "72h Operations Monitoring",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F122",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "متابعة حالات Busy",
+    "feature_en": "Busy Monitoring",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F123",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "متابعة حالات Hold",
+    "feature_en": "Hold Cases Monitoring",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F124",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "مركز الشكاوى",
+    "feature_en": "Complaints Center",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F125",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "لوحة المالية",
+    "feature_en": "Finance Dashboard",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F126",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "تنبيهات الربحية",
+    "feature_en": "Profitability Alerts",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F127",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "التقارير",
+    "feature_en": "Admin Reports",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F128",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "إعدادات النظام",
+    "feature_en": "System Settings",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F129",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "إدارة الأدوار والصلاحيات",
+    "feature_en": "Roles & Permissions Administration",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F130",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "عرض سجلات التدقيق",
+    "feature_en": "Audit Logs Viewer",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F131",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "مركز الإشعارات",
+    "feature_en": "Notifications Center",
+    "origin": "OLD"
+  },
+  {
+    "feature_id": "F132",
+    "module_id": "M12",
+    "module_ar": "لوحة تحكم الأدمن",
+    "feature_ar": "لوحة مؤشرات الأداء",
+    "feature_en": "KPI Dashboard",
+    "origin": "OLD"
+  }
+]

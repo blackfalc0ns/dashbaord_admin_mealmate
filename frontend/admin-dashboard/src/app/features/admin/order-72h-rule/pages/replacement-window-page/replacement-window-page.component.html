@@ -1,0 +1,11 @@
+<section class="mm-page">
+  <mm-page-state
+    [viewState]="facade.state.page.viewState"
+    emptyMessage="لا توجد نوافذ بديل نشطة"
+    (retry)="onRetry()"
+  />
+
+  @if (facade.state.page.viewState === 'success') {
+    <mm-open-replacement-dialog />
+  }
+</section>

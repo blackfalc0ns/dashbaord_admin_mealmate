@@ -1,0 +1,11 @@
+{
+  "folders": [
+    {
+      "name": "MealMate Admin Dashboard",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "git.ignoreLimitWarning": true
+  }
+}
