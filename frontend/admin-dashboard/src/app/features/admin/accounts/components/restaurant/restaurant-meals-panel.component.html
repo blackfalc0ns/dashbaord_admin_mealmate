@@ -1,0 +1,131 @@
+@if (restaurant(); as item) {
+<div class="flex flex-col gap-4">
+  <!-- Timeline Banner -->
+  <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div class="flex flex-col gap-1">
+      <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+        <ng-icon name="lucideLock" size="16" class="text-emerald-600" />
+        <span>{{ locale.isRtl() ? 'الجدول الزمني للطلبات والتحضير' : 'Operational Timeline & Lock Window' }}</span>
+      </h3>
+      <p class="text-[10px] font-bold text-slate-400">
+        {{ locale.isRtl() ? 'قفل تعديل العميل عند −72 ساعة وإرسال الطلبات للمطاعم' : 'Customer editing locks at −72h, orders sent to restaurant' }}
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2 shrink-0">
+      <span class="rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 ring-1 ring-emerald-600/10">
+        {{ locale.isRtl() ? 'مرحلة القفل والتحضير نشطة' : 'Lock & Prep Stage Active' }}
+      </span>
+    </div>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-3">
+    <!-- Left 2 Columns: Active Meals Dispatch List -->
+    <div class="flex flex-col gap-4 lg:col-span-2">
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-4 border-b border-slate-50 pb-3">
+          <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+            <ng-icon name="lucideUtensils" size="16" class="text-emerald-600" />
+            <span>{{ locale.isRtl() ? 'وجبات اليوم الجاهزة للتسليم والسحب' : 'Today\'s Meal Box Dispatch List' }}</span>
+          </h3>
+          
+          <div class="flex items-center gap-2">
+            <button type="button" class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-bold text-slate-600 hover:bg-slate-50">
+              <ng-icon name="lucidePrinter" size="12" />
+              <span>{{ locale.isRtl() ? 'طباعة الكل' : 'Print All' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          @for (meal of activeMeals(); track meal.id) {
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-slate-100 p-4 transition-all hover:border-emerald-200 hover:bg-emerald-50/5">
+              <div class="flex items-start gap-3">
+                <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                  <ng-icon name="lucideUtensils" size="16" />
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-extrabold text-slate-800">{{ t(meal.customer, meal.customerEn) }}</span>
+                    <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-bold text-slate-500">{{ meal.id }}</span>
+                  </div>
+                  <p class="text-xs font-bold text-emerald-600">{{ t(meal.meal, meal.mealEn) }}</p>
+                  <span class="text-[9px] font-semibold text-slate-400">{{ t(meal.program, meal.programEn) }} • {{ t(meal.type, meal.typeEn) }}</span>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2.5 shrink-0 self-start sm:self-center">
+                <span class="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-mono font-bold text-slate-600 flex items-center gap-1">
+                  <ng-icon name="lucideQrCode" size="12" />
+                  {{ meal.barcode }}
+                </span>
+
+                <span
+                  class="rounded-full px-2 py-0.5 text-[9px] font-bold ring-1"
+                  [ngClass]="{
+                    'bg-emerald-50 text-emerald-700 ring-emerald-600/10': meal.status === 'ready' || meal.status === 'dispatched',
+                    'bg-amber-50 text-amber-700 ring-amber-600/10': meal.status === 'preparing'
+                  }"
+                >
+                  {{ meal.status === 'ready' ? (locale.isRtl() ? 'جاهز للتسليم' : 'Ready') : meal.status === 'dispatched' ? (locale.isRtl() ? 'تم الاستلام' : 'Dispatched') : (locale.isRtl() ? 'قيد التحضير' : 'Preparing') }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Delivery Label Preview (شرح الملفات) -->
+    <div class="flex flex-col gap-4">
+      <!-- Meal Delivery Label Card -->
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h3 class="mb-3 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2 flex items-center gap-2">
+          <ng-icon name="lucidePrinter" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'ملصق علبة الوجبة والباركود' : 'Meal Box Delivery Label' }}</span>
+        </h3>
+        
+        <!-- Realistic Delivery Label Mockup -->
+        <div class="rounded-xl border-2 border-dashed border-slate-200 p-4 bg-slate-50/30 flex flex-col gap-3 text-slate-800">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span class="text-[10px] font-extrabold text-emerald-600">MealMate Delivery Label</span>
+            <span class="text-[8px] font-mono text-slate-400">ID: pr1-1029</span>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'المشترك والوجهة' : 'Subscriber & Destination' }}</span>
+            <span class="text-xs font-extrabold text-slate-800">أحمد العتيبي (ID: #2940)</span>
+            <p class="text-[10px] font-bold text-slate-500 leading-tight">حولي، قطعة 4، شارع تونس، قسيمة 12</p>
+          </div>
+
+          <div class="flex flex-col gap-1 border-t border-slate-100 pt-2">
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'محتويات العلبة والبرنامج' : 'Meal Box Contents' }}</span>
+            <span class="text-xs font-extrabold text-emerald-600">{{ locale.isRtl() ? 'ستيك لحم بصلصة الفطر' : 'Beef Steak with Mushroom Sauce' }}</span>
+            <span class="text-[9px] font-bold text-slate-500">{{ locale.isRtl() ? 'البرنامج: كيتو دايت • الوجبة: غداء' : 'Program: Keto Diet • Meal: Lunch' }}</span>
+          </div>
+
+          <!-- Barcode Representation -->
+          <div class="flex flex-col items-center justify-center border-t border-slate-100 pt-3 gap-1">
+            <div class="w-full h-10 bg-slate-900 rounded flex items-center justify-center text-white font-mono text-[9px] tracking-[0.4em] select-none">
+              ||||| | |||| ||| | |||||
+            </div>
+            <span class="text-[8px] font-mono text-slate-400">MM-RES1-1029</span>
+          </div>
+
+          <div class="flex items-center justify-between border-t border-slate-100 pt-2 text-[8px] font-bold text-slate-400">
+            <span>{{ locale.isRtl() ? 'تاريخ التوصيل: اليوم' : 'Delivery Date: Today' }}</span>
+            <span>{{ locale.isRtl() ? 'مسح الباركود إلزامي عند الاستلام والتسليم' : 'Barcode scan required' }}</span>
+          </div>
+        </div>
+
+        <div class="mt-4 flex gap-2">
+          <button type="button" class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50">
+            <ng-icon name="lucidePrinter" size="14" />
+            <span>{{ locale.isRtl() ? 'طباعة الملصق' : 'Print Label' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

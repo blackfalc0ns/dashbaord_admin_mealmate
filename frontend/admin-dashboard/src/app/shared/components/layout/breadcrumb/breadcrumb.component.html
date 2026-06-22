@@ -6,8 +6,14 @@
 
   @for (item of items(); track $index) {
     <ng-icon [name]="'lucideChevronRight'" class="mm-breadcrumb-separator" aria-hidden="true" />
-    <span [class]="item.active ? 'mm-breadcrumb-item mm-breadcrumb-item--active' : 'mm-breadcrumb-item'">
-      {{ item.label }}
-    </span>
+    @if (item.route && !item.active) {
+      <a [routerLink]="item.route" class="mm-breadcrumb-item hover:text-emerald-600 transition-colors">
+        {{ item.label }}
+      </a>
+    } @else {
+      <span [class]="item.active ? 'mm-breadcrumb-item mm-breadcrumb-item--active' : 'mm-breadcrumb-item'">
+        {{ item.label }}
+      </span>
+    }
   }
 </nav>

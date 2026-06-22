@@ -1,0 +1,10 @@
+<div [class]="toastClass({ type: type() })">
+  @if (type() === 'success') {
+    <ng-icon name="lucideShieldCheck" size="18" class="text-emerald-600" />
+  } @else if (type() === 'warning') {
+    <ng-icon name="lucideShieldAlert" size="18" class="text-amber-600" />
+  } @else {
+    <ng-icon name="lucideClock" size="18" class="text-blue-600" />
+  }
+  <span>{{ message() }}</span>
+</div>

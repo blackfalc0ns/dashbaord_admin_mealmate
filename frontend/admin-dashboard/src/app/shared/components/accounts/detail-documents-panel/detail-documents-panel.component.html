@@ -1,0 +1,90 @@
+<mm-detail-panel-card
+  [title]="title()"
+  [subtitle]="subtitle()"
+  icon="lucideFileText"
+>
+  <div class="flex flex-col gap-2.5">
+    @for (doc of documents(); track doc.id) {
+      <div
+        [class]="docItemClass({ selected: selectedDocId() === doc.id })"
+        (click)="selectedDocId.set(doc.id)"
+      >
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex min-w-0 items-center gap-2.5">
+            <div
+              class="flex size-8 shrink-0 items-center justify-center rounded-lg"
+              [ngClass]="{
+                'bg-emerald-50 text-emerald-600': doc.status === 'verified',
+                'bg-amber-50 text-amber-600': doc.status === 'under_review',
+                'bg-red-50 text-red-600': doc.status === 'missing' || doc.status === 'expired'
+              }"
+            >
+              <ng-icon name="lucideFileText" size="16" />
+            </div>
+            <div class="flex min-w-0 flex-col">
+              <span class="truncate text-xs font-bold text-slate-800">{{ tr(doc.nameAr, doc.nameEn) }}</span>
+              @if (doc.uploadedAtAr) {
+                <span class="text-[9px] font-semibold text-slate-400">
+                  {{ locale.isRtl() ? 'رفع:' : 'Uploaded:' }} {{ tr(doc.uploadedAtAr, doc.uploadedAtEn ?? '') }}
+                </span>
+              }
+            </div>
+          </div>
+          <span [class]="docStatusClass({ status: doc.status })">{{ statusLabel(doc.status) }}</span>
+        </div>
+        <div class="flex items-center justify-between border-t border-slate-100/60 pt-2 text-[9px] font-bold text-slate-400">
+          @if (doc.expiryDate) {
+            <span>{{ locale.isRtl() ? 'ينتهي:' : 'Expires:' }} {{ doc.expiryDate }}</span>
+          }
+          @if (doc.fileSizeKb) {
+            <span>{{ doc.fileSizeKb }} KB • PDF</span>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</mm-detail-panel-card>
+
+@if (selectedDoc(); as doc) {
+  <div class="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm ring-1 ring-emerald-500/10">
+    <div class="mb-3 flex items-center justify-between border-b border-slate-50 pb-2">
+      <div class="flex flex-col gap-0.5">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600">
+          {{ locale.isRtl() ? 'نافذة المعاينة' : 'Preview Window' }}
+        </span>
+        <h3 class="text-xs font-extrabold text-slate-800">{{ tr(doc.nameAr, doc.nameEn) }}</h3>
+      </div>
+      <span class="rounded-lg bg-slate-50 px-2 py-1 text-[9px] font-bold text-slate-500">PDF</span>
+    </div>
+    <div class="relative flex min-h-[140px] flex-col justify-between overflow-hidden rounded-xl border border-slate-100 bg-slate-50/50 p-4 shadow-inner">
+      <div class="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.03]">
+        <ng-icon name="lucideShieldCheck" size="100" />
+      </div>
+      <div class="z-10 flex items-center justify-between">
+        <span class="text-[9px] font-bold text-slate-500">{{ entityLabel() }}</span>
+        <span class="font-mono text-[8px] text-slate-400">REF: {{ doc.id }}-{{ entityRef() }}</span>
+      </div>
+      <div class="z-10 my-3 flex flex-col gap-1">
+        @for (row of previewRows(); track row.label) {
+          <div class="flex justify-between border-b border-slate-100/50 pb-1 text-[10px]">
+            <span class="font-bold text-slate-400">{{ row.label }}</span>
+            <span class="font-bold text-slate-700" [class.font-mono]="row.mono">{{ row.value }}</span>
+          </div>
+        }
+        @if (doc.expiryDate) {
+          <div class="flex justify-between text-[10px]">
+            <span class="font-bold text-slate-400">{{ locale.isRtl() ? 'تاريخ الانتهاء:' : 'Expiry:' }}</span>
+            <span class="font-bold text-slate-700">{{ doc.expiryDate }}</span>
+          </div>
+        }
+      </div>
+      <button
+        type="button"
+        class="z-10 inline-flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-bold text-emerald-600 hover:bg-emerald-50"
+      >
+        <ng-icon name="lucideEye" size="12" />
+        <span>{{ locale.isRtl() ? 'فتح الملف الأصلي' : 'Open Original File' }}</span>
+      </button>
+    </div>
+  </div>
+}

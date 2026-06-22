@@ -240,7 +240,7 @@ export class OverviewChartsSectionComponent {
         ? panel.span === 'full'
           ? 280
           : panel.chartType === 'donut'
-            ? 240
+            ? 190
             : 260
         : 260;
 
@@ -335,10 +335,11 @@ export class OverviewChartsSectionComponent {
           legend: {
             ...mmBaseLegend(),
             position: inlineCompactDonut ? ('right' as const) : compact ? ('right' as const) : ('bottom' as const),
+            horizontalAlign: inlineCompactDonut ? ('left' as const) : compact ? ('left' as const) : ('center' as const),
             fontSize: inlineCompactDonut ? '10px' : compact ? '11px' : '12px',
             itemMargin: inlineCompactDonut
               ? { horizontal: 6, vertical: 2 }
-              : undefined,
+              : { horizontal: 10, vertical: 2 },
           },
           tooltip: mmBaseTooltip(),
           plotOptions: {

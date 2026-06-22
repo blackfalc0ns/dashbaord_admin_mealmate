@@ -44,7 +44,7 @@ export class AdminLoginPageComponent {
 
   readonly form = this.fb.nonNullable.group({
     identifier: ['admin@mealmate.com', [Validators.required]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['123456', [Validators.required, Validators.minLength(6)]],
     rememberSession: [false],
   });
 

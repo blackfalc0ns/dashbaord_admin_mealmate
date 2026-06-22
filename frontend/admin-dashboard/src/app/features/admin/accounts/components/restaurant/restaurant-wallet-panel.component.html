@@ -1,0 +1,257 @@
+@if (restaurant(); as item) {
+<div class="flex flex-col gap-4">
+  <!-- Settlement rules notice -->
+  <div class="rounded-2xl border border-emerald-100 bg-emerald-50/30 p-4 shadow-sm ring-1 ring-emerald-500/10">
+    <div class="flex flex-wrap items-start gap-3">
+      <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+        <ng-icon name="lucideWallet" size="18" />
+      </div>
+      <div class="flex min-w-0 flex-col gap-1">
+        <span class="text-xs font-extrabold text-slate-800">
+          {{ locale.isRtl() ? 'محفظة التسوية — شريك المطعم' : 'Settlement Wallet — Restaurant Partner' }}
+        </span>
+        <p class="text-[10px] font-bold leading-relaxed text-slate-500">
+          {{ locale.isRtl()
+            ? 'التسويات تُحسب على الوجبات المُسلّمة فعلياً، مع خصم عمولة المطعم المتفق عليها وخصومات الشكاوى. لا تُعرض عمولة اشتراك العميل هنا.'
+            : 'Settlements are based on actually delivered boxes, minus agreed restaurant commission and complaint deductions. Customer subscription commission is not shown here.' }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Balance summary -->
+  <div class="grid gap-3 sm:grid-cols-3">
+    <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          {{ locale.isRtl() ? 'الرصيد المتاح للسحب' : 'Available Balance' }}
+        </span>
+        <span class="text-xl font-extrabold text-emerald-600">{{ fmt(wallet().availableBalance) }}</span>
+      </div>
+      <div class="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+        <ng-icon name="lucideWallet" size="20" />
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          {{ locale.isRtl() ? 'تسوية قيد المعالجة' : 'Pending Settlement' }}
+        </span>
+        <span class="text-xl font-extrabold text-amber-600">{{ fmt(wallet().pendingSettlement) }}</span>
+        <span class="text-[9px] font-bold text-slate-400">
+          {{ locale.isRtl() ? 'التسوية القادمة:' : 'Next cycle:' }}
+          {{ t(wallet().nextSettlementDateAr, wallet().nextSettlementDateEn) }}
+        </span>
+      </div>
+      <div class="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+        <ng-icon name="lucideClock" size="20" />
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          {{ locale.isRtl() ? 'آخر تحويل بنكي' : 'Last Bank Transfer' }}
+        </span>
+        <span class="text-xl font-extrabold text-slate-900">{{ fmt(wallet().lastTransferAmount) }}</span>
+        <span class="text-[9px] font-bold text-slate-400">
+          {{ t(wallet().lastTransferAtAr, wallet().lastTransferAtEn) }}
+        </span>
+      </div>
+      <div class="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+        <ng-icon name="lucideCreditCard" size="20" />
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-3">
+    <!-- Settlements + ledger (merged with toggle) -->
+    <div class="flex flex-col gap-4 lg:col-span-2">
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-50 pb-3">
+          <h3 class="flex items-center gap-2 text-sm font-extrabold text-slate-900">
+            <ng-icon name="lucideWallet" size="16" class="text-emerald-600" />
+            <span>{{ locale.isRtl() ? 'السجل المالي' : 'Financial Ledger' }}</span>
+          </h3>
+
+          <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-bold transition-all"
+              [class.bg-emerald-600]="ledgerView() === 'settlements'"
+              [class.text-white]="ledgerView() === 'settlements'"
+              [class.text-slate-500]="ledgerView() !== 'settlements'"
+              [class.hover:bg-slate-100]="ledgerView() !== 'settlements'"
+              (click)="setLedgerView('settlements')"
+            >
+              <ng-icon name="lucideReceipt" size="12" />
+              <span>{{ locale.isRtl() ? 'دفعات التسوية' : 'Settlement Batches' }}</span>
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-bold transition-all"
+              [class.bg-emerald-600]="ledgerView() === 'transactions'"
+              [class.text-white]="ledgerView() === 'transactions'"
+              [class.text-slate-500]="ledgerView() !== 'transactions'"
+              [class.hover:bg-slate-100]="ledgerView() !== 'transactions'"
+              (click)="setLedgerView('transactions')"
+            >
+              <ng-icon name="lucideClipboardList" size="12" />
+              <span>{{ locale.isRtl() ? 'سجل حركات المحفظة' : 'Wallet Transactions' }}</span>
+            </button>
+          </div>
+        </div>
+
+        @switch (ledgerView()) {
+          @case ('settlements') {
+            <div class="flex flex-col gap-2">
+              @for (batch of wallet().settlements; track batch.id) {
+                <div class="rounded-xl border border-slate-100 p-4 transition-all hover:border-emerald-200 hover:bg-emerald-50/5">
+                  <div class="mb-3 flex flex-wrap items-start justify-between gap-2">
+                    <div class="flex flex-col gap-0.5">
+                      <span class="text-xs font-extrabold text-slate-800">{{ t(batch.periodAr, batch.periodEn) }}</span>
+                      <span class="font-mono text-[9px] font-bold text-slate-400">{{ batch.id }}</span>
+                    </div>
+                    <span
+                      class="rounded-full px-2.5 py-0.5 text-[9px] font-bold ring-1"
+                      [ngClass]="{
+                        'bg-emerald-50 text-emerald-700 ring-emerald-600/10': batch.status === 'paid',
+                        'bg-amber-50 text-amber-700 ring-amber-600/10': batch.status === 'processing',
+                        'bg-slate-50 text-slate-600 ring-slate-600/10': batch.status === 'pending'
+                      }"
+                    >{{ settlementStatusLabel(batch) }}</span>
+                  </div>
+
+                  <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                    <div class="flex flex-col gap-0.5">
+                      <span class="text-[9px] font-bold uppercase text-slate-400">{{ locale.isRtl() ? 'الوجبات' : 'Boxes' }}</span>
+                      <span class="text-xs font-bold text-slate-800">{{ batch.deliveredBoxes }}</span>
+                    </div>
+                    <div class="flex flex-col gap-0.5">
+                      <span class="text-[9px] font-bold uppercase text-slate-400">{{ locale.isRtl() ? 'الإجمالي' : 'Gross' }}</span>
+                      <span class="text-xs font-bold text-slate-800">{{ fmt(batch.grossKwd) }}</span>
+                    </div>
+                    <div class="flex flex-col gap-0.5">
+                      <span class="text-[9px] font-bold uppercase text-slate-400">{{ locale.isRtl() ? 'عمولة المطعم' : 'Commission' }}</span>
+                      <span class="text-xs font-bold text-amber-700">− {{ fmt(batch.restaurantCommissionKwd) }}</span>
+                    </div>
+                    <div class="flex flex-col gap-0.5">
+                      <span class="text-[9px] font-bold uppercase text-slate-400">{{ locale.isRtl() ? 'الصافي' : 'Net' }}</span>
+                      <span class="text-xs font-extrabold text-emerald-700">{{ fmt(batch.netKwd) }}</span>
+                    </div>
+                  </div>
+
+                  @if (batch.complaintDeductionsKwd > 0) {
+                    <p class="mt-2 text-[9px] font-bold text-red-600">
+                      {{ locale.isRtl() ? 'خصم شكاوى:' : 'Complaint deductions:' }}
+                      − {{ fmt(batch.complaintDeductionsKwd) }}
+                    </p>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @case ('transactions') {
+            <div class="flex flex-col gap-2">
+              @for (tx of wallet().transactions; track tx.id) {
+                <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-50 bg-slate-50/20 p-3">
+                  <div class="flex items-start gap-3">
+                    <div
+                      class="flex size-8 shrink-0 items-center justify-center rounded-lg"
+                      [ngClass]="{
+                        'bg-emerald-50 text-emerald-600': tx.type === 'credit',
+                        'bg-red-50 text-red-600': tx.type === 'debit'
+                      }"
+                    >
+                      <ng-icon [name]="tx.type === 'credit' ? 'lucideArrowDownLeft' : 'lucideArrowUpRight'" size="14" />
+                    </div>
+                    <div class="flex flex-col gap-0.5">
+                      <span class="text-xs font-bold text-slate-800">{{ t(tx.categoryAr, tx.categoryEn) }}</span>
+                      <span class="text-[9px] font-semibold text-slate-400">
+                        {{ t(tx.dateAr, tx.dateEn) }} • {{ tx.ref }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="text-sm font-extrabold"
+                      [class.text-emerald-700]="tx.type === 'credit'"
+                      [class.text-red-600]="tx.type === 'debit'"
+                    >
+                      {{ tx.type === 'credit' ? '+' : '−' }} {{ fmt(tx.amountKwd) }}
+                    </span>
+                    <span
+                      class="rounded-full px-2 py-0.5 text-[9px] font-bold ring-1"
+                      [ngClass]="{
+                        'bg-emerald-50 text-emerald-700 ring-emerald-600/10': tx.status === 'posted',
+                        'bg-amber-50 text-amber-700 ring-amber-600/10': tx.status === 'pending',
+                        'bg-slate-50 text-slate-600 ring-slate-600/10': tx.status === 'reversed'
+                      }"
+                    >{{ txStatusLabel(tx) }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Bank & commission sidebar -->
+    <div class="flex flex-col gap-4">
+      @if (item.bankIban) {
+        <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+          <h3 class="mb-3 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+            <ng-icon name="lucideCreditCard" size="16" class="text-emerald-600" />
+            <span>{{ locale.isRtl() ? 'حساب التحويل البنكي' : 'Payout Bank Account' }}</span>
+          </h3>
+          <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] font-bold uppercase text-slate-400">{{ locale.isRtl() ? 'البنك' : 'Bank' }}</span>
+              <span class="text-sm font-bold text-slate-800">{{ t(item.bankNameAr ?? '', item.bankNameEn ?? '') }}</span>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] font-bold uppercase text-slate-400">{{ locale.isRtl() ? 'صاحب الحساب' : 'Account Holder' }}</span>
+              <span class="text-sm font-bold text-slate-800">{{ item.bankAccountName }}</span>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] font-bold uppercase text-slate-400">IBAN</span>
+              <span class="font-mono text-sm font-bold tracking-wide text-slate-800" dir="ltr">{{ item.bankIban }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (item.restaurantCommissionPercent) {
+        <div class="rounded-2xl border border-amber-100 bg-amber-50/20 p-5 shadow-sm ring-1 ring-amber-500/10">
+          <h3 class="mb-2 flex items-center gap-2 text-sm font-extrabold text-slate-900">
+            <ng-icon name="lucideDollarSign" size="16" class="text-amber-600" />
+            <span>{{ locale.isRtl() ? 'عمولة المطعم المتفق عليها' : 'Agreed Restaurant Commission' }}</span>
+          </h3>
+          <p class="text-2xl font-extrabold text-amber-700">{{ item.restaurantCommissionPercent }}%</p>
+          <p class="mt-2 text-[10px] font-bold leading-relaxed text-slate-500">
+            {{ locale.isRtl()
+              ? 'تُخصم من سعر العلبة المتفق عليه عند التسوية — منفصلة عن عمولة اشتراك العميل على المنصة.'
+              : 'Deducted from the agreed box price at settlement — separate from customer subscription commission.' }}
+          </p>
+        </div>
+      }
+
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h3 class="mb-3 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+          <ng-icon name="lucideShieldCheck" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'قواعد التسوية' : 'Settlement Rules' }}</span>
+        </h3>
+        <ul class="flex list-inside list-disc flex-col gap-2 text-[10px] font-bold leading-relaxed text-slate-500">
+          <li>{{ locale.isRtl() ? 'التسوية على الوجبات المُسلّمة فعلياً فقط.' : 'Settlement on actually delivered boxes only.' }}</li>
+          <li>{{ locale.isRtl() ? 'خصم الشكاوى المعتمدة من مستحقات الدفعة.' : 'Approved complaints deducted from batch payout.' }}</li>
+          <li>{{ locale.isRtl() ? 'دورة تسوية نصف شهرية (كل 15 يوماً).' : 'Bi-weekly settlement cycle (every 15 days).' }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+}

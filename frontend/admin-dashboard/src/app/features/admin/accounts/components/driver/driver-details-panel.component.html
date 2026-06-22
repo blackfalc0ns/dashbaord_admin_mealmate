@@ -1,0 +1,383 @@
+@if (driver(); as item) {
+<div class="grid gap-4 lg:grid-cols-3">
+  <!-- Left 2 Columns: Contact & Vehicle Info -->
+  <div class="flex flex-col gap-4 lg:col-span-2">
+    <!-- Identity & PACI Card -->
+    @if (item.civilId) {
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+          <ng-icon name="lucideShieldCheck" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'الهوية والتحقق المدني' : 'Identity & Civil Verification' }}</span>
+        </h2>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="flex items-start gap-3">
+            <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+              <ng-icon name="lucideHash" size="16" />
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'الرقم المدني' : 'Civil ID' }}</span>
+              <span class="text-sm font-mono font-bold text-slate-800" dir="ltr">{{ item.civilId }}</span>
+            </div>
+          </div>
+          @if (item.nationalityAr) {
+            <div class="flex items-start gap-3">
+              <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                <ng-icon name="lucideGlobe" size="16" />
+              </div>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'الجنسية' : 'Nationality' }}</span>
+                <span class="text-sm font-bold text-slate-800">{{ t(item.nationalityAr, item.nationalityEn ?? '') }}</span>
+              </div>
+            </div>
+          }
+          @if (item.dob) {
+            <div class="flex items-start gap-3">
+              <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                <ng-icon name="lucideCalendar" size="16" />
+              </div>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'تاريخ الميلاد' : 'Date of Birth' }}</span>
+                <span class="text-sm font-bold text-slate-800">{{ item.dob }}</span>
+              </div>
+            </div>
+          }
+          @if (item.genderAr) {
+            <div class="flex items-start gap-3">
+              <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                <ng-icon name="lucideUser" size="16" />
+              </div>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'الجنس' : 'Gender' }}</span>
+                <span class="text-sm font-bold text-slate-800">{{ t(item.genderAr, item.genderEn ?? '') }}</span>
+              </div>
+            </div>
+          }
+        </div>
+        @if (item.paciMatchStatusAr) {
+          <div class="mt-4 rounded-xl border border-emerald-100 bg-emerald-50/30 px-3 py-2 text-[10px] font-bold text-emerald-700">
+            PACI: {{ t(item.paciMatchStatusAr, item.paciMatchStatusEn ?? '') }}
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Contact Details Card -->
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+        <ng-icon name="lucideUser" size="16" class="text-emerald-600" />
+        <span>{{ copy().contactDetails }}</span>
+      </h2>
+      
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucideUser" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'الاسم الكامل' : 'Full Name' }}</span>
+            <span class="text-sm font-bold text-slate-800">{{ item.fullName }}</span>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucidePhone" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().phone }}</span>
+            <span class="text-sm font-bold text-slate-800" dir="ltr">{{ item.phoneNumber }}</span>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucideMail" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().email }}</span>
+            <span class="text-sm font-bold text-slate-800">{{ item.email }}</span>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucideMapPin" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'منطقة التغطية' : 'Service Region' }}</span>
+            <span class="text-sm font-bold text-slate-800">{{ t(item.regionAr, item.regionEn) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (item.restaurantNameAr) {
+      <div class="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/80 to-white p-5 shadow-sm ring-1 ring-emerald-500/10">
+        <h2 class="mb-3 text-sm font-extrabold text-slate-900 flex items-center gap-2">
+          <ng-icon name="lucideBuilding" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'الانتماء التشغيلي — مطعم شريك' : 'Operational Affiliation — Restaurant Partner' }}</span>
+        </h2>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-col gap-0.5">
+            <span class="text-base font-extrabold text-slate-900">{{ t(item.restaurantNameAr, item.restaurantNameEn ?? '') }}</span>
+            <span class="text-[10px] font-bold text-slate-400">ID: {{ item.restaurantId }}</span>
+            @if (item.contractTypeAr) {
+              <span class="text-xs font-bold text-emerald-700 mt-1">{{ t(item.contractTypeAr, item.contractTypeEn ?? '') }}</span>
+            }
+            @if (item.joinedAtAr) {
+              <span class="text-[10px] font-semibold text-slate-400">{{ locale.isRtl() ? 'تاريخ الانضمام:' : 'Joined:' }} {{ t(item.joinedAtAr, item.joinedAtEn ?? '') }}</span>
+            }
+          </div>
+          <a [routerLink]="['/admin/accounts/restaurants', item.restaurantId]" class="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-white px-3 py-2 text-[10px] font-bold text-emerald-700 hover:bg-emerald-50">
+            <ng-icon name="lucideEye" size="12" />
+            <span>{{ locale.isRtl() ? 'عرض ملف المطعم' : 'View Restaurant Profile' }}</span>
+          </a>
+        </div>
+      </div>
+    }
+
+    <!-- Vehicle Information Card -->
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+        <ng-icon name="lucideCar" size="16" class="text-emerald-600" />
+        <span>{{ copy().vehicleInformation }}</span>
+      </h2>
+      
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucideCar" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().vehicleType }}</span>
+            <span class="text-sm font-bold text-slate-800">{{ t(item.vehicleTypeAr, item.vehicleTypeEn) }}</span>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucideHash" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().plateNumber }}</span>
+            <span class="text-sm font-bold text-slate-800">{{ item.vehiclePlateNumber }}</span>
+          </div>
+        </div>
+
+        @if (item.vehicleModelAr) {
+          <div class="flex items-start gap-3">
+            <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+              <ng-icon name="lucideCar" size="16" />
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'الموديل' : 'Model' }}</span>
+              <span class="text-sm font-bold text-slate-800">{{ t(item.vehicleModelAr, item.vehicleModelEn ?? '') }}</span>
+            </div>
+          </div>
+        }
+        @if (item.vehicleColorAr) {
+          <div class="flex items-start gap-3">
+            <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+              <ng-icon name="lucideGlobe" size="16" />
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'لون المركبة' : 'Vehicle Color' }}</span>
+              <span class="text-sm font-bold text-slate-800">{{ t(item.vehicleColorAr, item.vehicleColorEn ?? '') }}</span>
+            </div>
+          </div>
+        }
+        @if (item.registrationExpiry) {
+          <div class="flex items-start gap-3">
+            <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+              <ng-icon name="lucideCalendar" size="16" />
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'انتهاء دفتر السيارة' : 'Registration Expiry' }}</span>
+              <span class="text-sm font-bold text-slate-800">{{ item.registrationExpiry }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (item.bankIban) {
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+          <ng-icon name="lucideCreditCard" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'بيانات الحساب البنكي والتحويلات' : 'Bank Account & Payout Details' }}</span>
+        </h2>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="flex items-start gap-3">
+            <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+              <ng-icon name="lucideBuilding" size="16" />
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'اسم البنك' : 'Bank Name' }}</span>
+              <span class="text-sm font-bold text-slate-800">{{ t(item.bankNameAr ?? '', item.bankNameEn ?? '') }}</span>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+              <ng-icon name="lucideUser" size="16" />
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'اسم صاحب الحساب' : 'Account Holder' }}</span>
+              <span class="text-sm font-bold text-slate-800">{{ item.bankAccountName }}</span>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 sm:col-span-2">
+            <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+              <ng-icon name="lucideCreditCard" size="16" />
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">IBAN</span>
+              <span class="text-sm font-mono font-bold text-slate-800 tracking-wide" dir="ltr">{{ item.bankIban }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (item.criminalRecordStatusAr || item.trafficViolationsAr) {
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+          <ng-icon name="lucideShieldCheck" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'الفحص الأمني والامتثال' : 'Security & Compliance Checks' }}</span>
+        </h2>
+        <div class="flex flex-col gap-2.5">
+          @if (item.criminalRecordStatusAr) {
+            <div class="flex items-center justify-between rounded-xl border border-slate-50 bg-slate-50/30 p-3">
+              <span class="text-[10px] font-bold text-slate-700">{{ locale.isRtl() ? 'الصحيفة الجنائية' : 'Criminal Record' }}</span>
+              <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold text-emerald-700">{{ t(item.criminalRecordStatusAr, item.criminalRecordStatusEn ?? '') }}</span>
+            </div>
+          }
+          @if (item.trafficViolationsAr) {
+            <div class="flex items-center justify-between rounded-xl border border-slate-50 bg-slate-50/30 p-3">
+              <span class="text-[10px] font-bold text-slate-700">{{ locale.isRtl() ? 'مخالفات المرور' : 'Traffic Violations' }}</span>
+              <span class="rounded-full px-2 py-0.5 text-[9px] font-bold ring-1"
+                [ngClass]="{
+                  'bg-emerald-50 text-emerald-700 ring-emerald-600/10': !item.trafficViolationsEn?.includes('Unpaid'),
+                  'bg-amber-50 text-amber-700 ring-amber-600/10': item.trafficViolationsEn?.includes('Unpaid')
+                }"
+              >{{ t(item.trafficViolationsAr, item.trafficViolationsEn ?? '') }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Notes Card -->
+    @if (item.notesAr) {
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h2 class="mb-3 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+          <ng-icon name="lucideFileText" size="16" class="text-emerald-600" />
+          <span>{{ copy().reviewNotes }}</span>
+        </h2>
+        <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-4 text-xs font-medium text-slate-500 leading-relaxed">
+          {{ t(item.notesAr, item.notesEn ?? '') }}
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Right Column: Documents & Preview -->
+  <div class="flex flex-col gap-4">
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div class="mb-4 border-b border-slate-50 pb-2.5">
+        <h2 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+          <ng-icon name="lucideFileText" size="16" class="text-emerald-600" />
+          <span>{{ copy().requiredDocuments }}</span>
+        </h2>
+        <p class="text-[10px] font-bold text-slate-400 mt-1">{{ locale.isRtl() ? 'اختر مستنداً لعرض التفاصيل والمعاينة' : 'Select a document to view details and preview' }}</p>
+      </div>
+
+      <div class="flex flex-col gap-2.5">
+        @for (doc of item.documents; track doc.id) {
+          <div
+            class="flex flex-col gap-2 rounded-xl border p-3 transition-all cursor-pointer hover:bg-slate-50"
+            [class.border-emerald-500]="selectedDocId() === doc.id"
+            [ngClass]="{ 'bg-emerald-50/10': selectedDocId() === doc.id }"
+            [class.border-slate-100]="selectedDocId() !== doc.id"
+            (click)="selectedDocId.set(doc.id)"
+          >
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="flex size-8 shrink-0 items-center justify-center rounded-lg"
+                  [class.bg-emerald-50]="doc.status === 'verified'"
+                  [class.text-emerald-600]="doc.status === 'verified'"
+                  [class.bg-amber-50]="doc.status === 'under_review'"
+                  [class.text-amber-600]="doc.status === 'under_review'"
+                  [class.bg-red-50]="doc.status === 'missing' || doc.status === 'expired'"
+                  [class.text-red-600]="doc.status === 'missing' || doc.status === 'expired'"
+                >
+                  <ng-icon name="lucideFileText" size="16" />
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="text-xs font-bold text-slate-800 truncate">{{ t(doc.nameAr, doc.nameEn) }}</span>
+                  @if (doc.uploadedAtAr) {
+                    <span class="text-[9px] font-semibold text-slate-400">{{ locale.isRtl() ? 'رفع:' : 'Uploaded:' }} {{ t(doc.uploadedAtAr, doc.uploadedAtEn ?? '') }}</span>
+                  }
+                </div>
+              </div>
+              <span class="shrink-0 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold ring-1"
+                [ngClass]="{
+                  'bg-emerald-50 text-emerald-700 ring-emerald-600/20': doc.status === 'verified',
+                  'bg-amber-50 text-amber-700 ring-amber-600/20': doc.status === 'under_review',
+                  'bg-red-50 text-red-700 ring-red-600/20': doc.status === 'missing' || doc.status === 'expired'
+                }"
+              >{{ docStatusLabel(doc.status) }}</span>
+            </div>
+            <div class="flex items-center justify-between border-t border-slate-100/60 pt-2 text-[9px] font-bold text-slate-400">
+              @if (doc.expiryDate) {
+                <span>{{ copy().expiry }}: {{ doc.expiryDate }}</span>
+              }
+              @if (doc.fileSizeKb) {
+                <span>{{ doc.fileSizeKb }} KB • PDF</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (selectedDoc(); as doc) {
+      <div class="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm ring-1 ring-emerald-500/10">
+        <div class="mb-3 flex items-center justify-between border-b border-slate-50 pb-2">
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">{{ locale.isRtl() ? 'نافذة المعاينة' : 'Preview Window' }}</span>
+            <h3 class="text-xs font-extrabold text-slate-800">{{ t(doc.nameAr, doc.nameEn) }}</h3>
+          </div>
+          <span class="rounded-lg bg-slate-50 px-2 py-1 text-[9px] font-bold text-slate-500">PDF</span>
+        </div>
+        <div class="relative overflow-hidden rounded-xl border border-slate-100 bg-slate-50/50 p-4 shadow-inner min-h-[140px] flex flex-col justify-between">
+          <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+            <ng-icon name="lucideShieldCheck" size="100" />
+          </div>
+          <div class="flex items-center justify-between z-10">
+            <span class="text-[9px] font-bold text-slate-500">{{ item.fullName }}</span>
+            <span class="text-[8px] font-mono text-slate-400">REF: {{ doc.id }}-{{ item.id }}</span>
+          </div>
+          <div class="my-3 flex flex-col gap-1 z-10">
+            @if (item.civilId) {
+              <div class="flex justify-between text-[10px] border-b border-slate-100/50 pb-1">
+                <span class="font-bold text-slate-400">{{ locale.isRtl() ? 'الرقم المدني:' : 'Civil ID:' }}</span>
+                <span class="font-mono font-bold text-slate-700">{{ item.civilId }}</span>
+              </div>
+            }
+            @if (doc.expiryDate) {
+              <div class="flex justify-between text-[10px]">
+                <span class="font-bold text-slate-400">{{ copy().expiry }}:</span>
+                <span class="font-bold text-slate-700">{{ doc.expiryDate }}</span>
+              </div>
+            }
+          </div>
+          <button type="button" class="z-10 inline-flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-bold text-emerald-600 hover:bg-emerald-50">
+            <ng-icon name="lucideEye" size="12" />
+            <span>{{ locale.isRtl() ? 'فتح الملف الأصلي' : 'Open Original File' }}</span>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+}

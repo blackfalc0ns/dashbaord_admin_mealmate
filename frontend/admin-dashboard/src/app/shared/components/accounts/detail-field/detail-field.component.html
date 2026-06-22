@@ -1,0 +1,14 @@
+<div [class]="fieldClass()">
+  <div [class]="iconClass({ tone: tone() })">
+    <ng-icon [name]="icon()" size="16" />
+  </div>
+  <div class="flex flex-col gap-0.5">
+    <span [class]="labelClass()">{{ label() }}</span>
+    <span
+      [class]="valueClass()"
+      [class.font-mono]="mono()"
+      [class.tracking-wide]="mono()"
+      [attr.dir]="valueDir()"
+    >{{ value() }}</span>
+  </div>
+</div>

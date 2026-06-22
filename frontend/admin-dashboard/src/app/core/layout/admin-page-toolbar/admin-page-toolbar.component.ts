@@ -9,6 +9,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { AdminPageContextService } from '@/core/navigation/admin-page-context.service';
 import { AdminNavItem } from '@/core/navigation/admin-nav.model';
+import { ADMIN_NAV_SECTIONS } from '@/core/navigation/admin-nav.config';
 import {
   MmBreadcrumbComponent,
   MmPageHeadingComponent,
@@ -40,20 +41,20 @@ export class AdminPageToolbarComponent {
     this.locale.isRtl() ? 'لوحة المسؤول' : 'Admin Panel',
   );
 
-  readonly operationsLabel = computed(() =>
-    this.locale.isRtl() ? 'العمليات' : 'Operations',
-  );
-
   readonly quickActionLabel = computed(() =>
     this.locale.isRtl() ? 'استثناء طارئ' : 'Quick exception',
   );
 
   readonly pageTitle = computed(() => {
+    const custom = this.pageContext.customTitle();
+    if (custom) return custom;
     const page = this.pageContext.context().page;
     return page ? this.label(page) : this.panelLabel();
   });
 
   readonly pageDescription = computed(() => {
+    const custom = this.pageContext.customDescription();
+    if (custom) return custom;
     const page = this.pageContext.context().page;
     if (!page) {
       return this.locale.isRtl()
@@ -71,11 +72,37 @@ export class AdminPageToolbarComponent {
     return group ? this.label(group) : null;
   });
 
+  readonly sectionLabel = computed(() => {
+    const context = this.pageContext.context();
+    const page = context.page;
+    const group = context.group;
+    if (!page) return null;
+
+    const targetItem = group || page;
+    const section = ADMIN_NAV_SECTIONS.find((sec) =>
+      sec.items.some((item) => item.id === targetItem.id)
+    );
+
+    if (!section) return null;
+    return this.locale.isRtl() ? section.labelAr : section.labelEn;
+  });
+
+  readonly showQuickAction = computed(() => {
+    const context = this.pageContext.context();
+    return context.group?.id === 'operations-72h';
+  });
+
   readonly breadcrumbItems = computed<BreadcrumbItem[]>(() => {
+    const custom = this.pageContext.customBreadcrumbs();
+    if (custom) return custom;
+
     const items: BreadcrumbItem[] = [];
 
+    if (this.sectionLabel()) {
+      items.push({ label: this.sectionLabel()! });
+    }
+
     if (this.groupTitle()) {
-      items.push({ label: this.operationsLabel() });
       items.push({ label: this.groupTitle()! });
     }
 

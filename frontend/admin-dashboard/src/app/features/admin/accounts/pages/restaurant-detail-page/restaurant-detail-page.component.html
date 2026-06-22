@@ -1,0 +1,38 @@
+@if (restaurant(); as item) {
+  <section class="flex flex-col gap-4" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+    <mm-detail-tab-nav
+      [tabs]="tabs()"
+      [activeTab]="activeTab()"
+      (tabChange)="setActiveTab($event)"
+    />
+
+    @switch (activeTab()) {
+      @case ('overview') {
+        <mm-restaurant-overview-panel [restaurant]="item" />
+      }
+      @case ('details') {
+        <mm-restaurant-details-panel [restaurant]="item" />
+      }
+      @case ('analytics') {
+        <mm-restaurant-analytics-panel [restaurant]="item" />
+      }
+      @case ('wallet') {
+        <mm-restaurant-wallet-panel [restaurant]="item" />
+      }
+      @case ('meals') {
+        <mm-restaurant-meals-panel [restaurant]="item" />
+      }
+      @case ('settings') {
+        <mm-restaurant-settings-panel
+          [restaurant]="item"
+          (manualAudit)="triggerManualAudit()"
+          (toggleSuspension)="toggleSuspension()"
+        />
+      }
+    }
+  </section>
+}
+
+@if (toastMessage(); as message) {
+  <mm-detail-toast [message]="message" [type]="toastType()" />
+}

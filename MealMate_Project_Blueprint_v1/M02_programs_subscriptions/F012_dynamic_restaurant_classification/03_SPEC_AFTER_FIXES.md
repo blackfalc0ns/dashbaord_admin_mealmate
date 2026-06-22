@@ -3,6 +3,37 @@
 ## Purpose
 تنفيذ **Dynamic Restaurant Classification** كميزة جاهزة للتطوير بعد معالجة نقاط الضعف والفجوات.
 
+## Profit Protection Addendum
+هذه الإضافة لا تغير خوارزمية التصنيف الحالية. يظل التصنيف معتمدًا على `Mean + Standard Deviation` كما هو موثق، وتضاف فقط طبقة فحص ربحية بعد حساب التصنيف.
+
+### الحسابات الإضافية
+| البند | المعادلة | الغرض |
+|---|---|---|
+| Net Restaurant Cost | `Restaurant Daily Price × (1 - Commission)` | حساب التكلفة الصافية للمطعم بعد عمولة المطعم |
+| Expected Profit | `Customer Daily Price - Net Restaurant Cost` | قياس هامش الربح المتوقع لليوم الواحد |
+| Minimum Profit | `0.500 KD` | الحد الأدنى المقبول لحماية ربحية MealMate |
+
+### Outlier Rule
+يتم وضع علامة مراجعة على المطعم فقط عند تحقق الشرطين معًا:
+
+```text
+IF Restaurant Price > Mean + 1 SD
+AND Expected Profit < 0.500 KD
+THEN Flag Restaurant
+```
+
+### Admin Action
+عند ظهور العلامة، يختار الأدمن إجراءً واحدًا مع سبب إلزامي وAuditLog:
+- Keep Restaurant
+- Move To Higher Classification
+- Exclude Restaurant
+
+### قواعد لا تتغير
+- التصنيف الأساسي يظل كما هو ولا يتحول إلى تصنيف يدوي.
+- Limit System يبقى كما هو.
+- Pricing Engine يبقى كما هو: `Average Price × Margin%`.
+- لا يتم تعديل أي بند آخر في الخوارزمية الحالية بسبب هذا الملحق.
+
 ## Owners
 | Role | Responsibility |
 |---|---|

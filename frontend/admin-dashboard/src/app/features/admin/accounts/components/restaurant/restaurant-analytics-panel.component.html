@@ -1,0 +1,198 @@
+@if (restaurant(); as item) {
+<div class="flex flex-col gap-4">
+  <!-- Financial Metrics Grid -->
+  <div class="grid gap-3 sm:grid-cols-3">
+    <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          {{ locale.isRtl() ? 'إجمالي الإيرادات (آخر 4 أسابيع)' : 'Gross Revenue (Last 4 Weeks)' }}
+        </span>
+        <span class="text-xl font-extrabold text-slate-900">{{ grossLabel() }}</span>
+        <span class="text-[9px] font-bold text-slate-400">
+          {{ locale.isRtl() ? 'متوسط يومي:' : 'Daily avg:' }}
+          ~{{ analytics().avgDailyMeals }}
+          {{ locale.isRtl() ? 'وجبة' : 'meals' }}
+        </span>
+      </div>
+      <div class="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+        <ng-icon name="lucideDollarSign" size="20" />
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          {{ locale.isRtl() ? 'عمولة المنصة' : 'Platform Commission' }}
+          ({{ commissionRateLabel() }})
+        </span>
+        <span class="text-xl font-extrabold text-amber-600">{{ commissionLabel() }}</span>
+      </div>
+      <div class="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+        <ng-icon name="lucideTrendingUp" size="20" />
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          {{ locale.isRtl() ? 'صافي مستحقات التسوية' : 'Net Settlement Amount' }}
+        </span>
+        <span class="text-xl font-extrabold text-blue-600">{{ netLabel() }}</span>
+        <span class="text-[9px] font-bold text-emerald-600">
+          {{ locale.isRtl() ? 'استهلاك السعة:' : 'Capacity:' }}
+          {{ analytics().capacityUtilization }}%
+        </span>
+      </div>
+      <div class="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+        <ng-icon name="lucideCheck" size="20" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 1 -->
+  <div class="grid gap-4 lg:grid-cols-2">
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h3 class="mb-1 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+        <ng-icon name="lucideTrendingUp" size="16" class="text-emerald-600" />
+        <span>{{ locale.isRtl() ? 'اتجاه الإيرادات الأسبوعية' : 'Weekly Revenue Trend' }}</span>
+      </h3>
+      <p class="mb-3 text-[10px] font-bold text-slate-400">
+        {{ locale.isRtl() ? 'بناءً على الوجبات الموزعة فعلياً (أيام الخدمة فقط)' : 'Based on actually delivered meals (service days only)' }}
+      </p>
+      @let rev = revenueChart();
+      <mm-apex-chart
+        [series]="rev.series"
+        [chart]="rev.chart"
+        [xaxis]="rev.xaxis"
+        [yaxis]="rev.yaxis"
+        [stroke]="rev.stroke"
+        [fill]="rev.fill"
+        [grid]="rev.grid"
+        [legend]="rev.legend"
+        [tooltip]="rev.tooltip"
+        [markers]="rev.markers"
+        [colors]="rev.colors"
+      />
+    </div>
+
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h3 class="mb-1 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+        <ng-icon name="lucideUtensils" size="16" class="text-emerald-600" />
+        <span>{{ locale.isRtl() ? 'الوجبات الموزعة يومياً' : 'Daily Meals Delivered' }}</span>
+      </h3>
+      <p class="mb-3 text-[10px] font-bold text-slate-400">
+        {{ locale.isRtl() ? 'آخر أسبوع تشغيلي — السعة القصوى:' : 'Last service week — max capacity:' }}
+        {{ item.dailyCapacity }}
+      </p>
+      @let meals = mealsChart();
+      <mm-apex-chart
+        [series]="meals.series"
+        [chart]="meals.chart"
+        [xaxis]="meals.xaxis"
+        [yaxis]="meals.yaxis"
+        [grid]="meals.grid"
+        [legend]="meals.legend"
+        [tooltip]="meals.tooltip"
+        [plotOptions]="meals.plotOptions"
+        [dataLabels]="meals.dataLabels"
+        [colors]="meals.colors"
+      />
+    </div>
+  </div>
+
+  <!-- Charts Row 2 + KPIs -->
+  <div class="grid gap-4 lg:grid-cols-3">
+    <div class="flex flex-col gap-4 lg:col-span-2">
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h3 class="mb-1 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+          <ng-icon name="lucideActivity" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'مؤشرات الالتزام التشغيلي (SLA)' : 'Operational SLA Compliance' }}</span>
+        </h3>
+        <p class="mb-3 text-[10px] font-bold text-slate-400">
+          {{ locale.isRtl() ? 'تأكيد 24 ساعة وتجهيز الوجبات في الوقت المحدد' : '24h confirmation and on-time meal preparation' }}
+        </p>
+        @let sla = slaChart();
+        <mm-apex-chart
+          [series]="sla.series"
+          [chart]="sla.chart"
+          [xaxis]="sla.xaxis"
+          [yaxis]="sla.yaxis"
+          [stroke]="sla.stroke"
+          [grid]="sla.grid"
+          [legend]="sla.legend"
+          [tooltip]="sla.tooltip"
+          [markers]="sla.markers"
+          [colors]="sla.colors"
+        />
+      </div>
+
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h3 class="mb-4 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+          <ng-icon name="lucideTrendingUp" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'مؤشرات الكفاءة التشغيلية والالتزام' : 'Operational Efficiency & SLA KPIs' }}</span>
+        </h3>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="flex flex-col gap-2 rounded-xl border border-slate-100 p-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500">{{ locale.isRtl() ? 'تأكيد الطلبات خلال 24 ساعة' : '24h Order Confirmation Rate' }}</span>
+              <span class="text-xs font-extrabold text-emerald-600">{{ confirmRate() }}%</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+              <div class="h-full rounded-full bg-emerald-500" [style.width.%]="confirmRate()"></div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 rounded-xl border border-slate-100 p-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500">{{ locale.isRtl() ? 'الالتزام بمواعيد تجهيز الوجبات' : 'On-Time Meal Prep Rate' }}</span>
+              <span class="text-xs font-extrabold text-emerald-600">{{ prepRate() }}%</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+              <div class="h-full rounded-full bg-emerald-500" [style.width.%]="prepRate()"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h3 class="mb-1 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+          <ng-icon name="lucideDollarSign" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'توزيع التسوية المالية' : 'Settlement Breakdown' }}</span>
+        </h3>
+        <p class="mb-3 text-[10px] font-bold text-slate-400">
+          {{ locale.isRtl() ? 'صافي المطعم مقابل عمولة المنصة' : 'Restaurant net vs platform commission' }}
+        </p>
+        @let settlement = settlementChart();
+        <mm-apex-chart
+          [series]="settlement.series"
+          [chart]="settlement.chart"
+          [labels]="settlement.labels"
+          [legend]="settlement.legend"
+          [tooltip]="settlement.tooltip"
+          [plotOptions]="settlement.plotOptions"
+          [colors]="settlement.colors"
+        />
+      </div>
+
+      <div class="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm ring-1 ring-emerald-500/10">
+        <h3 class="mb-3 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+          <ng-icon name="lucideShieldCheck" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'محرك حماية الأرباح الذكي' : 'Pricing Engine Guardrails' }}</span>
+        </h3>
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-1.5 rounded-xl border border-emerald-100 bg-emerald-50/50 p-2.5 text-xs font-extrabold text-emerald-700">
+            <ng-icon name="lucideCheck" size="14" />
+            <span>{{ locale.isRtl() ? 'نظام الحماية نشط ولا توجد ثغرات' : 'Guardrails active, no anomalies' }}</span>
+          </div>
+          <p class="text-[10px] font-bold leading-relaxed text-slate-400">
+            {{ locale.isRtl() ? 'يقوم محرك حماية الأرباح بمراقبة فوارق الأسعار بين فئات المطاعم (Basic / Platinum / Elite).' : 'The pricing guardrail monitors tier variances (Basic / Platinum / Elite).' }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

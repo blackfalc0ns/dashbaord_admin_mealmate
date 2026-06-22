@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronRight, lucideLayoutDashboard } from '@ng-icons/lucide';
 
@@ -7,7 +8,7 @@ import { BreadcrumbItem } from '@/shared/models/breadcrumb-item.model';
 @Component({
   selector: 'mm-breadcrumb',
   standalone: true,
-  imports: [NgIcon],
+  imports: [NgIcon, RouterLink],
   templateUrl: './breadcrumb.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [

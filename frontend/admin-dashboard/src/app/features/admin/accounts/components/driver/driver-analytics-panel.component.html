@@ -1,0 +1,217 @@
+@if (driver(); as item) {
+<div class="flex flex-col gap-4">
+  <!-- Affiliation notice: drivers are paid by restaurant, not MealMate -->
+  <div class="rounded-2xl border border-blue-100 bg-blue-50/40 p-4 shadow-sm ring-1 ring-blue-500/10">
+    <div class="flex flex-wrap items-start gap-3">
+      <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+        <ng-icon name="lucideBuilding" size="18" />
+      </div>
+      <div class="flex min-w-0 flex-col gap-1">
+        <span class="text-xs font-extrabold text-slate-800">
+          {{ locale.isRtl() ? 'سائق تابع للمطعم — ليس موظفاً على المنصة' : 'Restaurant-affiliated driver — not a platform employee' }}
+        </span>
+        <p class="text-[10px] font-bold leading-relaxed text-slate-500">
+          {{ locale.isRtl()
+            ? 'الرواتب والمستحقات المالية يديرها المطعم التابع (' + (item.restaurantNameAr ?? '') + '). تعرض MealMate هنا مؤشرات التشغيل والأداء فقط.'
+            : 'Compensation is managed by the affiliated restaurant (' + (item.restaurantNameEn ?? '') + '). MealMate shows operational performance metrics only.' }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Operational Metrics Grid -->
+  <div class="grid gap-3 sm:grid-cols-3">
+    <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          {{ locale.isRtl() ? 'إجمالي التوصيلات (آخر 4 أسابيع)' : 'Total Deliveries (Last 4 Weeks)' }}
+        </span>
+        <span class="text-xl font-extrabold text-slate-900">
+          {{ analytics().totalDeliveries }}
+          {{ locale.isRtl() ? 'طلب' : 'orders' }}
+        </span>
+        <span class="text-[9px] font-bold text-slate-400">
+          {{ locale.isRtl() ? 'متوسط يومي:' : 'Daily avg:' }}
+          ~{{ analytics().avgDailyDeliveries }}
+        </span>
+      </div>
+      <div class="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+        <ng-icon name="lucideTruck" size="20" />
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          {{ locale.isRtl() ? 'معدل نجاح التوصيل' : 'Delivery Success Rate' }}
+        </span>
+        <span class="text-xl font-extrabold text-emerald-600">{{ analytics().successRate }}%</span>
+      </div>
+      <div class="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+        <ng-icon name="lucideCheck" size="20" />
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          {{ locale.isRtl() ? 'الالتزام بمسح الباركود' : 'Barcode Scan Compliance' }}
+        </span>
+        <span class="text-xl font-extrabold text-slate-900">{{ analytics().barcodeScanRate }}%</span>
+        <span class="text-[9px] font-bold text-emerald-600">
+          {{ locale.isRtl() ? 'إلزامي عند الاستلام والتسليم' : 'Required at pickup & delivery' }}
+        </span>
+      </div>
+      <div class="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+        <ng-icon name="lucideQrCode" size="20" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 1 -->
+  <div class="grid gap-4 lg:grid-cols-2">
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h3 class="mb-1 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+        <ng-icon name="lucideTruck" size="16" class="text-emerald-600" />
+        <span>{{ locale.isRtl() ? 'طلبات التوصيل الأسبوعية' : 'Weekly Deliveries' }}</span>
+      </h3>
+      <p class="mb-3 text-[10px] font-bold text-slate-400">
+        {{ locale.isRtl() ? 'تابع لمطعم:' : 'Affiliated restaurant:' }}
+        {{ locale.isRtl() ? item.restaurantNameAr : item.restaurantNameEn }}
+      </p>
+      @let deliveries = deliveriesChart();
+      <mm-apex-chart
+        [series]="deliveries.series"
+        [chart]="deliveries.chart"
+        [xaxis]="deliveries.xaxis"
+        [yaxis]="deliveries.yaxis"
+        [grid]="deliveries.grid"
+        [legend]="deliveries.legend"
+        [tooltip]="deliveries.tooltip"
+        [plotOptions]="deliveries.plotOptions"
+        [dataLabels]="deliveries.dataLabels"
+        [colors]="deliveries.colors"
+      />
+    </div>
+
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h3 class="mb-1 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+        <ng-icon name="lucideActivity" size="16" class="text-emerald-600" />
+        <span>{{ locale.isRtl() ? 'التوصيلات اليومية' : 'Daily Delivery Volume' }}</span>
+      </h3>
+      <p class="mb-3 text-[10px] font-bold text-slate-400">
+        {{ locale.isRtl() ? 'المنطقة:' : 'Region:' }}
+        {{ locale.isRtl() ? item.regionAr : item.regionEn }}
+      </p>
+      @let daily = dailyDeliveriesChart();
+      <mm-apex-chart
+        [series]="daily.series"
+        [chart]="daily.chart"
+        [xaxis]="daily.xaxis"
+        [yaxis]="daily.yaxis"
+        [grid]="daily.grid"
+        [legend]="daily.legend"
+        [tooltip]="daily.tooltip"
+        [plotOptions]="daily.plotOptions"
+        [dataLabels]="daily.dataLabels"
+        [colors]="daily.colors"
+      />
+    </div>
+  </div>
+
+  <!-- Charts Row 2 -->
+  <div class="grid gap-4 lg:grid-cols-3">
+    <div class="flex flex-col gap-4 lg:col-span-2">
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h3 class="mb-1 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+          <ng-icon name="lucideClock" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'معدل التوصيل في الوقت المحدد' : 'On-Time Delivery Rate' }}</span>
+        </h3>
+        <p class="mb-3 text-[10px] font-bold text-slate-400">
+          {{ locale.isRtl() ? 'الهدف: أعلى من 92%' : 'Target: above 92%' }}
+        </p>
+        @let onTime = onTimeChart();
+        <mm-apex-chart
+          [series]="onTime.series"
+          [chart]="onTime.chart"
+          [xaxis]="onTime.xaxis"
+          [yaxis]="onTime.yaxis"
+          [stroke]="onTime.stroke"
+          [grid]="onTime.grid"
+          [legend]="onTime.legend"
+          [tooltip]="onTime.tooltip"
+          [markers]="onTime.markers"
+          [colors]="onTime.colors"
+        />
+      </div>
+
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h3 class="mb-4 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+          <ng-icon name="lucideTrendingUp" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'مؤشرات الكفاءة والالتزام بالتوصيل' : 'Delivery Performance & Compliance KPIs' }}</span>
+        </h3>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="flex flex-col gap-2 rounded-xl border border-slate-100 p-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500">{{ locale.isRtl() ? 'معدل نجاح مسح الباركود' : 'Barcode Scan Success Rate' }}</span>
+              <span class="text-xs font-extrabold text-emerald-600">{{ analytics().barcodeScanRate }}%</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+              <div class="h-full rounded-full bg-emerald-500" [style.width.%]="analytics().barcodeScanRate"></div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 rounded-xl border border-slate-100 p-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500">{{ locale.isRtl() ? 'التوصيل في الوقت' : 'On-Time Delivery' }}</span>
+              <span class="text-xs font-extrabold text-emerald-600">{{ onTimeRate() }}%</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+              <div class="h-full rounded-full bg-emerald-500" [style.width.%]="onTimeRate()"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h3 class="mb-1 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+          <ng-icon name="lucideTruck" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'نتائج التوصيل' : 'Delivery Outcomes' }}</span>
+        </h3>
+        <p class="mb-3 text-[10px] font-bold text-slate-400">
+          {{ locale.isRtl() ? 'آخر 4 أسابيع — نسب مئوية' : 'Last 4 weeks — percentage share' }}
+        </p>
+        @let outcomes = outcomesChart();
+        <mm-apex-chart
+          [series]="outcomes.series"
+          [chart]="outcomes.chart"
+          [labels]="outcomes.labels"
+          [legend]="outcomes.legend"
+          [tooltip]="outcomes.tooltip"
+          [plotOptions]="outcomes.plotOptions"
+          [colors]="outcomes.colors"
+        />
+      </div>
+
+      <div class="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm ring-1 ring-emerald-500/10">
+        <h3 class="mb-3 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+          <ng-icon name="lucideShieldCheck" size="16" class="text-emerald-600" />
+          <span>{{ locale.isRtl() ? 'خصوصية بيانات العميل' : 'Customer Data Privacy' }}</span>
+        </h3>
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-1.5 rounded-xl border border-emerald-100 bg-emerald-50/50 p-2.5 text-xs font-extrabold text-emerald-700">
+            <ng-icon name="lucideCheck" size="14" />
+            <span>{{ locale.isRtl() ? 'نظام إخفاء الأرقام والبيانات نشط' : 'Number masking system active' }}</span>
+          </div>
+          <p class="text-[10px] font-bold leading-relaxed text-slate-400">
+            {{ locale.isRtl() ? 'لا يرى السائق رقم هاتف العميل الحقيقي إلا ضمن نطاق 3 كم.' : 'Driver cannot see real customer phone except within 3 km radius.' }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

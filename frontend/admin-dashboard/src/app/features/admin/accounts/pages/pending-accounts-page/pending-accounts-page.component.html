@@ -1,0 +1,320 @@
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
+  <div class="flex w-full flex-col gap-4">
+
+    <!-- ═══ KPI Cards Grid ═══ -->
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- KPI 1: Total Pending Restaurants -->
+      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-slate-500">{{ copy().pendingRestaurants }}</span>
+            <span class="text-2xl font-extrabold text-slate-900">{{ kpis().restaurants }}</span>
+          </div>
+          <div class="flex size-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600 ring-1 ring-amber-100">
+            <ng-icon name="lucideUser" size="20" />
+          </div>
+        </div>
+        <div class="mt-2 text-[10px] text-slate-400">
+          {{ copy().awaitingLicenseCheck }}
+        </div>
+      </div>
+
+      <!-- KPI 2: Total Pending Drivers -->
+      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-slate-500">{{ copy().pendingDrivers }}</span>
+            <span class="text-2xl font-extrabold text-slate-900">{{ kpis().drivers }}</span>
+          </div>
+          <div class="flex size-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600 ring-1 ring-blue-100">
+            <ng-icon name="lucideCar" size="20" />
+          </div>
+        </div>
+        <div class="mt-2 text-[10px] text-slate-400">
+          {{ copy().awaitingDriverLicenseCheck }}
+        </div>
+      </div>
+
+      <!-- KPI 3: Ready to Approve -->
+      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-slate-500">{{ copy().readyToApprove }}</span>
+            <span class="text-2xl font-extrabold text-emerald-600">{{ kpis().ready }}</span>
+          </div>
+          <div class="flex size-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
+            <ng-icon name="lucideShieldCheck" size="20" />
+          </div>
+        </div>
+        <div class="mt-2 text-[10px] text-slate-400">
+          {{ copy().readyToApproveDesc }}
+        </div>
+      </div>
+
+      <!-- KPI 4: Missing Documents -->
+      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-slate-500">{{ copy().missingDocuments }}</span>
+            <span class="text-2xl font-extrabold text-red-600">{{ kpis().missing }}</span>
+          </div>
+          <div class="flex size-10 items-center justify-center rounded-lg bg-red-50 text-red-600 ring-1 ring-red-100">
+            <ng-icon name="lucideShieldAlert" size="20" />
+          </div>
+        </div>
+        <div class="mt-2 text-[10px] text-slate-400">
+          {{ copy().missingDocumentsDesc }}
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Filters & Search Card (Separate from Table) ═══ -->
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Search Input (Compact) -->
+        <div class="relative w-full sm:max-w-xs">
+          <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+            <ng-icon name="lucideSearch" size="16" />
+          </span>
+          <input
+            type="text"
+            [placeholder]="copy().searchPlaceholder"
+            class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-xs transition-all focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            (input)="onSearch($event)"
+          />
+        </div>
+
+        <!-- Filter Buttons (Chips) -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Type Filter -->
+          <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="activeTypeFilter() === 'all'"
+              [class.text-slate-900]="activeTypeFilter() === 'all'"
+              [class.shadow-sm]="activeTypeFilter() === 'all'"
+              [class.text-slate-500]="activeTypeFilter() !== 'all'"
+              (click)="onTypeFilter('all')"
+            >
+              {{ copy().all }}
+            </button>
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="activeTypeFilter() === 'restaurant'"
+              [class.text-slate-900]="activeTypeFilter() === 'restaurant'"
+              [class.shadow-sm]="activeTypeFilter() === 'restaurant'"
+              [class.text-slate-500]="activeTypeFilter() !== 'restaurant'"
+              (click)="onTypeFilter('restaurant')"
+            >
+              {{ copy().restaurants }}
+            </button>
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="activeTypeFilter() === 'driver'"
+              [class.text-slate-900]="activeTypeFilter() === 'driver'"
+              [class.shadow-sm]="activeTypeFilter() === 'driver'"
+              [class.text-slate-500]="activeTypeFilter() !== 'driver'"
+              (click)="onTypeFilter('driver')"
+            >
+              {{ copy().drivers }}
+            </button>
+          </div>
+
+          <!-- Status Filter -->
+          <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="activeStatusFilter() === 'all'"
+              [class.text-slate-900]="activeStatusFilter() === 'all'"
+              [class.shadow-sm]="activeStatusFilter() === 'all'"
+              [class.text-slate-500]="activeStatusFilter() !== 'all'"
+              (click)="onStatusFilter('all')"
+            >
+              {{ copy().allStatuses }}
+            </button>
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="activeStatusFilter() === 'ready'"
+              [class.text-slate-900]="activeStatusFilter() === 'ready'"
+              [class.shadow-sm]="activeStatusFilter() === 'ready'"
+              [class.text-slate-500]="activeStatusFilter() !== 'ready'"
+              (click)="onStatusFilter('ready')"
+            >
+              {{ copy().ready }}
+            </button>
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="activeStatusFilter() === 'review'"
+              [class.text-slate-900]="activeStatusFilter() === 'review'"
+              [class.shadow-sm]="activeStatusFilter() === 'review'"
+              [class.text-slate-500]="activeStatusFilter() !== 'review'"
+              (click)="onStatusFilter('review')"
+            >
+              {{ copy().review }}
+            </button>
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="activeStatusFilter() === 'missing'"
+              [class.text-slate-900]="activeStatusFilter() === 'missing'"
+              [class.shadow-sm]="activeStatusFilter() === 'missing'"
+              [class.text-slate-500]="activeStatusFilter() !== 'missing'"
+              (click)="onStatusFilter('missing')"
+            >
+              {{ copy().missing }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Professional Data Table Card ═══ -->
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-start text-xs">
+          <thead>
+            <tr class="border-b border-slate-100 bg-slate-50/75 text-slate-500 font-bold">
+              <th class="px-4 py-3 text-start">{{ copy().nameAndInfo }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().type }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().submittedAt }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().verificationStatus }}</th>
+              <th class="px-4 py-3 text-end">{{ copy().actions }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (item of paginatedAccounts(); track item.id) {
+              <tr class="hover:bg-slate-50/50 transition-colors">
+                <!-- Name & Info -->
+                <td class="px-4 py-3">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="font-extrabold text-slate-900 text-sm">{{ t(item.nameAr, item.nameEn) }}</span>
+                    <span class="text-slate-400 text-[10px]">{{ item.email }}</span>
+                  </div>
+                </td>
+
+                <!-- Type -->
+                <td class="px-4 py-3">
+                  @if (item.type === 'restaurant') {
+                    <span class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 ring-1 ring-amber-600/10">
+                      <ng-icon name="lucideUser" size="10" />
+                      {{ copy().restaurant }}
+                    </span>
+                  } @else {
+                    <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 ring-1 ring-blue-600/10">
+                      <ng-icon name="lucideCar" size="10" />
+                      {{ copy().driver }}
+                    </span>
+                  }
+                </td>
+
+                <!-- Submitted At -->
+                <td class="px-4 py-3 text-slate-500 font-medium">
+                  {{ t(item.submittedAtAr, item.submittedAtEn) }}
+                </td>
+
+                <!-- Verification Status -->
+                <td class="px-4 py-3">
+                  <span
+                    class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1"
+                    [ngClass]="{
+                      'bg-emerald-50 text-emerald-700 ring-emerald-600/20': item.statusTone === 'success',
+                      'bg-amber-50 text-amber-700 ring-amber-600/20': item.statusTone === 'warning',
+                      'bg-red-50 text-red-700 ring-red-600/20': item.statusTone === 'danger'
+                    }"
+                  >
+                    <span class="size-1.5 rounded-full"
+                      [class.bg-emerald-500]="item.statusTone === 'success'"
+                      [class.bg-amber-500]="item.statusTone === 'warning'"
+                      [class.bg-red-500]="item.statusTone === 'danger'"
+                    ></span>
+                    {{ t(item.statusAr, item.statusEn) }}
+                  </span>
+                </td>
+
+                <!-- Actions -->
+                <td class="px-4 py-3 text-end">
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    (click)="openDetails(item)"
+                  >
+                    <span>{{ copy().reviewDetails }}</span>
+                    <ng-icon name="lucideChevronRight" size="12" class="rtl:rotate-180" />
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="px-4 py-12 text-center">
+                  <div class="flex flex-col items-center justify-center gap-2">
+                    <div class="flex size-12 items-center justify-center rounded-full bg-slate-50 text-slate-400">
+                      <ng-icon name="lucideSlidersHorizontal" size="24" />
+                    </div>
+                    <span class="text-sm font-bold text-slate-500">{{ copy().noPendingRequests }}</span>
+                    <span class="text-xs text-slate-400">{{ copy().adjustSearch }}</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      @if (totalPages() > 1) {
+        <div class="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 px-4 py-3 text-xs">
+          <span class="font-medium text-slate-500">
+            {{ copy().showingPage }} {{ currentPage() }} {{ copy().of }} {{ totalPages() }}
+          </span>
+
+          <div class="flex items-center gap-1">
+            <button
+              type="button"
+              class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 disabled:pointer-events-none disabled:opacity-50"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(1)"
+            >
+              <ng-icon name="lucideChevronsLeft" size="14" class="rtl:rotate-180" />
+            </button>
+            <button
+              type="button"
+              class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 disabled:pointer-events-none disabled:opacity-50"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(currentPage() - 1)"
+            >
+              <ng-icon name="lucideChevronLeft" size="14" class="rtl:rotate-180" />
+            </button>
+
+            <span class="inline-flex h-7 items-center justify-center rounded-lg bg-emerald-50 px-3 font-bold text-emerald-700 ring-1 ring-emerald-600/10">
+              {{ currentPage() }}
+            </span>
+
+            <button
+              type="button"
+              class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 disabled:pointer-events-none disabled:opacity-50"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(currentPage() + 1)"
+            >
+              <ng-icon name="lucideChevronRight" size="14" class="rtl:rotate-180" />
+            </button>
+            <button
+              type="button"
+              class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 disabled:pointer-events-none disabled:opacity-50"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(totalPages())"
+            >
+              <ng-icon name="lucideChevronsRight" size="14" class="rtl:rotate-180" />
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+  </div>
+</section>

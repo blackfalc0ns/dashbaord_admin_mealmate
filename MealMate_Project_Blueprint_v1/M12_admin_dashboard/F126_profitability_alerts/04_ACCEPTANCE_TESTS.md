@@ -9,6 +9,8 @@
 6. التحديث المتزامن لا يسبب فقدان بيانات.
 7. كل انتقال حالة غير مسموح يتم رفضه.
 8. الواجهة تعرض Loading/Empty/Error/Permission Denied.
+9. يظهر تنبيه ربحية فقط عندما يكون `Restaurant Price > Mean + 1 SD` و`Expected Profit < 0.500 KD`.
+10. لا يقوم التنبيه بتعديل التصنيف أو اللمت أو سعر العميل تلقائيًا.
 
 ## Given / When / Then
 ### Happy Path
@@ -40,3 +42,25 @@ Then يرجع النظام 409 conflict
 Given عملية حساسة تمت بنجاح  
 When يراجع الأدمن AuditLog  
 Then يجد actor/action/entity/before/after/reason/correlationId
+
+### Restaurant Outlier Profitability Flag
+Given مطعم سعره اليومي أعلى من `Mean + 1 SD`  
+And `Expected Profit = Customer Daily Price - (Restaurant Daily Price × (1 - Commission))` أقل من `0.500 KD`  
+When يعمل النظام فحص تنبيهات الربحية  
+Then يتم وضع علامة مراجعة على المطعم
+
+### No Flag For Profitable Outlier
+Given مطعم سعره اليومي أعلى من `Mean + 1 SD`  
+And `Expected Profit` يساوي أو يزيد عن `0.500 KD`  
+When يعمل النظام فحص تنبيهات الربحية  
+Then لا يتم إنشاء تنبيه ربحية
+
+### Admin Resolution Options
+Given مطعم عليه تنبيه ربحية  
+When يراجعه الأدمن  
+Then يسمح النظام فقط بالإجراءات `Keep Restaurant` أو `Move To Higher Classification` أو `Exclude Restaurant` مع سبب إلزامي
+
+### Pricing And Limit Not Mutated
+Given تم إنشاء تنبيه ربحية لمطعم  
+When يحفظ الأدمن قرار المراجعة  
+Then لا يتم تعديل `Pricing Engine` أو `Limit System` تلقائيًا بسبب التنبيه

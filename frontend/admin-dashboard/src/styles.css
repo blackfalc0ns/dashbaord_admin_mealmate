@@ -316,7 +316,7 @@
   }
 
   .mm-sb--collapsed .mm-sb-header__layer--rail {
-    @apply relative top-0 opacity-100;
+    @apply relative top-0 left-auto right-auto opacity-100;
     pointer-events: auto;
   }
 
@@ -2178,17 +2178,20 @@
   }
 
   .mm-overview-chart-card--analytics .mm-overview-chart-card__body {
+    height: 13.75rem;
     min-height: 13.75rem;
   }
 
   .mm-overview-chart-card--analytics .mm-overview-chart-card__body apx-chart,
   .mm-overview-chart-card--analytics .mm-overview-chart-card__body > * {
     width: 100%;
+    height: 13.75rem;
     min-height: 13.75rem;
   }
 
   .mm-overview-chart-card--analytics.mm-overview-chart-card--full
     .mm-overview-chart-card__body {
+    height: 15rem;
     min-height: 15rem;
   }
 
@@ -2196,6 +2199,8 @@
     .mm-overview-chart-card__body apx-chart,
   .mm-overview-chart-card--analytics.mm-overview-chart-card--full
     .mm-overview-chart-card__body > * {
+    width: 100%;
+    height: 15rem;
     min-height: 15rem;
   }
 

@@ -1,0 +1,706 @@
+@if (account(); as item) {
+  <section class="flex flex-col gap-4" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+
+    <!-- ═══ Registration Progress Timeline ═══ -->
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div class="flex flex-col gap-1">
+          <h3 class="text-sm font-extrabold text-slate-900">
+            {{ locale.isRtl() ? 'مراحل مراجعة واعتماد الحساب' : 'Account Review & Approval Stages' }}
+          </h3>
+          <p class="text-[10px] font-bold text-slate-400">
+            {{ locale.isRtl() ? 'تتبع التقدم التلقائي واليدوي للطلب الحالي' : 'Track automated and manual progress of the current request' }}
+          </p>
+        </div>
+        
+        <!-- Interactive Status Badge -->
+        <span
+          class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ring-1 self-start md:self-center"
+          [ngClass]="{
+            'bg-emerald-50 text-emerald-700 ring-emerald-600/20': item.statusTone === 'success',
+            'bg-amber-50 text-amber-700 ring-amber-600/20': item.statusTone === 'warning',
+            'bg-red-50 text-red-700 ring-red-600/20': item.statusTone === 'danger'
+          }"
+        >
+          <span class="relative flex size-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
+              [class.bg-emerald-400]="item.statusTone === 'success'"
+              [class.bg-amber-400]="item.statusTone === 'warning'"
+              [class.bg-red-400]="item.statusTone === 'danger'"
+            ></span>
+            <span class="relative inline-flex size-2 rounded-full"
+              [class.bg-emerald-500]="item.statusTone === 'success'"
+              [class.bg-amber-500]="item.statusTone === 'warning'"
+              [class.bg-red-500]="item.statusTone === 'danger'"
+            ></span>
+          </span>
+          {{ t(item.statusAr, item.statusEn) }}
+        </span>
+      </div>
+
+      <!-- Timeline Steps -->
+      <div class="mt-6 grid gap-4 sm:grid-cols-3">
+        <!-- Step 1: Submission -->
+        <div class="relative flex flex-col gap-1.5 rounded-xl border border-emerald-100 bg-emerald-50/10 p-3">
+          <div class="flex items-center gap-2">
+            <span class="flex size-5 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white">✓</span>
+            <span class="text-xs font-extrabold text-emerald-800">{{ locale.isRtl() ? 'تقديم الطلب' : 'Form Submitted' }}</span>
+          </div>
+          <p class="text-[10px] font-bold text-slate-400">
+            {{ locale.isRtl() ? 'تم استلام البيانات بنجاح' : 'Data received successfully' }} • {{ t(item.submittedAtAr, item.submittedAtEn) }}
+          </p>
+        </div>
+
+        <!-- Step 2: Document Verification -->
+        <div class="relative flex flex-col gap-1.5 rounded-xl border p-3"
+          [ngClass]="{
+            'border-emerald-100 bg-emerald-50/10': item.statusTone === 'success',
+            'border-amber-100 bg-amber-50/10': item.statusTone === 'warning',
+            'border-red-100 bg-red-50/10': item.statusTone === 'danger'
+          }"
+        >
+          <div class="flex items-center gap-2">
+            @if (item.statusTone === 'success') {
+              <span class="flex size-5 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white">✓</span>
+            } @else {
+              <span class="flex size-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">2</span>
+            }
+            <span class="text-xs font-extrabold"
+              [ngClass]="{
+                'text-emerald-800': item.statusTone === 'success',
+                'text-amber-800': item.statusTone === 'warning',
+                'text-red-800': item.statusTone === 'danger'
+              }"
+            >
+              {{ locale.isRtl() ? 'التحقق من الوثائق' : 'Documents Verification' }}
+            </span>
+          </div>
+          <p class="text-[10px] font-bold text-slate-400">
+            @if (item.statusTone === 'success') {
+              {{ locale.isRtl() ? 'تم اعتماد جميع المستندات' : 'All documents verified' }}
+            } @else if (item.statusTone === 'danger') {
+              {{ locale.isRtl() ? 'توجد وثائق مفقودة أو مرفوضة' : 'Some documents are missing/rejected' }}
+            } @else {
+              {{ locale.isRtl() ? 'جاري فحص وتدقيق الوثائق' : 'Documents are being audited' }}
+            }
+          </p>
+        </div>
+
+        <!-- Step 3: Admin Activation -->
+        <div class="relative flex flex-col gap-1.5 rounded-xl border border-slate-100 bg-slate-50/30 p-3"
+          [class.border-emerald-100]="item.statusTone === 'success'"
+          [ngClass]="{ 'bg-emerald-50/5': item.statusTone === 'success' }"
+        >
+          <div class="flex items-center gap-2">
+            <span class="flex size-5 items-center justify-center rounded-full bg-slate-200 text-[10px] font-bold text-slate-500"
+              [class.bg-emerald-500]="item.statusTone === 'success'"
+              [class.text-white]="item.statusTone === 'success'"
+            >3</span>
+            <span class="text-xs font-extrabold text-slate-500" [class.text-emerald-800]="item.statusTone === 'success'">
+              {{ locale.isRtl() ? 'التفعيل النهائي' : 'Admin Activation' }}
+            </span>
+          </div>
+          <p class="text-[10px] font-bold text-slate-400">
+            {{ locale.isRtl() ? 'بانتظار موافقة المسؤول' : 'Awaiting admin approval' }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Main Content Grid ═══ -->
+    <div class="grid gap-4 lg:grid-cols-3">
+      
+      <!-- Left 2 Columns: Basic Info & Programs & Notes -->
+      <div class="flex flex-col gap-4 lg:col-span-2">
+        
+        <!-- Basic Info Card -->
+        <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+          <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+            <ng-icon name="lucideUser" size="16" class="text-emerald-600" />
+            <span>{{ copy().basicInformation }}</span>
+          </h2>
+          
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="flex items-start gap-3">
+              <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                <ng-icon name="lucideUser" size="16" />
+              </div>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().fullName }}</span>
+                <span class="text-sm font-bold text-slate-800">{{ t(item.nameAr, item.nameEn) }}</span>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                <ng-icon name="lucidePhone" size="16" />
+              </div>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().phoneNumber }}</span>
+                <span class="text-sm font-bold text-slate-800" dir="ltr">{{ item.phone }}</span>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                <ng-icon name="lucideMail" size="16" />
+              </div>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().emailAddress }}</span>
+                <span class="text-sm font-bold text-slate-800">{{ item.email }}</span>
+              </div>
+            </div>
+
+            <!-- Civil ID -->
+            @if (item.civilId) {
+              <div class="flex items-start gap-3">
+                <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                  <ng-icon name="lucideCreditCard" size="16" />
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'رقم البطاقة المدنية' : 'Civil ID Number' }}</span>
+                  <span class="text-sm font-bold text-slate-800">{{ item.civilId }}</span>
+                </div>
+              </div>
+            }
+
+            <!-- Nationality -->
+            @if (item.nationalityAr) {
+              <div class="flex items-start gap-3">
+                <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                  <ng-icon name="lucideGlobe" size="16" />
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'الجنسية' : 'Nationality' }}</span>
+                  <span class="text-sm font-bold text-slate-800">{{ t(item.nationalityAr, item.nationalityEn ?? '') }}</span>
+                </div>
+              </div>
+            }
+
+            <!-- Date of Birth -->
+            @if (item.dob) {
+              <div class="flex items-start gap-3">
+                <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                  <ng-icon name="lucideCalendar" size="16" />
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'تاريخ الميلاد' : 'Date of Birth' }}</span>
+                  <span class="text-sm font-bold text-slate-800">{{ item.dob }}</span>
+                </div>
+              </div>
+            }
+
+            @if (item.type === 'restaurant') {
+              <div class="flex items-start gap-3">
+                <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                  <ng-icon name="lucideMapPin" size="16" />
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().address }}</span>
+                  <span class="text-sm font-bold text-slate-800">{{ t(item.addressAr ?? '', item.addressEn ?? '') }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Vehicle & Logistics Details (For Drivers only) -->
+        @if (item.type === 'driver') {
+          <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+              <ng-icon name="lucideCar" size="16" class="text-emerald-600" />
+              <span>{{ locale.isRtl() ? 'بيانات المركبة واللوجستيات' : 'Vehicle & Logistics Details' }}</span>
+            </h2>
+            
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="flex items-start gap-3">
+                <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                  <ng-icon name="lucideCar" size="16" />
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'نوع وموديل المركبة' : 'Vehicle Type & Model' }}</span>
+                  <span class="text-sm font-bold text-slate-800">
+                    {{ t(item.vehicleTypeAr ?? '', item.vehicleTypeEn ?? '') }} @if (item.vehicleModelAr) { - {{ t(item.vehicleModelAr, item.vehicleModelEn ?? '') }} }
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                  <ng-icon name="lucideHash" size="16" />
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'رقم اللوحة المعدنية' : 'License Plate Number' }}</span>
+                  <span class="text-sm font-bold text-slate-800">{{ item.licensePlate }}</span>
+                </div>
+              </div>
+
+              @if (item.vehicleColorAr) {
+                <div class="flex items-start gap-3">
+                  <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                    <ng-icon name="lucideGlobe" size="16" />
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'لون المركبة' : 'Vehicle Color' }}</span>
+                    <span class="text-sm font-bold text-slate-800">{{ t(item.vehicleColorAr, item.vehicleColorEn ?? '') }}</span>
+                  </div>
+                </div>
+              }
+
+              @if (item.registrationExpiry) {
+                <div class="flex items-start gap-3">
+                  <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                    <ng-icon name="lucideCalendar" size="16" />
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'انتهاء دفتر السيارة' : 'Registration Expiry' }}</span>
+                    <span class="text-sm font-bold text-slate-800">{{ item.registrationExpiry }}</span>
+                  </div>
+                </div>
+              }
+
+              @if (item.restaurantNameAr) {
+                <div class="flex items-start gap-3 sm:col-span-2 border-t border-slate-50 pt-3 mt-1">
+                  <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
+                    <ng-icon name="lucideBuilding" size="16" />
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">{{ locale.isRtl() ? 'المطعم التابع له السائق' : 'Associated Restaurant Partner' }}</span>
+                    <span class="text-sm font-extrabold text-slate-800">
+                      {{ t(item.restaurantNameAr, item.restaurantNameEn ?? '') }} (ID: {{ item.restaurantId }})
+                    </span>
+                    <p class="text-[10px] font-bold text-slate-400">
+                      {{ locale.isRtl() ? 'هذا السائق مسجل للعمل حصرياً لتوصيل طلبات هذا المطعم الشريك.' : 'This driver is registered to deliver exclusively for this restaurant partner.' }}
+                    </p>
+                  </div>
+                </div>
+              }
+
+              @if (item.preferredRegionsAr && item.preferredRegionsAr.length) {
+                <div class="flex items-start gap-3 sm:col-span-2">
+                  <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                    <ng-icon name="lucideMapPin" size="16" />
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'مناطق التوصيل المفضلة' : 'Preferred Delivery Zones' }}</span>
+                    <div class="flex flex-wrap gap-1.5 mt-0.5">
+                      @for (zone of (locale.isRtl() ? item.preferredRegionsAr : item.preferredRegionsEn); track zone) {
+                        <span class="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">
+                          {{ zone }}
+                        </span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Bank Account Details Card -->
+        @if (item.bankIban) {
+          <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+              <ng-icon name="lucideCreditCard" size="16" class="text-emerald-600" />
+              <span>{{ locale.isRtl() ? 'بيانات الحساب البنكي والتحويلات' : 'Bank Account & Payout Details' }}</span>
+            </h2>
+            
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="flex items-start gap-3">
+                <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                  <ng-icon name="lucideBuilding" size="16" />
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'اسم البنك' : 'Bank Name' }}</span>
+                  <span class="text-sm font-bold text-slate-800">{{ t(item.bankNameAr ?? '', item.bankNameEn ?? '') }}</span>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                  <ng-icon name="lucideUser" size="16" />
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'اسم صاحب الحساب' : 'Account Holder Name' }}</span>
+                  <span class="text-sm font-bold text-slate-800">{{ item.bankAccountName }}</span>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 sm:col-span-2">
+                <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                  <ng-icon name="lucideCreditCard" size="16" />
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'رقم الآيبان الدولي (IBAN)' : 'IBAN Number' }}</span>
+                  <span class="text-sm font-mono font-bold text-slate-800 tracking-wide" dir="ltr">{{ item.bankIban }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Programs Requested (For Restaurants only) -->
+        @if (item.type === 'restaurant' && item.programsAr && item.programsAr.length) {
+          <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+              <ng-icon name="lucideBuilding" size="16" class="text-emerald-600" />
+              <span>{{ copy().requestedPrograms }}</span>
+            </h2>
+            <div class="flex flex-wrap gap-2">
+              @for (prog of (locale.isRtl() ? item.programsAr : item.programsEn); track prog) {
+                <span class="rounded-xl bg-emerald-50/50 px-3.5 py-1.5 text-xs font-bold text-emerald-700 ring-1 ring-emerald-600/10">
+                  {{ prog }}
+                </span>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Notes Card -->
+        <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+          <h2 class="mb-3 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+            <ng-icon name="lucideFileText" size="16" class="text-emerald-600" />
+            <span>{{ copy().reviewNotes }}</span>
+          </h2>
+          <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-4 text-xs font-medium text-slate-500 leading-relaxed">
+            {{ t(item.notesAr ?? '', item.notesEn ?? '') }}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Documents Verification & Security Checks -->
+      <div class="flex flex-col gap-4">
+        
+        <!-- Documents Card -->
+        <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+          <div class="mb-4 border-b border-slate-50 pb-2.5">
+            <h2 class="text-sm font-extrabold text-slate-900">
+              {{ copy().requiredDocuments }}
+            </h2>
+            <p class="text-[10px] font-bold text-slate-400 mt-1">
+              {{ locale.isRtl() ? 'اختر مستنداً لعرضه والتحقق منه في النافذة أدناه' : 'Select a document to preview and verify in the panel below' }}
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-2.5">
+            @for (doc of item.documents; track doc.id) {
+              <div
+                class="flex items-center justify-between rounded-xl border p-3 transition-all hover:bg-slate-50 cursor-pointer"
+                [class.border-emerald-500]="selectedDocId() === doc.id"
+                [ngClass]="{ 'bg-emerald-50/10': selectedDocId() === doc.id }"
+                [class.border-slate-100]="selectedDocId() !== doc.id"
+                (click)="selectedDocId.set(doc.id)"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-500"
+                    [class.bg-emerald-50]="doc.status === 'verified'"
+                    [class.text-emerald-600]="doc.status === 'verified'"
+                    [class.bg-amber-50]="doc.status === 'under_review'"
+                    [class.text-amber-600]="doc.status === 'under_review'"
+                    [class.bg-red-50]="doc.status === 'missing'"
+                    [class.text-red-600]="doc.status === 'missing'"
+                  >
+                    <ng-icon name="lucideFileText" size="16" />
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-xs font-bold text-slate-800 leading-tight">{{ t(doc.nameAr, doc.nameEn) }}</span>
+                    <span class="text-[9px] font-semibold text-slate-400">{{ locale.isRtl() ? 'اضغط للمعاينة' : 'Click to preview' }}</span>
+                  </div>
+                </div>
+
+                <span
+                  class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold ring-1"
+                  [ngClass]="{
+                    'bg-emerald-50 text-emerald-700 ring-emerald-600/20': doc.status === 'verified',
+                    'bg-amber-50 text-amber-700 ring-amber-600/20': doc.status === 'under_review',
+                    'bg-red-50 text-red-700 ring-red-600/20': doc.status === 'missing'
+                  }"
+                >
+                  @if (doc.status === 'verified') {
+                    <ng-icon name="lucideCheck" size="10" />
+                  } @else if (doc.status === 'under_review') {
+                    <ng-icon name="lucideClock" size="10" />
+                  } @else {
+                    <ng-icon name="lucideX" size="10" />
+                  }
+                  {{ doc.status === 'verified' ? copy().verified : doc.status === 'under_review' ? copy().underReview : copy().missing }}
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- ═══ Interactive Document Preview Window (نوافذ المعاينة) ═══ -->
+        @if (selectedDoc(); as doc) {
+          <div class="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm ring-1 ring-emerald-500/10">
+            <div class="mb-3 flex items-center justify-between border-b border-slate-50 pb-2">
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">{{ locale.isRtl() ? 'نافذة المعاينة والتحقق' : 'Preview & Verification Window' }}</span>
+                <h3 class="text-xs font-extrabold text-slate-800">{{ t(doc.nameAr, doc.nameEn) }}</h3>
+              </div>
+              <span class="rounded-lg bg-slate-50 px-2 py-1 text-[9px] font-bold text-slate-500">PDF / Image</span>
+            </div>
+
+            <!-- Mock Document Visual Representation -->
+            <div class="relative overflow-hidden rounded-xl border border-slate-100 bg-slate-50/50 p-4 shadow-inner min-h-[160px] flex flex-col justify-between">
+              <!-- Watermark/Background Glow -->
+              <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
+                <ng-icon name="lucideShieldCheck" size="120" />
+              </div>
+
+              <!-- Document Header -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="size-6 rounded-full bg-emerald-600/10 flex items-center justify-center text-emerald-600">
+                    <ng-icon name="lucideBuilding" size="12" />
+                  </div>
+                  <span class="text-[9px] font-bold text-slate-500">{{ locale.isRtl() ? 'دولة الكويت • وزارة الداخلية' : 'State of Kuwait • Ministry of Interior' }}</span>
+                </div>
+                <span class="text-[8px] font-mono text-slate-400">REF: {{ doc.id }}-{{ item.id }}</span>
+              </div>
+
+              <!-- Document Body Details -->
+              <div class="my-4 flex flex-col gap-1.5">
+                <div class="flex justify-between text-[10px] border-b border-slate-100/50 pb-1">
+                  <span class="font-bold text-slate-400">{{ locale.isRtl() ? 'الاسم المسجل:' : 'Registered Name:' }}</span>
+                  <span class="font-extrabold text-slate-700">{{ t(item.nameAr, item.nameEn) }}</span>
+                </div>
+                <div class="flex justify-between text-[10px] border-b border-slate-100/50 pb-1">
+                  <span class="font-bold text-slate-400">{{ locale.isRtl() ? 'رقم الهوية المدنية:' : 'Civil ID:' }}</span>
+                  <span class="font-mono font-bold text-slate-700">{{ item.civilId || '294061500123' }}</span>
+                </div>
+                @if (item.type === 'driver') {
+                  <div class="flex justify-between text-[10px]">
+                    <span class="font-bold text-slate-400">{{ locale.isRtl() ? 'رقم اللوحة:' : 'Plate Number:' }}</span>
+                    <span class="font-bold text-slate-700">{{ item.licensePlate }}</span>
+                  </div>
+                } @else {
+                  <div class="flex justify-between text-[10px]">
+                    <span class="font-bold text-slate-400">{{ locale.isRtl() ? 'البريد المسجل:' : 'Email Registered:' }}</span>
+                    <span class="font-bold text-slate-700">{{ item.email }}</span>
+                  </div>
+                }
+              </div>
+
+              <!-- Document Footer Action -->
+              <div class="flex items-center justify-between pt-2 border-t border-slate-100/80">
+                <span class="text-[8px] font-bold text-slate-400 flex items-center gap-1">
+                  <span class="size-1.5 rounded-full"
+                    [class.bg-emerald-500]="doc.status === 'verified'"
+                    [class.bg-amber-500]="doc.status === 'under_review'"
+                    [class.bg-red-500]="doc.status === 'missing'"
+                  ></span>
+                  {{ doc.status === 'verified' ? copy().verified : doc.status === 'under_review' ? copy().underReview : copy().missing }}
+                </span>
+                <button type="button" class="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-600 hover:text-emerald-700">
+                  <ng-icon name="lucideEye" size="10" />
+                  <span>{{ locale.isRtl() ? 'عرض المستند الأصلي' : 'View Original File' }}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Verification Action Buttons inside the panel -->
+            <div class="mt-4 grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                class="flex flex-col items-center justify-center gap-1 rounded-xl border border-slate-100 bg-slate-50 p-2 text-center transition-all hover:bg-slate-100"
+                [class.ring-1]="doc.status === 'under_review'"
+                [class.ring-amber-500]="doc.status === 'under_review'"
+                (click)="changeDocStatus(doc.id, 'under_review')"
+              >
+                <ng-icon name="lucideClock" size="14" class="text-amber-600" />
+                <span class="text-[9px] font-bold text-slate-600">{{ locale.isRtl() ? 'قيد المراجعة' : 'Under Review' }}</span>
+              </button>
+
+              <button
+                type="button"
+                class="flex flex-col items-center justify-center gap-1 rounded-xl border border-slate-100 bg-slate-50 p-2 text-center transition-all hover:bg-slate-100"
+                [class.ring-1]="doc.status === 'missing'"
+                [class.ring-red-500]="doc.status === 'missing'"
+                (click)="changeDocStatus(doc.id, 'missing')"
+              >
+                <ng-icon name="lucideX" size="14" class="text-red-600" />
+                <span class="text-[9px] font-bold text-slate-600">{{ locale.isRtl() ? 'مرفوض / ناقص' : 'Reject / Missing' }}</span>
+              </button>
+
+              <button
+                type="button"
+                class="flex flex-col items-center justify-center gap-1 rounded-xl border border-slate-100 bg-slate-50 p-2 text-center transition-all hover:bg-slate-100"
+                [class.ring-1]="doc.status === 'verified'"
+                [class.ring-emerald-500]="doc.status === 'verified'"
+                (click)="changeDocStatus(doc.id, 'verified')"
+              >
+                <ng-icon name="lucideCheck" size="14" class="text-emerald-600" />
+                <span class="text-[9px] font-bold text-slate-600">{{ locale.isRtl() ? 'اعتماد المستند' : 'Approve Doc' }}</span>
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Security & Background Checks Card (الفحص الأمني والتحري) -->
+        <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+          <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+            <ng-icon name="lucideShieldCheck" size="16" class="text-emerald-600" />
+            <span>{{ locale.isRtl() ? 'الفحص الأمني والتحقق الذكي' : 'Security & Background Checks' }}</span>
+          </h2>
+
+          <div class="flex flex-col gap-3">
+            <!-- Criminal Record Check -->
+            <div class="flex items-center justify-between rounded-xl border border-slate-50 bg-slate-50/30 p-3">
+              <div class="flex items-center gap-2.5">
+                <div class="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                  <ng-icon name="lucideShieldCheck" size="14" />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-[10px] font-bold text-slate-800 leading-tight">{{ locale.isRtl() ? 'الصحيفة الجنائية (لا حكم عليه)' : 'Criminal Record Check' }}</span>
+                  <span class="text-[8px] font-semibold text-slate-400">{{ locale.isRtl() ? 'وزارة الداخلية الكويتية' : 'Kuwait Ministry of Interior' }}</span>
+                </div>
+              </div>
+              <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold text-emerald-700 ring-1 ring-emerald-600/10">
+                {{ t(item.criminalRecordStatusAr ?? 'سليم', item.criminalRecordStatusEn ?? 'Passed') }}
+              </span>
+            </div>
+
+            <!-- Traffic Violations Check -->
+            <div class="flex items-center justify-between rounded-xl border border-slate-50 bg-slate-50/30 p-3">
+              <div class="flex items-center gap-2.5">
+                <div class="flex size-7 items-center justify-center rounded-lg"
+                  [class.bg-emerald-50]="!item.trafficViolationsEn?.includes('Unpaid')"
+                  [class.text-emerald-600]="!item.trafficViolationsEn?.includes('Unpaid')"
+                  [class.bg-amber-50]="item.trafficViolationsEn?.includes('Unpaid')"
+                  [class.text-amber-600]="item.trafficViolationsEn?.includes('Unpaid')"
+                >
+                  <ng-icon name="lucideCar" size="14" />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-[10px] font-bold text-slate-800 leading-tight">{{ locale.isRtl() ? 'مخالفات المرور النشطة' : 'Traffic Violations Check' }}</span>
+                  <span class="text-[8px] font-semibold text-slate-400">{{ locale.isRtl() ? 'بوابة المرور الإلكترونية' : 'General Traffic Dept Gateway' }}</span>
+                </div>
+              </div>
+              <span class="rounded-full px-2 py-0.5 text-[9px] font-bold ring-1"
+                [ngClass]="{
+                  'bg-emerald-50 text-emerald-700 ring-emerald-600/10': !item.trafficViolationsEn?.includes('Unpaid'),
+                  'bg-amber-50 text-amber-700 ring-amber-600/10': item.trafficViolationsEn?.includes('Unpaid')
+                }"
+              >
+                {{ t(item.trafficViolationsAr ?? 'لا يوجد', item.trafficViolationsEn ?? 'Clean') }}
+              </span>
+            </div>
+
+            <!-- PACI Match -->
+            <div class="flex items-center justify-between rounded-xl border border-slate-50 bg-slate-50/30 p-3">
+              <div class="flex items-center gap-2.5">
+                <div class="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                  <ng-icon name="lucideUser" size="14" />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-[10px] font-bold text-slate-800 leading-tight">{{ locale.isRtl() ? 'مطابقة الهوية المدنية' : 'PACI Identity Match' }}</span>
+                  <span class="text-[8px] font-semibold text-slate-400">{{ locale.isRtl() ? 'الهيئة العامة للمعلومات المدنية' : 'Public Authority for Civil Information' }}</span>
+                </div>
+              </div>
+              <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold text-emerald-700 ring-1 ring-emerald-600/10">
+                {{ t(item.paciMatchStatusAr ?? 'مطابق 100%', item.paciMatchStatusEn ?? '100% Match') }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ═══ Sticky Premium Action Control Panel ═══ -->
+    <div class="sticky bottom-4 z-40 flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-[0_-12px_40px_-15px_rgba(15,41,24,0.12),0_15px_30px_-10px_rgba(0,0,0,0.05)] backdrop-blur-md sm:flex-row sm:items-center sm:justify-between">
+      
+      <!-- Left Side: Context & Decision Status -->
+      <div class="flex items-center gap-3">
+        <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+          <ng-icon [name]="item.type === 'driver' ? 'lucideCar' : 'lucideBuilding'" size="18" />
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            {{ item.type === 'driver' ? (locale.isRtl() ? 'طلب تسجيل سائق' : 'Driver Registration') : (locale.isRtl() ? 'طلب تسجيل مطعم' : 'Restaurant Registration') }}
+          </span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-extrabold text-slate-800">{{ t(item.nameAr, item.nameEn) }}</span>
+            <span class="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-bold text-amber-700 ring-1 ring-amber-600/10">
+              <span class="relative flex size-1.5">
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+                <span class="relative inline-flex size-1.5 rounded-full bg-amber-500"></span>
+              </span>
+              {{ t(item.statusAr, item.statusEn) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side: Beautiful Interactive Decision Buttons -->
+      <div class="flex flex-wrap items-center gap-2.5 sm:justify-end">
+        <!-- Cancel / Back -->
+        <a
+          routerLink="/admin/accounts/pending"
+          class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-800"
+        >
+          {{ copy().cancel }}
+        </a>
+
+        <!-- Reject Request -->
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50/50 px-4 py-2.5 text-xs font-bold text-red-700 shadow-sm transition-all hover:bg-red-600 hover:text-white hover:border-red-600"
+          (click)="rejectAccount()"
+        >
+          <ng-icon name="lucideX" size="14" />
+          <span>{{ copy().rejectRequest }}</span>
+        </button>
+
+        <!-- Request More Docs -->
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-2.5 text-xs font-bold text-amber-700 shadow-sm transition-all hover:bg-amber-500 hover:text-white hover:border-amber-500"
+          (click)="requestMoreDocs()"
+        >
+          <ng-icon name="lucideClock" size="14" />
+          <span>{{ copy().requestDocs }}</span>
+        </button>
+
+        <!-- Approve & Activate (Primary Action) -->
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-bold text-white shadow-[0_4px_14px_-4px_rgba(16,185,129,0.4)] transition-all hover:from-emerald-700 hover:to-teal-700 hover:shadow-[0_6px_20px_-4px_rgba(16,185,129,0.6)] hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+          (click)="approveAccount()"
+        >
+          <ng-icon name="lucideCheck" size="14" />
+          <span>{{ copy().approveAndActivate }}</span>
+        </button>
+      </div>
+    </div>
+
+  </section>
+}
+
+<!-- ═══ Toast Alerts ═══ -->
+@if (toastMessage(); as message) {
+  <div
+    class="fixed bottom-5 start-5 z-50 flex items-center gap-2.5 rounded-xl border px-4 py-3 text-xs font-extrabold shadow-lg animate-in slide-in-from-bottom-5 duration-300"
+    [class.border-emerald-200]="toastType() === 'success'"
+    [class.bg-emerald-50]="toastType() === 'success'"
+    [class.text-emerald-800]="toastType() === 'success'"
+    [class.border-amber-200]="toastType() === 'warning'"
+    [class.bg-amber-50]="toastType() === 'warning'"
+    [class.text-amber-800]="toastType() === 'warning'"
+    [class.border-blue-200]="toastType() === 'info'"
+    [class.bg-blue-50]="toastType() === 'info'"
+    [class.text-blue-800]="toastType() === 'info'"
+  >
+    @if (toastType() === 'success') {
+      <ng-icon name="lucideShieldCheck" size="18" class="text-emerald-600" />
+    } @else if (toastType() === 'warning') {
+      <ng-icon name="lucideShieldAlert" size="18" class="text-amber-600" />
+    } @else {
+      <ng-icon name="lucideClock" size="18" class="text-blue-600" />
+    }
+    <span>{{ message }}</span>
+  </div>
+}

@@ -5,6 +5,7 @@ import { filter } from 'rxjs';
 
 import { ADMIN_NAV_ITEMS } from './admin-nav.config';
 import { AdminNavItem, AdminPageContext } from './admin-nav.model';
+import { BreadcrumbItem } from '@/shared/models/breadcrumb-item.model';
 
 @Injectable({ providedIn: 'root' })
 export class AdminPageContextService {
@@ -13,6 +14,11 @@ export class AdminPageContextService {
   private readonly url = signal(this.router.url);
 
   readonly context = computed(() => resolvePageContext(this.url()));
+
+  // Custom Overrides for Toolbar
+  readonly customTitle = signal<string | null>(null);
+  readonly customDescription = signal<string | null>(null);
+  readonly customBreadcrumbs = signal<BreadcrumbItem[] | null>(null);
 
   constructor() {
     this.router.events

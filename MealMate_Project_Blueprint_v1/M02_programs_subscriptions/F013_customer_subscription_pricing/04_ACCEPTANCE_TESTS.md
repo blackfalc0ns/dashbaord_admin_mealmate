@@ -9,6 +9,7 @@
 6. التحديث المتزامن لا يسبب فقدان بيانات.
 7. كل انتقال حالة غير مسموح يتم رفضه.
 8. الواجهة تعرض Loading/Empty/Error/Permission Denied.
+9. تنبيه الربحية يستخدم سعر العميل اليومي الناتج من محرك التسعير الحالي ولا يعيد تسعير الاشتراك.
 
 ## Given / When / Then
 ### Happy Path
@@ -40,3 +41,8 @@ Then يرجع النظام 409 conflict
 Given عملية حساسة تمت بنجاح  
 When يراجع الأدمن AuditLog  
 Then يجد actor/action/entity/before/after/reason/correlationId
+
+### Profitability Check Uses Current Pricing Output
+Given محرك التسعير أنتج `Customer Daily Price` حسب قاعدة `Average Price × Margin%`  
+When يعمل فحص الربحية للمطاعم  
+Then يستخدم النظام هذا السعر في `Expected Profit` بدون تعديل سعر العميل أو متوسط التصنيف

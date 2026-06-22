@@ -1,0 +1,73 @@
+@if (driver(); as item) {
+<div class="grid gap-4 lg:grid-cols-3">
+  <!-- Left 2 Columns: Operational Parameters -->
+  <div class="flex flex-col gap-4 lg:col-span-2">
+    <!-- Operational Settings Card -->
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+        <ng-icon name="lucideSettings" size="16" class="text-emerald-600" />
+        <span>{{ locale.isRtl() ? 'إعدادات التشغيل والتحكم' : 'Operational Settings' }}</span>
+      </h2>
+      
+      <div class="flex flex-col gap-4">
+        <!-- Region -->
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucideMapPin" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'المنطقة الجغرافية المعينة' : 'Assigned Working Region' }}</span>
+            <span class="text-sm font-bold text-slate-800">{{ t(item.regionAr, item.regionEn) }}</span>
+          </div>
+        </div>
+
+        <!-- Vehicle Plate -->
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucideCar" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().plateNumber }}</span>
+            <span class="text-sm font-bold text-slate-800">{{ item.vehiclePlateNumber }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Status & Suspension Actions -->
+  <div class="flex flex-col gap-4">
+    <!-- Quick Actions Card -->
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h2 class="mb-3 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2 flex items-center gap-2">
+        <ng-icon name="lucideSettings" size="16" class="text-emerald-600" />
+        <span>{{ locale.isRtl() ? 'إجراءات سريعة' : 'Quick Actions' }}</span>
+      </h2>
+      
+      <div class="flex flex-col gap-2.5">
+        <button
+          type="button"
+          class="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900"
+          (click)="onExpiryWarning()"
+        >
+          <ng-icon name="lucideShieldAlert" size="14" />
+          <span>{{ copy().sendExpiryWarning }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-bold shadow-sm transition-all"
+          [ngClass]="{
+            'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100': item.status === 'Suspended',
+            'border-red-200 bg-red-50 text-red-700 hover:bg-red-100': item.status !== 'Suspended'
+          }"
+          (click)="onToggleSuspension()"
+        >
+          <ng-icon [name]="item.status === 'Suspended' ? 'lucideCheck' : 'lucideX'" size="14" />
+          <span>{{ item.status === 'Suspended' ? copy().unsuspendAccount : copy().suspendAccount }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}

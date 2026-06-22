@@ -3,6 +3,23 @@
 ## Purpose
 تنفيذ **Customer Subscription Pricing** كميزة جاهزة للتطوير بعد معالجة نقاط الضعف والفجوات.
 
+## Pricing Engine Guardrail
+محرك التسعير لا يتغير بسبب إضافة تنبيه الربحية. تبقى قاعدة التسعير الحالية:
+
+```text
+Customer Daily Price = Average Price × Margin%
+```
+
+يستخدم تنبيه الربحية `Customer Daily Price` الناتج من هذه القاعدة لحساب:
+
+```text
+Net Restaurant Cost = Restaurant Daily Price × (1 - Commission)
+Expected Profit = Customer Daily Price - Net Restaurant Cost
+Minimum Profit = 0.500 KD
+```
+
+إذا كان `Restaurant Price > Mean + 1 SD` و`Expected Profit < 0.500 KD` يتم فقط إرسال المطعم للمراجعة في تنبيهات الربحية، ولا يتم تعديل سعر العميل أو متوسط التصنيف تلقائيًا.
+
 ## Owners
 | Role | Responsibility |
 |---|---|

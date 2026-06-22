@@ -1,0 +1,13 @@
+<nav [class]="navClass()" aria-label="Detail sections">
+  @for (tab of tabs(); track tab.id) {
+    <button
+      type="button"
+      [class]="buttonClass({ active: tab.id === activeTab() })"
+      [attr.aria-selected]="tab.id === activeTab()"
+      (click)="tabChange.emit(tab.id)"
+    >
+      <ng-icon [name]="tab.icon" size="14" />
+      <span>{{ tab.label }}</span>
+    </button>
+  }
+</nav>

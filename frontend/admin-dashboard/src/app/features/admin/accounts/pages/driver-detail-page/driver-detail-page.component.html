@@ -1,0 +1,35 @@
+@if (driver(); as item) {
+  <section class="flex flex-col gap-4" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+    <mm-detail-tab-nav
+      [tabs]="tabs()"
+      [activeTab]="activeTab()"
+      (tabChange)="setActiveTab($event)"
+    />
+
+    @switch (activeTab()) {
+      @case ('overview') {
+        <mm-driver-overview-panel [driver]="item" />
+      }
+      @case ('details') {
+        <mm-driver-details-panel [driver]="item" />
+      }
+      @case ('analytics') {
+        <mm-driver-analytics-panel [driver]="item" />
+      }
+      @case ('deliveries') {
+        <mm-driver-deliveries-panel [driver]="item" />
+      }
+      @case ('settings') {
+        <mm-driver-settings-panel
+          [driver]="item"
+          (expiryWarning)="triggerExpiryWarning()"
+          (toggleSuspension)="toggleSuspension()"
+        />
+      }
+    }
+  </section>
+}
+
+@if (toastMessage(); as message) {
+  <mm-detail-toast [message]="message" [type]="toastType()" />
+}

@@ -3,6 +3,46 @@
 ## Purpose
 تنفيذ **Profitability Alerts** كميزة جاهزة للتطوير بعد معالجة نقاط الضعف والفجوات.
 
+## Restaurant Outlier Profitability Alert
+هذا التنبيه يضيف حماية ربحية فقط على الخوارزمية الحالية، ولا يغير التصنيف أو نظام اللمت أو محرك التسعير.
+
+### Inputs
+| Input | Description |
+|---|---|
+| Restaurant Daily Price | سعر المطعم اليومي داخل نفس البرنامج والباقة |
+| Mean | متوسط أسعار المطاعم اليومية لنفس البرنامج والباقة |
+| Standard Deviation | الانحراف المعياري لنفس مجموعة المطاعم |
+| Commission | عمولة المطعم المستخدمة في التسوية |
+| Customer Daily Price | سعر العميل اليومي الناتج من محرك التسعير الحالي |
+
+### Calculations
+```text
+Net Restaurant Cost = Restaurant Daily Price × (1 - Commission)
+Expected Profit = Customer Daily Price - Net Restaurant Cost
+Minimum Profit = 0.500 KD
+```
+
+### Trigger Rule
+```text
+IF Restaurant Price > Mean + 1 SD
+AND Expected Profit < 0.500 KD
+THEN Flag Restaurant
+```
+
+### Allowed Admin Actions
+الأدمن يستطيع معالجة التنبيه بأحد الخيارات التالية فقط:
+- Keep Restaurant
+- Move To Higher Classification
+- Exclude Restaurant
+
+كل إجراء يحتاج سببًا إلزاميًا، ويسجل `before/after/reason/correlationId` في AuditLog.
+
+### Explicit Non-Changes
+- Classification remains `Mean + Standard Deviation` as currently defined.
+- Limit System remains unchanged.
+- Pricing Engine remains `Average Price × Margin%`.
+- لا يتم تعديل أي بند آخر في الخوارزمية بسبب هذا التنبيه.
+
 ## Owners
 | Role | Responsibility |
 |---|---|

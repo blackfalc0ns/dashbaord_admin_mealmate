@@ -1,0 +1,14 @@
+<div [class]="cardClass()">
+  <div [class]="headerClass()">
+    @if (icon(); as iconName) {
+      <ng-icon [name]="iconName" size="16" [class]="iconClass()" />
+    }
+    <span>{{ title() }}</span>
+  </div>
+
+  @if (subtitle(); as sub) {
+    <p [class]="subtitleClass()">{{ sub }}</p>
+  }
+
+  <ng-content />
+</div>
