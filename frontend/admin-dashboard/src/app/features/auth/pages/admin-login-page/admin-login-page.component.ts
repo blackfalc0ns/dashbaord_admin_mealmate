@@ -22,6 +22,20 @@ import { LOGIN_I18N } from '../../i18n/login.i18n';
     ZardInputDirective,
   ],
   templateUrl: './admin-login-page.component.html',
+  styles: [
+    `
+      .mm-login-field {
+        font-weight: 600;
+        color: rgb(30 41 59);
+      }
+
+      .mm-login-field::placeholder {
+        color: rgb(148 163 184 / 0.35);
+        font-weight: 400;
+        opacity: 1;
+      }
+    `,
+  ],
   host: {
     class: 'block min-h-dvh w-full overflow-x-hidden',
   },
@@ -43,8 +57,8 @@ export class AdminLoginPageComponent {
   readonly isRtl = this.localeService.isRtl;
 
   readonly form = this.fb.nonNullable.group({
-    identifier: ['admin@mealmate.com', [Validators.required]],
-    password: ['123456', [Validators.required, Validators.minLength(6)]],
+    identifier: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
     rememberSession: [false],
   });
 
