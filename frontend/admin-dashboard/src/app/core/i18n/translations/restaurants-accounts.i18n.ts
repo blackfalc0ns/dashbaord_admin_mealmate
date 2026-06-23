@@ -50,6 +50,12 @@ export interface RestaurantsCopy {
   suspendAccount: string;
   verified: string;
   reviewNotes: string;
+  settlementCommissionTitle: string;
+  settlementCommissionDesc: string;
+  settlementCommissionNote: string;
+  settlementCommissionUpdated: string;
+  saveCommission: string;
+  commissionSaved: string;
 }
 
 export const RESTAURANTS_ACCOUNTS_I18N: Record<RestaurantsLocale, RestaurantsCopy> = {
@@ -103,6 +109,12 @@ export const RESTAURANTS_ACCOUNTS_I18N: Record<RestaurantsLocale, RestaurantsCop
     suspendAccount: 'إيقاف الحساب مؤقتاً',
     verified: 'معتمد',
     reviewNotes: 'ملاحظات المراجعة والتشغيل',
+    settlementCommissionTitle: 'عمولة تسوية المطعم',
+    settlementCommissionDesc: 'تُخصم من سعر العلبة المتفق عليه عند التسوية — منفصلة عن عمولة اشتراك العميل على المنصة.',
+    settlementCommissionNote: 'التغييرات تُطبَّق على التسويات الجديدة فقط.',
+    settlementCommissionUpdated: 'آخر تحديث',
+    saveCommission: 'حفظ العمولة',
+    commissionSaved: 'تم حفظ عمولة التسوية',
   },
   en: {
     overview: 'Overview',
@@ -154,5 +166,11 @@ export const RESTAURANTS_ACCOUNTS_I18N: Record<RestaurantsLocale, RestaurantsCop
     suspendAccount: 'Suspend Account',
     verified: 'Verified',
     reviewNotes: 'Review & Operations Notes',
+    settlementCommissionTitle: 'Restaurant settlement commission',
+    settlementCommissionDesc: 'Deducted from the agreed box price at settlement — separate from customer subscription commission.',
+    settlementCommissionNote: 'Changes apply to new settlements only.',
+    settlementCommissionUpdated: 'Last updated',
+    saveCommission: 'Save commission',
+    commissionSaved: 'Settlement commission saved',
   },
 };

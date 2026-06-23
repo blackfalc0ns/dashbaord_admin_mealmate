@@ -382,6 +382,7 @@ export class AccountsStateService {
       bankIban: 'KW89NBKK00000001234567890123',
       bankSwift: 'NBKKKWKK',
       restaurantCommissionPercent: 12,
+      restaurantCommissionUpdatedAt: '2025-06-18T10:00:00+03:00',
       contactName: 'باسل الشمري',
       contactCivilId: '285101234567',
       contactRoleAr: 'المدير العام والمفوض بالتوقيع',
@@ -435,6 +436,8 @@ export class AccountsStateService {
       serviceRegionsAr: ['السالمية', 'الرميثية'],
       serviceRegionsEn: ['Salmiya', 'Rumaithiya'],
       dailyCapacity: 80,
+      restaurantCommissionPercent: 15,
+      restaurantCommissionUpdatedAt: '2025-06-10T09:00:00+03:00',
       notesAr: 'تم اعتماد المستندات القانونية، بانتظار استكمال إعداد المنيو والأسعار.',
       notesEn: 'Legal documents approved, awaiting menu and pricing setup.',
     },
@@ -464,6 +467,8 @@ export class AccountsStateService {
       serviceRegionsAr: ['المنطقة العاشرة', 'الأحمدي'],
       serviceRegionsEn: ['10th Area', 'Ahmadi'],
       dailyCapacity: 200,
+      restaurantCommissionPercent: 18,
+      restaurantCommissionUpdatedAt: '2025-05-20T14:30:00+03:00',
       notesAr: 'تم إيقاف الحساب مؤقتاً بسبب شكاوى متكررة من جودة الوجبات.',
       notesEn: 'Account temporarily suspended due to repeated complaints regarding meal quality.',
     },
@@ -493,6 +498,8 @@ export class AccountsStateService {
       serviceRegionsAr: ['الجابرية', 'حولي', 'السرة'],
       serviceRegionsEn: ['Jabriya', 'Hawally', 'Surra'],
       dailyCapacity: 100,
+      restaurantCommissionPercent: 16,
+      restaurantCommissionUpdatedAt: '2025-06-15T11:00:00+03:00',
       notesAr: 'تم الانتهاء من جميع الإعدادات التشغيلية والمنيو، جاهز للتفعيل الفوري.',
       notesEn: 'All operational setup and menu completed, ready for immediate activation.',
     },
@@ -808,6 +815,17 @@ export class AccountsStateService {
         }
         return r;
       })
+    );
+  }
+
+  updateRestaurantSettlementCommission(id: string, percent: number): void {
+    const now = new Date().toISOString();
+    this.restaurants.update((list) =>
+      list.map((r) =>
+        r.id === id
+          ? { ...r, restaurantCommissionPercent: percent, restaurantCommissionUpdatedAt: now }
+          : r,
+      ),
     );
   }
 

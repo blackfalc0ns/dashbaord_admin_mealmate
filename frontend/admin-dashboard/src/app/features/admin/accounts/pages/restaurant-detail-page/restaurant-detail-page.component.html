@@ -17,7 +17,10 @@
         <mm-restaurant-analytics-panel [restaurant]="item" />
       }
       @case ('wallet') {
-        <mm-restaurant-wallet-panel [restaurant]="item" />
+        <mm-restaurant-wallet-panel
+          [restaurant]="item"
+          (commissionSaved)="onCommissionSaved()"
+        />
       }
       @case ('meals') {
         <mm-restaurant-meals-panel [restaurant]="item" />

@@ -1,11 +1,101 @@
-<section class="mm-page">
-  <mm-page-state
-    [viewState]="facade.state.page.viewState"
-    emptyMessage="لا توجد نوافذ بديل نشطة"
-    (retry)="onRetry()"
-  />
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
+  <div class="flex w-full flex-col gap-4">
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <span class="text-xs font-bold text-slate-500">{{ copy().replacementWindows }}</span>
+        <p class="text-2xl font-extrabold text-slate-900">{{ kpis().total }}</p>
+      </div>
+      <div class="rounded-xl border border-violet-200 bg-violet-50 p-4 shadow-sm">
+        <span class="text-xs font-bold text-violet-700">{{ copy().windowOpen }}</span>
+        <p class="text-2xl font-extrabold text-violet-700">{{ kpis().open }}</p>
+      </div>
+      <div class="rounded-xl border border-red-200 bg-red-50 p-4 shadow-sm">
+        <span class="text-xs font-bold text-red-700">{{ copy().windowExpired }}</span>
+        <p class="text-2xl font-extrabold text-red-700">{{ kpis().expired }}</p>
+      </div>
+      <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm">
+        <span class="text-xs font-bold text-emerald-700">{{ copy().windowCompleted }}</span>
+        <p class="text-2xl font-extrabold text-emerald-700">{{ kpis().completed }}</p>
+      </div>
+    </div>
 
-  @if (facade.state.page.viewState === 'success') {
-    <mm-open-replacement-dialog />
-  }
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div class="relative w-full lg:max-w-xs">
+          <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+            <ng-icon name="lucideSearch" size="16" />
+          </span>
+          <input
+            type="text"
+            class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 ps-9 pe-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+            [placeholder]="copy().searchPlaceholder"
+            (input)="searchQuery.set($any($event.target).value)"
+          />
+        </div>
+        <div class="flex flex-wrap gap-2">
+          @for (opt of [
+            { id: 'all', label: copy().all },
+            { id: 'open', label: copy().windowOpen },
+            { id: 'expired', label: copy().windowExpired },
+            { id: 'completed', label: copy().windowCompleted },
+          ]; track opt.id) {
+            <button
+              type="button"
+              class="rounded-lg px-3 py-1.5 text-xs font-bold transition"
+              [ngClass]="statusFilter() === opt.id
+                ? 'bg-emerald-600 text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              (click)="statusFilter.set(opt.id)"
+            >
+              {{ opt.label }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      @if (filteredRows().length === 0) {
+        <p class="p-8 text-center text-sm text-slate-500">{{ copy().noWindows }}</p>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[720px] text-sm">
+            <thead class="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase text-slate-500">
+              <tr>
+                <th class="px-4 py-3 text-start">{{ copy().orderId }}</th>
+                <th class="px-4 py-3 text-start">{{ copy().customer }}</th>
+                <th class="px-4 py-3 text-start">{{ copy().originalRestaurant }}</th>
+                <th class="px-4 py-3 text-start">{{ copy().windowOpens }}</th>
+                <th class="px-4 py-3 text-start">{{ copy().windowCloses }}</th>
+                <th class="px-4 py-3 text-start">{{ copy().hoursRemaining }}</th>
+                <th class="px-4 py-3 text-start">{{ copy().phase }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              @for (row of filteredRows(); track row.orderId) {
+                <tr class="hover:bg-slate-50/80">
+                  <td class="px-4 py-3 font-mono text-xs font-bold">{{ row.orderId }}</td>
+                  <td class="px-4 py-3 font-medium">{{ row.customerDisplayName }}</td>
+                  <td class="px-4 py-3">{{ row.originalRestaurantName }}</td>
+                  <td class="px-4 py-3 text-xs text-slate-500">{{ row.windowOpensAt }}</td>
+                  <td class="px-4 py-3 text-xs text-slate-500">{{ row.windowClosesAt }}</td>
+                  <td class="px-4 py-3 font-bold" [class.text-red-600]="row.hoursRemaining <= 6">
+                    {{ row.hoursRemaining }}h
+                  </td>
+                  <td class="px-4 py-3">
+                    <span
+                      class="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold ring-1"
+                      [ngClass]="statusClass(row.status)"
+                    >
+                      {{ statusLabel(row.status) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
 </section>

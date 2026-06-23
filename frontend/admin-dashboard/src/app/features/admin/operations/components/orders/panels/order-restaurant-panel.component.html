@@ -1,0 +1,108 @@
+<div class="flex flex-col gap-4">
+  <div class="grid gap-4 lg:grid-cols-2">
+    <mm-detail-panel-card
+      [title]="copy().panelRestaurantContact"
+      icon="lucideBuilding"
+      iconClass="text-emerald-600"
+    >
+      <div class="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <p class="text-lg font-extrabold text-slate-900">{{ order.restaurantName }}</p>
+          <p class="text-xs font-mono text-slate-500">{{ order.restaurantId }}</p>
+        </div>
+        <a
+          [routerLink]="['/admin/accounts/restaurants', order.restaurantId]"
+          class="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50"
+        >
+          <ng-icon name="lucideEye" size="14" />
+          {{ copy().viewRestaurantAccount }}
+        </a>
+      </div>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <mm-detail-field
+          [label]="copy().restaurantPhone"
+          [value]="order.extras.restaurantPhone"
+          icon="lucidePhone"
+          [mono]="true"
+          valueDir="ltr"
+        />
+        <mm-detail-field
+          [label]="copy().restaurantContact"
+          [value]="order.extras.restaurantContactName"
+          icon="lucideUser"
+        />
+        <mm-detail-field
+          [label]="copy().sentToRestaurantAt"
+          [value]="formatDateTime(order.extras.dispatchedToRestaurantAt)"
+          icon="lucideArrowUpRight"
+        />
+        <mm-detail-field
+          [label]="copy().restaurantContactAttempts"
+          [value]="order.extras.restaurantContactAttempts + ''"
+          icon="lucidePhone"
+          [tone]="order.extras.restaurantContactAttempts > 0 ? 'warning' : 'default'"
+        />
+      </div>
+    </mm-detail-panel-card>
+
+    <mm-detail-panel-card
+      [title]="copy().panelConfirmationSla"
+      icon="lucideClock"
+      iconClass="text-amber-600"
+    >
+      <div class="grid gap-3 sm:grid-cols-2">
+        <mm-detail-field
+          [label]="copy().confirmationStatus"
+          [value]="confirmationStatusLabel()"
+          icon="lucideCheck"
+          [tone]="order.confirmationStatus === RestaurantConfirmationStatus.Overdue ? 'warning' : 'default'"
+        />
+        <mm-detail-field
+          [label]="copy().confirmDeadline"
+          [value]="formatDateTime(order.confirmationDeadlineAt)"
+          icon="lucideClock"
+          [tone]="order.phase === OrderLifecyclePhase.ConfirmationOverdue ? 'warning' : 'default'"
+        />
+        <mm-detail-field
+          [label]="copy().alternativeRestaurants"
+          [value]="order.extras.alternativeRestaurantCount + ''"
+          icon="lucideTrendingUp"
+        />
+        <mm-detail-field [label]="copy().deliveryDate" [value]="order.deliveryDate" icon="lucideCalendar" />
+      </div>
+
+      @if (order.phase === OrderLifecyclePhase.ConfirmationOverdue || order.phase === OrderLifecyclePhase.ReplacementWindowOpen) {
+        <div class="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+          @if (order.phase === OrderLifecyclePhase.ConfirmationOverdue) {
+            <button
+              type="button"
+              class="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-violet-700"
+              (click)="action.emit('replacement')"
+            >
+              {{ copy().openReplacement }}
+            </button>
+          }
+          <button
+            type="button"
+            class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold hover:bg-slate-50"
+            (click)="action.emit('reassign')"
+          >
+            {{ copy().manualReassign }}
+          </button>
+        </div>
+      }
+    </mm-detail-panel-card>
+  </div>
+
+  @if (order.extras.escalationNotes) {
+    <mm-detail-panel-card
+      [title]="copy().panelEscalation"
+      icon="lucideShieldAlert"
+      iconClass="text-red-600"
+    >
+      <div class="rounded-xl border border-red-100 bg-red-50 p-4 text-sm leading-relaxed text-red-800">
+        {{ order.extras.escalationNotes }}
+      </div>
+    </mm-detail-panel-card>
+  }
+</div>

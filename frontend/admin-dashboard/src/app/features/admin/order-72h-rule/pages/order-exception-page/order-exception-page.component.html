@@ -1,3 +1,41 @@
-<section class="mm-page">
-  <mm-exception-form />
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
+  <div class="flex w-full flex-col gap-4">
+    <mm-exception-form />
+
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="border-b border-slate-200 px-4 py-3">
+        <h2 class="text-sm font-extrabold text-slate-900">{{ copy().recentExceptions }}</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[720px] text-sm">
+          <thead class="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase text-slate-500">
+            <tr>
+              <th class="px-4 py-3 text-start">{{ copy().orderId }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().customer }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().exceptionType }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().reason }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().actor }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().appliedAt }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (log of logs(); track log.id) {
+              <tr class="hover:bg-slate-50/80">
+                <td class="px-4 py-3 font-mono text-xs font-bold">{{ log.orderId }}</td>
+                <td class="px-4 py-3">{{ log.customerDisplayName }}</td>
+                <td class="px-4 py-3">
+                  <span class="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700 ring-1 ring-amber-200">
+                    {{ exceptionLabel(log.exceptionType) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 max-w-xs truncate text-slate-600" [title]="log.reason">{{ log.reason }}</td>
+                <td class="px-4 py-3 text-xs text-slate-500">{{ log.actorName }}</td>
+                <td class="px-4 py-3 text-xs text-slate-500">{{ log.appliedAt }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </section>

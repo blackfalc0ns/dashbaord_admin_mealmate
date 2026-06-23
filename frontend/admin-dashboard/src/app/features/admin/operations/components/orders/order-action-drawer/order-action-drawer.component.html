@@ -1,0 +1,36 @@
+@if (orderId && action) {
+  <div class="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 sm:items-center">
+    <div class="w-full max-w-md rounded-t-2xl border border-slate-200 bg-white p-6 shadow-xl sm:rounded-2xl">
+      <h3 class="text-base font-extrabold text-slate-900">{{ title() }}</h3>
+      <p class="mt-1 font-mono text-xs text-slate-500">{{ orderId }}</p>
+
+      @if (action === 'exception') {
+        <form [formGroup]="exceptionForm" class="mt-4 space-y-3">
+          <label class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-slate-600">{{ copy().exceptionType }}</span>
+            <select formControlName="exceptionType" class="rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              @for (opt of exceptionTypes(); track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </label>
+          <label class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-slate-600">{{ copy().reason }}</span>
+            <textarea formControlName="reason" rows="3" class="rounded-lg border border-slate-200 px-3 py-2 text-sm"></textarea>
+          </label>
+        </form>
+      } @else {
+        <p class="mt-4 text-sm text-slate-600">{{ copy().confirmAction }}?</p>
+      }
+
+      <div class="mt-6 flex justify-end gap-2">
+        <button type="button" class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold" (click)="close()">
+          {{ copy().cancel }}
+        </button>
+        <button type="button" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white" (click)="confirm()">
+          {{ copy().confirmAction }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

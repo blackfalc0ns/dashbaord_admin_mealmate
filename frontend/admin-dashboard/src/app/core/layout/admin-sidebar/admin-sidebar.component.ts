@@ -274,7 +274,7 @@ export class AdminSidebarComponent {
 
     return (
       route === '/admin/overview' ||
-      route === '/admin/operations/72h-rule' ||
+      route === '/admin/operations/orders' ||
       route.startsWith('/admin/security')
     );
   }

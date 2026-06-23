@@ -140,6 +140,10 @@ export class RestaurantDetailPageComponent implements OnInit {
     );
   }
 
+  onCommissionSaved(): void {
+    this.showToast(this.copy().commissionSaved, 'success');
+  }
+
   private showToast(message: string, type: 'success' | 'warning' | 'info'): void {
     this.toastMessage.set(message);
     this.toastType.set(type);

@@ -1,0 +1,52 @@
+<div class="flex flex-col gap-4">
+  @if (toast()) {
+    <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">{{ toast() }}</div>
+  }
+  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div class="relative max-w-xs">
+      <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+        <ng-icon name="lucideSearch" size="16" />
+      </span>
+      <input type="text" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 ps-9 pe-3 text-sm" [placeholder]="copy().searchPlaceholder" (input)="searchQuery.set($any($event.target).value)" />
+    </div>
+  </div>
+  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    @if (filteredCases().length === 0) {
+      <p class="p-8 text-center text-sm text-slate-500">{{ copy().noHoldCases }}</p>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[800px] text-sm">
+          <thead class="border-b bg-slate-50 text-xs font-bold uppercase text-slate-500">
+            <tr>
+              <th class="px-4 py-3 text-start">{{ copy().orderId }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().customer }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().holdReason }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().contactAttempts }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().status }}</th>
+              <th class="px-4 py-3 text-start"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (c of filteredCases(); track c.caseId) {
+              <tr class="hover:bg-slate-50/80">
+                <td class="px-4 py-3 font-mono text-xs font-bold">{{ c.orderId }}</td>
+                <td class="px-4 py-3">{{ c.customerDisplayName }}</td>
+                <td class="px-4 py-3 max-w-xs truncate">{{ c.holdReason }}</td>
+                <td class="px-4 py-3 text-center font-bold">{{ c.contactAttempts }}</td>
+                <td class="px-4 py-3">{{ statusLabel(c.status) }}</td>
+                <td class="px-4 py-3">
+                  @if (c.status !== 'resolved') {
+                    <div class="flex gap-1">
+                      <button type="button" class="rounded-lg bg-sky-600 px-2 py-1 text-[10px] font-bold text-white" (click)="logContact(c.caseId)">{{ copy().logContact }}</button>
+                      <button type="button" class="rounded-lg border px-2 py-1 text-[10px] font-bold" (click)="resolve(c.caseId)">{{ copy().resolve }}</button>
+                    </div>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

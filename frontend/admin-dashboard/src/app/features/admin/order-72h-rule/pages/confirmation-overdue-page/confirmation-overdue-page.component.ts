@@ -1,23 +1,51 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { PageStateComponent } from '../../../../../shared/components/page-state/page-state.component';
+import { Component, computed, inject, signal } from '@angular/core';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideSearch, lucideCircleAlert, lucideRefreshCw, lucideStore } from '@ng-icons/lucide';
+
+import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
+import { ORDERS_72H_I18N } from '../../../../../core/i18n/translations/orders-72h.i18n';
+import { Order72hStateService } from '../../data/order-72h-state.service';
 import { Order72hTableComponent } from '../../components/order-72h-table/order-72h-table.component';
-import { Order72hFacade } from '../../state/order-72h.facade';
 
 @Component({
   selector: 'mm-confirmation-overdue-page',
   standalone: true,
-  imports: [PageStateComponent, Order72hTableComponent],
+  imports: [NgIcon, Order72hTableComponent],
+  providers: [provideIcons({ lucideSearch, lucideCircleAlert, lucideRefreshCw, lucideStore })],
   templateUrl: './confirmation-overdue-page.component.html',
-  styleUrl: './confirmation-overdue-page.component.scss',
+  host: { class: 'block' },
 })
-export class ConfirmationOverduePageComponent implements OnInit {
-  readonly facade = inject(Order72hFacade);
+export class ConfirmationOverduePageComponent {
+  readonly locale = inject(AppLocaleService);
+  readonly state = inject(Order72hStateService);
 
-  ngOnInit(): void {
-    this.facade.loadOverdue();
-  }
+  readonly copy = computed(() => ORDERS_72H_I18N[this.locale.locale()]);
+  readonly searchQuery = signal('');
+  readonly toast = signal<string | null>(null);
 
-  onRetry(): void {
-    this.facade.retry();
-  }
+  readonly rows = computed(() => {
+    let list = this.state.overdueRows();
+    const q = this.searchQuery().toLowerCase().trim();
+    if (q) {
+      list = list.filter(
+        (r) =>
+          r.orderId.toLowerCase().includes(q) ||
+          r.customerDisplayName.toLowerCase().includes(q) ||
+          r.restaurantName.toLowerCase().includes(q),
+      );
+    }
+    return list;
+  });
+
+  openReplacement = (orderId: string): void => {
+    this.state.openReplacementWindow(orderId, 'Restaurant missed 24h confirmation');
+    this.toast.set(`${this.copy().openReplacement}: ${orderId}`);
+    setTimeout(() => this.toast.set(null), 3000);
+  };
+
+  manualReassign = (orderId: string): void => {
+    this.state.manualReassign(orderId, 'RST-002', 'Green Kitchen');
+    this.toast.set(`${this.copy().manualReassign}: ${orderId}`);
+    setTimeout(() => this.toast.set(null), 3000);
+  };
 }

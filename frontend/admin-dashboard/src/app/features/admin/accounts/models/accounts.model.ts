@@ -110,6 +110,7 @@ export interface RestaurantAccount {
   bankIban?: string;
   bankSwift?: string;
   restaurantCommissionPercent?: number;
+  restaurantCommissionUpdatedAt?: string;
 
   // Authorized signatory
   contactCivilId?: string;

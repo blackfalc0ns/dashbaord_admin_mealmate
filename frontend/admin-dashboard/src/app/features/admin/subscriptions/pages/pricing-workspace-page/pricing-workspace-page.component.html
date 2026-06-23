@@ -1,0 +1,292 @@
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page flex flex-col gap-4 text-slate-900">
+  <div class="grid auto-rows-fr gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+    <button
+      type="button"
+      class="flex h-full min-h-[6.75rem] w-full flex-col rounded-xl border border-emerald-600 bg-emerald-600 p-4 text-start shadow-sm transition hover:bg-emerald-700 hover:shadow-md"
+      (click)="openCommissionModal()"
+    >
+      <div class="flex flex-1 items-center justify-between gap-2">
+        <div class="flex min-w-0 flex-col gap-1">
+          <span class="truncate text-xs font-bold text-emerald-100">{{ copy().platformCommissionTitle }}</span>
+          <span class="truncate text-2xl font-extrabold leading-tight text-white">{{ copy().edit }}</span>
+        </div>
+        <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500 text-white ring-1 ring-emerald-400">
+          <ng-icon name="lucideSettings2" size="20" />
+        </div>
+      </div>
+      <p class="mt-2 min-h-[14px] truncate text-[10px] leading-tight text-emerald-100/80">{{ copy().editCommissionBounds }}</p>
+    </button>
+    <mm-operations-kpi-card [label]="copy().kpiCommissionMode" [value]="commissionModeLabel()" icon="lucideGlobe" />
+    <mm-operations-kpi-card [label]="copy().kpiMaxCommission" [value]="kpiMaxDisplay()" icon="lucidePercent" />
+    <mm-operations-kpi-card [label]="copy().kpiMinCommission" [value]="kpiMinDisplay()" icon="lucideTrendingDown" valueClass="text-emerald-600" />
+    <mm-operations-kpi-card
+      [label]="copy().profitabilityAlerts"
+      [value]="alerts().length"
+      [description]="profitAlertsSummary()"
+      icon="lucideShieldAlert"
+      [valueClass]="alerts().length ? 'text-amber-600' : 'text-emerald-600'"
+      [iconWrapClass]="alerts().length ? 'bg-amber-50 text-amber-600 ring-amber-100' : 'bg-emerald-50 text-emerald-600 ring-emerald-100'"
+      [active]="alerts().length > 0"
+    />
+  </div>
+
+  <mm-detail-panel-card [title]="copy().tierAveragesTitle" icon="lucidePercent" iconClass="text-violet-600">
+    <p class="mb-3 text-xs text-slate-500">{{ copy().tierAveragesDesc }}</p>
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[900px] text-sm">
+        <thead class="text-xs font-bold uppercase text-slate-500">
+          <tr class="border-b border-slate-100">
+            <th class="py-2 text-start">{{ copy().colProgram }}</th>
+            <th class="py-2 text-start">{{ copy().colTier }}</th>
+            <th class="py-2 text-start">{{ copy().colRestaurantCount }}</th>
+            <th class="py-2 text-start">{{ copy().colAvg26 }}</th>
+            <th class="py-2 text-start">{{ copy().colAvgDaily }}</th>
+            <th class="py-2 text-start">{{ copy().colCustomer6 }}</th>
+            <th class="py-2 text-start">{{ copy().colCustomer12 }}</th>
+            <th class="py-2 text-start">{{ copy().colCustomer26 }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+          @for (row of tierAverages(); track row.programId + row.bundleId + row.tier) {
+            <tr>
+              <td class="py-2 text-xs">{{ programBundleLabel(row) }}</td>
+              <td class="py-2 font-bold">{{ tierLabel(row.tier) }}</td>
+              <td class="py-2">{{ row.restaurantCount }}</td>
+              <td class="py-2 font-mono">{{ row.avgPrice26DaysKd | number:'1.2-2' }} {{ copy().kd }}</td>
+              <td class="py-2 font-mono">{{ row.avgDailyPriceKd | number:'1.3-3' }}</td>
+              <td class="py-2 font-mono">
+                {{ row.customerPrice6DaysKd | number:'1.0-0' }} {{ copy().kd }}
+              </td>
+              <td class="py-2 font-mono">
+                {{ row.customerPrice12DaysKd | number:'1.0-0' }} {{ copy().kd }}
+              </td>
+              <td class="py-2 font-mono font-bold">
+                {{ row.customerPrice26DaysKd | number:'1.0-0' }} {{ copy().kd }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </mm-detail-panel-card>
+
+  @if (commissionModalOpen()) {
+    <div class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center" (click)="closeCommissionModal()">
+      <div
+        class="flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-white shadow-xl sm:max-w-2xl"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="flex items-start justify-between border-b border-slate-100 px-5 py-4">
+          <div>
+            <p class="text-lg font-extrabold text-slate-900">{{ copy().platformCommissionTitle }}</p>
+            <p class="mt-1 text-xs text-slate-500">{{ copy().platformCommissionDesc }}</p>
+          </div>
+          <button type="button" class="rounded-lg p-1 hover:bg-slate-100" (click)="closeCommissionModal()">
+            <ng-icon name="lucideX" size="18" />
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-5 py-4">
+          <div class="mb-5 inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition-all"
+              [ngClass]="modeDraft() === 'global' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'"
+              (click)="setMode('global')"
+            >
+              <ng-icon name="lucideGlobe" size="14" />
+              {{ copy().commissionModeGlobal }}
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition-all"
+              [ngClass]="modeDraft() === 'per_bundle' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'"
+              (click)="setMode('per_bundle')"
+            >
+              <ng-icon name="lucidePackage" size="14" />
+              {{ copy().commissionModePerBundle }}
+            </button>
+          </div>
+
+          <p class="mb-4 text-xs font-bold text-slate-600">
+            {{ modeDraft() === 'global' ? copy().commissionModeGlobalDesc : copy().commissionModePerBundleDesc }}
+          </p>
+
+          @if (modeDraft() === 'global') {
+            <div class="flex flex-col gap-4">
+              <div class="rounded-xl border border-emerald-100 bg-gradient-to-br from-emerald-50/80 to-white p-5">
+                <div class="flex flex-col gap-5">
+                  <label class="flex flex-col gap-2">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-xs font-bold text-slate-600">{{ copy().maxCommission }}</span>
+                      <div class="flex items-center gap-1">
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="0.5"
+                          class="w-16 rounded-lg border border-slate-200 bg-white px-2 py-1 text-center font-mono text-sm font-bold"
+                          [ngModel]="globalMax()"
+                          (ngModelChange)="globalMax.set($event); onGlobalChange()"
+                        />
+                        <span class="text-xs font-bold text-slate-400">{{ copy().pct }}</span>
+                      </div>
+                    </div>
+                    <input
+                      type="range"
+                      min="10"
+                      max="40"
+                      step="0.5"
+                      class="h-2 w-full cursor-pointer accent-emerald-600"
+                      [ngModel]="globalMax()"
+                      (ngModelChange)="globalMax.set($event); onGlobalChange()"
+                    />
+                    <span class="text-[10px] font-bold text-amber-700">{{ copy().commissionShortDuration }} · {{ copy().commissionAtDay }} 1</span>
+                  </label>
+
+                  <label class="flex flex-col gap-2">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-xs font-bold text-slate-600">{{ copy().minCommission }}</span>
+                      <div class="flex items-center gap-1">
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="0.5"
+                          class="w-16 rounded-lg border border-slate-200 bg-white px-2 py-1 text-center font-mono text-sm font-bold"
+                          [ngModel]="globalMin()"
+                          (ngModelChange)="globalMin.set($event); onGlobalChange()"
+                        />
+                        <span class="text-xs font-bold text-slate-400">{{ copy().pct }}</span>
+                      </div>
+                    </div>
+                    <input
+                      type="range"
+                      min="5"
+                      max="35"
+                      step="0.5"
+                      class="h-2 w-full cursor-pointer accent-emerald-600"
+                      [ngModel]="globalMin()"
+                      (ngModelChange)="globalMin.set($event); onGlobalChange()"
+                    />
+                    <span class="text-[10px] font-bold text-emerald-700">{{ copy().commissionLongDuration }} · {{ copy().commissionAtDay }} 26</span>
+                  </label>
+                </div>
+
+                <div class="mt-5">
+                  <div class="mb-1 flex items-center justify-between text-[10px] font-bold text-slate-400">
+                    <span>{{ globalMax() }}{{ copy().pct }}</span>
+                    <span>{{ globalMin() }}{{ copy().pct }}</span>
+                  </div>
+                  <div class="h-2 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      class="h-full rounded-full from-amber-400 via-violet-400 to-emerald-500"
+                      [ngClass]="locale.isRtl() ? 'bg-gradient-to-l' : 'bg-gradient-to-r'"
+                    ></div>
+                  </div>
+                  <p class="mt-2 text-[10px] text-slate-500">{{ copy().commissionInterpolationNote }}</p>
+                </div>
+              </div>
+
+              <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-4">
+                <p class="mb-3 text-xs font-extrabold uppercase tracking-wide text-slate-500">{{ copy().commissionPreviewTitle }}</p>
+                <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  @for (day of previewDays; track day) {
+                    <div class="flex min-w-0 flex-col items-center gap-1.5 rounded-lg border border-white bg-white p-3 shadow-sm">
+                      <span class="text-[10px] font-bold text-slate-400">{{ copy().commissionAtDay }} {{ day }}</span>
+                      <span class="font-mono text-base font-extrabold text-emerald-700 sm:text-lg">
+                        {{ previewPct({ maxCommissionPct: globalMax(), minCommissionPct: globalMin() }, day) | number:'1.1-1' }}{{ copy().pct }}
+                      </span>
+                      <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                        <div
+                          class="h-full rounded-full bg-emerald-500 transition-all"
+                          [style.width.%]="barWidth(previewPct({ maxCommissionPct: globalMax(), minCommissionPct: globalMin() }, day), globalMax(), globalMin())"
+                        ></div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          } @else {
+            <div class="grid gap-3 sm:grid-cols-2">
+              @for (bundle of activeBundles(); track bundle.id) {
+                @let bounds = boundsForBundleDraft(bundle.id);
+                <div class="rounded-xl border border-violet-100 bg-gradient-to-br from-violet-50/40 to-white p-4 shadow-sm">
+                  <div class="mb-3 flex items-start justify-between gap-2">
+                    <div>
+                      <p class="font-extrabold text-slate-900">{{ bundleName(bundle) }}</p>
+                      <p class="font-mono text-[10px] text-slate-400">{{ bundle.id }}</p>
+                    </div>
+                    <span class="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-bold text-violet-700">{{ copy().customBundleBounds }}</span>
+                  </div>
+
+                  <div class="mb-3 grid grid-cols-2 gap-2">
+                    <label class="flex flex-col gap-1">
+                      <span class="text-[10px] font-bold text-slate-500">{{ copy().maxCommission }}</span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.5"
+                        class="rounded-lg border border-slate-200 bg-white px-2 py-1.5 font-mono text-sm font-bold"
+                        [ngModel]="bounds.maxCommissionPct"
+                        (ngModelChange)="onBundleBoundChange(bundle.id, 'maxCommissionPct', $event)"
+                      />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                      <span class="text-[10px] font-bold text-slate-500">{{ copy().minCommission }}</span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.5"
+                        class="rounded-lg border border-slate-200 bg-white px-2 py-1.5 font-mono text-sm font-bold"
+                        [ngModel]="bounds.minCommissionPct"
+                        (ngModelChange)="onBundleBoundChange(bundle.id, 'minCommissionPct', $event)"
+                      />
+                    </label>
+                  </div>
+
+                  <div class="flex gap-1">
+                    @for (day of previewDays; track day) {
+                      <div class="flex flex-1 flex-col items-center rounded-lg bg-white px-1 py-2 ring-1 ring-slate-100">
+                        <span class="text-[9px] text-slate-400">{{ day }}d</span>
+                        <span class="font-mono text-xs font-bold text-violet-700">
+                          {{ previewPct(bounds, day) | number:'1.0-1' }}{{ copy().pct }}
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-5 py-4">
+          <div class="flex gap-2">
+            <button
+              type="button"
+              class="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50"
+              [disabled]="!dirty()"
+              (click)="saveCommissionBounds()"
+            >
+              {{ copy().savePublish }}
+            </button>
+            <button type="button" class="rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold" (click)="closeCommissionModal()">
+              {{ copy().cancel }}
+            </button>
+          </div>
+          <span class="text-xs" [class.text-amber-600]="dirty()" [class.font-bold]="dirty()" [class.text-slate-400]="!dirty()">
+            {{ dirty() ? copy().unsavedChanges : copy().newSubsOnly }}
+          </span>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (toast()) {
+    <mm-detail-toast [message]="toast()!" type="success" />
+  }
+</section>

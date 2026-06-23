@@ -1,5 +1,56 @@
-<form class="mm-form">
-  <h2>تنفيذ استثناء طارئ</h2>
-  <!-- Reactive form: orderId, exceptionType, reason, newRestaurantId, newMealId -->
-  <p class="mm-form__hint">يُسجّل: المُنفّذ، الوقت، السبب، الكيان المتأثر</p>
+<form
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+>
+  <h2 class="text-base font-extrabold text-slate-900">{{ copy().exceptionFormTitle }}</h2>
+  <p class="mt-1 text-xs text-slate-500">{{ copy().exceptionFormHint }}</p>
+
+  @if (submitted()) {
+    <div class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+      {{ copy().submitException }} ✓
+    </div>
+  }
+
+  <div class="mt-5 grid gap-4 sm:grid-cols-2">
+    <label class="flex flex-col gap-1.5">
+      <span class="text-xs font-bold text-slate-600">{{ copy().orderId }}</span>
+      <input
+        type="text"
+        formControlName="orderId"
+        class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+        placeholder="ORD-20250622-001"
+      />
+    </label>
+
+    <label class="flex flex-col gap-1.5">
+      <span class="text-xs font-bold text-slate-600">{{ copy().exceptionType }}</span>
+      <select
+        formControlName="exceptionType"
+        class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+      >
+        @for (opt of exceptionTypes(); track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="flex flex-col gap-1.5 sm:col-span-2">
+      <span class="text-xs font-bold text-slate-600">{{ copy().reason }}</span>
+      <textarea
+        formControlName="reason"
+        rows="3"
+        class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+      ></textarea>
+    </label>
+  </div>
+
+  <div class="mt-5 flex justify-end">
+    <button
+      type="submit"
+      class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700"
+    >
+      {{ copy().submitException }}
+    </button>
+  </div>
 </form>

@@ -1,0 +1,43 @@
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
+  @if (!order()) {
+    <div class="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+      <p class="text-sm text-slate-500">{{ copy().orderNotFound }}</p>
+      <a routerLink="/admin/operations/orders" class="mt-4 inline-block text-sm font-bold text-emerald-600">{{ copy().backToOrders }}</a>
+    </div>
+  } @else {
+    @if (order()!.phase === 'confirmation_overdue') {
+      <div class="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 shadow-sm">
+        <div class="flex items-start gap-3">
+          <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-600">
+            <span class="text-lg font-bold">!</span>
+          </div>
+          <div>
+            <p class="font-extrabold text-red-900">{{ copy().overdueAlertTitle }}</p>
+            <p class="mt-1 text-sm text-red-800">{{ copy().overdueAlertBody }}</p>
+          </div>
+        </div>
+      </div>
+    }
+
+    <mm-order-detail-body
+      [order]="order()!"
+      [events]="timeline()"
+      [tracking]="state.getTracking(order()!.orderId)"
+      [hold]="state.getHoldCase(order()!.orderId)"
+      [exceptions]="exceptions()"
+      (restaurantAction)="openAction($event)"
+      (applyException)="openAction('exception')"
+    />
+
+    <mm-order-action-drawer
+      [orderId]="order()!.orderId"
+      [action]="drawerAction()"
+      (closed)="closeDrawer()"
+      (completed)="onCompleted($event)"
+    />
+
+    @if (toastMessage()) {
+      <mm-detail-toast [message]="toastMessage()!" type="success" />
+    }
+  }
+</section>

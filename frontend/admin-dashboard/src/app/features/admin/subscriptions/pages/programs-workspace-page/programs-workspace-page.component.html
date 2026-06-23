@@ -1,0 +1,204 @@
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page flex flex-col gap-4 text-slate-900">
+  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+    <mm-operations-kpi-card [label]="copy().kpiActivePrograms" [value]="kpis().programs" icon="lucideLayers" />
+    <mm-operations-kpi-card [label]="copy().kpiBundles" [value]="kpis().bundles" icon="lucidePackage" />
+    <mm-operations-kpi-card [label]="copy().kpiAwaitingPricing" [value]="kpis().awaiting" icon="lucideClock" valueClass="text-amber-600" />
+    <mm-operations-kpi-card [label]="copy().kpiActiveSubscriptions" [value]="kpis().activeSubs" icon="lucideUsers" />
+    <mm-operations-kpi-card [label]="copy().kpiFrozen" [value]="kpis().frozen" icon="lucideSnowflake" />
+    <mm-operations-kpi-card [label]="copy().kpiCustomDuration" [value]="kpis().custom" icon="lucideSlidersHorizontal" />
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div class="flex flex-wrap gap-2">
+      <button type="button" class="rounded-lg px-3 py-1.5 text-xs font-bold" [ngClass]="activeTab() === 'durations' ? 'bg-emerald-600 text-white' : 'border border-slate-200 bg-white'" (click)="setTab('durations')">{{ copy().tabDurations }}</button>
+      <button type="button" class="rounded-lg px-3 py-1.5 text-xs font-bold" [ngClass]="activeTab() === 'programs' ? 'bg-emerald-600 text-white' : 'border border-slate-200 bg-white'" (click)="setTab('programs')">{{ copy().tabPrograms }}</button>
+      <button type="button" class="rounded-lg px-3 py-1.5 text-xs font-bold" [ngClass]="activeTab() === 'bundles' ? 'bg-emerald-600 text-white' : 'border border-slate-200 bg-white'" (click)="setTab('bundles')">{{ copy().tabBundles }}</button>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      @if (activeTab() !== 'durations') {
+        <div class="relative">
+          <ng-icon name="lucideSearch" size="14" class="absolute top-1/2 -translate-y-1/2 text-slate-400 start-3" />
+          <input type="search" class="rounded-lg border border-slate-200 py-1.5 ps-8 pe-3 text-sm" [placeholder]="copy().searchPlaceholder" (input)="searchQuery.set($any($event.target).value)" />
+        </div>
+        @if (activeTab() === 'programs') {
+          <select class="rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-bold" (change)="statusFilter.set($any($event.target).value)">
+            <option value="all">{{ copy().all }}</option>
+            <option value="active">{{ copy().active }}</option>
+            <option value="inactive">{{ copy().inactive }}</option>
+          </select>
+        }
+      }
+      <button type="button" class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700" (click)="openCreate()">
+        <ng-icon name="lucidePlus" size="14" /> {{ addLabel() }}
+      </button>
+      <button type="button" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white" (click)="savePublish()">{{ copy().savePublish }}</button>
+    </div>
+  </div>
+
+  <p class="text-xs text-slate-500">{{ copy().newSubsOnly }}</p>
+
+  @switch (activeTab()) {
+    @case ('durations') {
+      <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-xs font-bold uppercase text-slate-500">
+            <tr>
+              <th class="px-4 py-3 text-start">{{ copy().colName }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colDays }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colStatus }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colCommission }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colActions }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (d of state.durations(); track d.id) {
+              <tr class="hover:bg-slate-50/50">
+                <td class="px-4 py-3">
+                  <p class="font-bold">{{ locale.isRtl() ? d.nameAr : d.nameEn }}</p>
+                  <p class="text-xs font-mono text-slate-400">{{ d.id }}</p>
+                </td>
+                <td class="px-4 py-3">{{ durationDaysLabel(d) }}</td>
+                <td class="px-4 py-3">
+                  <span class="rounded-full px-2 py-0.5 text-xs font-bold" [ngClass]="d.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'">{{ statusLabel(d.status) }}</span>
+                  @if (d.isCustom) {
+                    <span class="ms-1 text-[10px] text-violet-600">✦</span>
+                  }
+                </td>
+                <td class="px-4 py-3 font-mono">{{ d.commissionAtDays | number:'1.1-1' }}{{ copy().pct }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-600" (click)="openView('duration', d.id)">
+                      <ng-icon name="lucideEye" size="14" /> {{ copy().viewDetails }}
+                    </button>
+                    <button type="button" class="inline-flex items-center gap-1 text-xs font-bold text-slate-600" (click)="openEdit('duration', d.id)">
+                      <ng-icon name="lucidePencil" size="14" /> {{ copy().edit }}
+                    </button>
+                    <button type="button" class="text-xs font-bold text-amber-600" (click)="toggleDuration(d.id)">{{ d.status === 'active' ? copy().inactive : copy().active }}</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    @case ('programs') {
+      <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-xs font-bold uppercase text-slate-500">
+            <tr>
+              <th class="px-4 py-3 text-start">{{ copy().colProgram }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colStatus }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colRestaurantsPriced }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colActiveSubs }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colActions }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (p of filteredPrograms(); track p.id) {
+              <tr class="hover:bg-slate-50/50">
+                <td class="px-4 py-3">
+                  <p class="font-bold">{{ programName(p) }}</p>
+                  <p class="text-xs text-slate-400 font-mono">{{ p.id }}</p>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="rounded-full px-2 py-0.5 text-xs font-bold" [ngClass]="p.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'">{{ statusLabel(p.status) }}</span>
+                  @if (p.activeSubscriptionCount > 0 && p.status !== 'active') {
+                    <span class="ms-1 text-[10px] text-slate-400">{{ copy().keptForExisting }}</span>
+                  }
+                </td>
+                <td class="px-4 py-3">{{ p.pricedRestaurantCount }}</td>
+                <td class="px-4 py-3">{{ p.activeSubscriptionCount }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-600" (click)="openView('program', p.id)">
+                      <ng-icon name="lucideEye" size="14" /> {{ copy().viewDetails }}
+                    </button>
+                    <button type="button" class="inline-flex items-center gap-1 text-xs font-bold text-slate-600" (click)="openEdit('program', p.id)">
+                      <ng-icon name="lucidePencil" size="14" /> {{ copy().edit }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ copy().empty }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    @case ('bundles') {
+      <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-xs font-bold uppercase text-slate-500">
+            <tr>
+              <th class="px-4 py-3 text-start">{{ copy().colBundle }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colComponents }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colCustom }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colReadiness }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colActiveSubs }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colActions }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (b of filteredBundles(); track b.id) {
+              <tr class="hover:bg-slate-50/50">
+                <td class="px-4 py-3">
+                  <p class="font-bold">{{ programName(b) }}</p>
+                  <p class="text-xs font-mono text-slate-400">{{ b.id }}</p>
+                </td>
+                <td class="px-4 py-3 text-xs text-slate-600">{{ bundleComponentsLabel(b.components) }}</td>
+                <td class="px-4 py-3">{{ b.isCustom ? copy().yes : copy().no }}</td>
+                <td class="px-4 py-3">
+                  <span class="rounded-full px-2 py-0.5 text-xs font-bold" [ngClass]="b.isReady ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'">{{ b.isReady ? copy().ready : copy().notReady }}</span>
+                </td>
+                <td class="px-4 py-3">{{ b.activeSubscriptionCount }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-600" (click)="openView('bundle', b.id)">
+                      <ng-icon name="lucideEye" size="14" /> {{ copy().viewDetails }}
+                    </button>
+                    <button type="button" class="inline-flex items-center gap-1 text-xs font-bold text-slate-600" (click)="openEdit('bundle', b.id)">
+                      <ng-icon name="lucidePencil" size="14" /> {{ copy().edit }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ copy().empty }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+  @if (readinessGaps().length > 0) {
+    <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
+      <p class="font-extrabold text-amber-900">{{ copy().readinessGate }}</p>
+      <p class="mt-1 text-sm text-amber-800">{{ copy().readinessGateDesc }}</p>
+      <ul class="mt-3 space-y-1 text-sm text-amber-900">
+        @for (g of readinessGaps(); track g.programId + g.bundleId) {
+          <li>• {{ locale.isRtl() ? g.programNameAr : g.programNameEn }} / {{ locale.isRtl() ? g.bundleNameAr : g.bundleNameEn }} — <span class="font-bold">{{ copy().notSelectable }}</span></li>
+        }
+      </ul>
+    </div>
+  }
+
+  @if (drawerOpen()) {
+    <mm-catalog-item-drawer
+      [entityType]="drawerEntity()"
+      [mode]="drawerMode()"
+      [itemId]="drawerItemId()"
+      (closed)="closeDrawer()"
+      (saved)="onDrawerSaved($event)"
+      (deleted)="onDrawerDeleted()"
+      (message)="onDrawerMessage($event)"
+      (editRequested)="onDrawerEditRequested()"
+    />
+  }
+
+  @if (toast()) {
+    <mm-detail-toast [message]="toast()!" type="success" />
+  }
+</section>

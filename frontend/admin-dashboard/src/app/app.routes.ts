@@ -60,11 +60,18 @@ export const APP_ROUTES: Routes = [
       },
       ...ADMIN_STUB_ROUTES,
       {
-        path: 'operations/72h-rule',
+        path: 'subscriptions',
+        loadChildren: () =>
+          import('./features/admin/subscriptions/subscriptions.routes').then(
+            (m) => m.SUBSCRIPTIONS_ROUTES,
+          ),
+      },
+      {
+        path: 'operations',
         canActivate: [order72hMonitorGuard],
         loadChildren: () =>
-          import('./features/admin/order-72h-rule/order-72h-rule.routes').then(
-            (m) => m.ORDER_72H_RULE_ROUTES,
+          import('./features/admin/operations/operations.routes').then(
+            (m) => m.OPERATIONS_ROUTES,
           ),
       },
     ],
