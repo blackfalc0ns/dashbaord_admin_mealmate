@@ -13,8 +13,10 @@ import {
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
+import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { SUBSCRIPTIONS_I18N, TIER_LABELS } from '@/core/i18n/translations/subscriptions.i18n';
-import { SubscriptionsStateService } from '../../data/subscriptions-state.service';
+import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
+import { SubscriptionsStore } from '../../data/subscriptions-store';
 import { PlatformCommissionBounds, PlatformCommissionMode, RestaurantTier } from '../../models';
 import { commissionPct } from '../../data/subscription-formulas';
 import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
@@ -34,6 +36,7 @@ const PREVIEW_DAYS = [1, 6, 12, 26] as const;
     MmOperationsKpiCardComponent,
     MmDetailPanelCardComponent,
     MmDetailToastComponent,
+    HasPermissionDirective,
   ],
   providers: [
     provideIcons({
@@ -51,7 +54,8 @@ const PREVIEW_DAYS = [1, 6, 12, 26] as const;
 })
 export class PricingWorkspacePageComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(SubscriptionsStateService);
+  readonly store = inject(SubscriptionsStore);
+  readonly perms = AdminPermissions;
 
   readonly copy = computed(() => SUBSCRIPTIONS_I18N[this.locale.locale()]);
   readonly previewDays = PREVIEW_DAYS;
@@ -64,22 +68,22 @@ export class PricingWorkspacePageComponent {
   readonly dirty = signal(false);
   readonly commissionModalOpen = signal(false);
 
-  readonly alerts = computed(() => this.state.profitabilityAlerts());
-  readonly tierAverages = computed(() => this.state.tierAverages());
+  readonly alerts = computed(() => this.store.profitabilityAlerts());
+  readonly tierAverages = computed(() => this.store.tierAverages());
 
   readonly activeBundles = computed(() =>
-    this.state.bundles().filter((b) => b.status === 'active' || b.status === 'hidden_for_new'),
+    this.store.bundles().filter((b) => b.status === 'active' || b.status === 'hidden_for_new'),
   );
 
   readonly commissionModeLabel = computed(() => {
     const c = this.copy();
-    return this.state.platformCommissionConfig().mode === 'global'
+    return this.store.platformCommissionConfig().mode === 'global'
       ? c.commissionModeGlobal
       : c.commissionModePerBundle;
   });
 
   readonly kpiMaxDisplay = computed(() => {
-    const cfg = this.state.platformCommissionConfig();
+    const cfg = this.store.platformCommissionConfig();
     if (cfg.mode === 'global') return `${cfg.global.maxCommissionPct}${this.copy().pct}`;
     const values = Object.values(cfg.perBundle).map((b) => b.maxCommissionPct);
     if (!values.length) return `${cfg.global.maxCommissionPct}${this.copy().pct}`;
@@ -87,7 +91,7 @@ export class PricingWorkspacePageComponent {
   });
 
   readonly kpiMinDisplay = computed(() => {
-    const cfg = this.state.platformCommissionConfig();
+    const cfg = this.store.platformCommissionConfig();
     if (cfg.mode === 'global') return `${cfg.global.minCommissionPct}${this.copy().pct}`;
     const values = Object.values(cfg.perBundle).map((b) => b.minCommissionPct);
     if (!values.length) return `${cfg.global.minCommissionPct}${this.copy().pct}`;
@@ -108,7 +112,7 @@ export class PricingWorkspacePageComponent {
 
   constructor() {
     effect(() => {
-      const cfg = this.state.platformCommissionConfig();
+      const cfg = this.store.platformCommissionConfig();
       if (this.dirty()) return;
       this.modeDraft.set(cfg.mode);
       this.globalMax.set(cfg.global.maxCommissionPct);
@@ -151,7 +155,7 @@ export class PricingWorkspacePageComponent {
   }
 
   private resetDraftFromState(): void {
-    const cfg = this.state.platformCommissionConfig();
+    const cfg = this.store.platformCommissionConfig();
     this.modeDraft.set(cfg.mode);
     this.globalMax.set(cfg.global.maxCommissionPct);
     this.globalMin.set(cfg.global.minCommissionPct);
@@ -216,7 +220,7 @@ export class PricingWorkspacePageComponent {
       perBundle[bundle.id] = { ...this.boundsForBundleDraft(bundle.id) };
     }
 
-    this.state.updatePlatformCommissionConfig({
+    this.store.updatePlatformCommissionConfig({
       mode,
       global,
       perBundle,

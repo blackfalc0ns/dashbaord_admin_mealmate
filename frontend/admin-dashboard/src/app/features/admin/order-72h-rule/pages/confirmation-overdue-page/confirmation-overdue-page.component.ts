@@ -4,7 +4,7 @@ import { lucideSearch, lucideCircleAlert, lucideRefreshCw, lucideStore } from '@
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
 import { ORDERS_72H_I18N } from '../../../../../core/i18n/translations/orders-72h.i18n';
-import { Order72hStateService } from '../../data/order-72h-state.service';
+import { Order72hStore } from '../../data/order-72h-store';
 import { Order72hTableComponent } from '../../components/order-72h-table/order-72h-table.component';
 
 @Component({
@@ -17,14 +17,14 @@ import { Order72hTableComponent } from '../../components/order-72h-table/order-7
 })
 export class ConfirmationOverduePageComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(Order72hStateService);
+  readonly store = inject(Order72hStore);
 
   readonly copy = computed(() => ORDERS_72H_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
   readonly toast = signal<string | null>(null);
 
   readonly rows = computed(() => {
-    let list = this.state.overdueRows();
+    let list = this.store.overdueRows();
     const q = this.searchQuery().toLowerCase().trim();
     if (q) {
       list = list.filter(
@@ -38,13 +38,13 @@ export class ConfirmationOverduePageComponent {
   });
 
   openReplacement = (orderId: string): void => {
-    this.state.openReplacementWindow(orderId, 'Restaurant missed 24h confirmation');
+    this.store.openReplacementWindow(orderId, 'Restaurant missed 24h confirmation');
     this.toast.set(`${this.copy().openReplacement}: ${orderId}`);
     setTimeout(() => this.toast.set(null), 3000);
   };
 
   manualReassign = (orderId: string): void => {
-    this.state.manualReassign(orderId, 'RST-002', 'Green Kitchen');
+    this.store.manualReassign(orderId, 'RST-002', 'Green Kitchen');
     this.toast.set(`${this.copy().manualReassign}: ${orderId}`);
     setTimeout(() => this.toast.set(null), 3000);
   };

@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { adminPermissionGuard } from '@/core/auth/admin-permission.guard';
+import { AdminPermissions } from '@/core/auth/admin-permissions';
 
 const loadPlaceholder = () =>
   import('./shared/pages/admin-placeholder-page/admin-placeholder-page.component').then(
@@ -9,6 +11,7 @@ const loadPlaceholder = () =>
 export const ADMIN_STUB_ROUTES: Routes = [
   {
     path: 'accounts/pending',
+    canActivate: [adminPermissionGuard(AdminPermissions.accountsView)],
     loadComponent: () =>
       import('./accounts/pages/pending-accounts-page/pending-accounts-page.component').then(
         (m) => m.PendingAccountsPageComponent,
@@ -16,6 +19,7 @@ export const ADMIN_STUB_ROUTES: Routes = [
   },
   {
     path: 'accounts/pending/:id',
+    canActivate: [adminPermissionGuard(AdminPermissions.accountsView)],
     loadComponent: () =>
       import('./accounts/pages/pending-account-detail-page/pending-account-detail-page.component').then(
         (m) => m.PendingAccountDetailPageComponent,

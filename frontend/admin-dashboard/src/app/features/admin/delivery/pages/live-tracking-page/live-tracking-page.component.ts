@@ -13,7 +13,7 @@ import {
   DELIVERY_I18N,
   DELIVERY_STATUS_LABELS,
 } from '../../../../../core/i18n/translations/delivery.i18n';
-import { DeliveryStateService } from '../../data/delivery-state.service';
+import { DeliveryStore } from '../../data/delivery-store';
 import { DeliveryStatus } from '../../models/delivery.model';
 
 @Component({
@@ -33,14 +33,14 @@ import { DeliveryStatus } from '../../models/delivery.model';
 })
 export class LiveTrackingPageComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(DeliveryStateService);
+  readonly store = inject(DeliveryStore);
 
   readonly copy = computed(() => DELIVERY_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
   readonly statusFilter = signal<string>('all');
 
   readonly kpis = computed(() => {
-    const rows = this.state.trackingRows();
+    const rows = this.store.trackingRows();
     return {
       active: rows.filter((r) =>
         ['picked_up', 'in_transit', 'arriving'].includes(r.status),
@@ -52,7 +52,7 @@ export class LiveTrackingPageComponent {
   });
 
   readonly filteredRows = computed(() => {
-    let rows = this.state.trackingRows();
+    let rows = this.store.trackingRows();
     const q = this.searchQuery().toLowerCase().trim();
     const status = this.statusFilter();
 

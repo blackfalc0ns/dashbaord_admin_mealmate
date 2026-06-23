@@ -1,10 +1,10 @@
-/** Admin API paths — dashboard, F06, and shared operational endpoints. */
+/** Admin API paths — aligned with blueprint `/api/v1/...` contract. */
 export const AdminApiEndpoints = {
-  dashboardOverview: '/api/admin/dashboard/overview',
-  confirmationOverdue: '/api/admin/orders/confirmation-overdue',
+  dashboardOverview: '/api/v1/admin/dashboard/overview',
+  confirmationOverdue: '/api/v1/admin/orders/confirmation-overdue',
   openReplacementWindow: (orderId: string) =>
-    `/api/admin/orders/${orderId}/open-replacement-window`,
+    `/api/v1/admin/orders/${orderId}/open-replacement-window`,
   manualReassign: (orderId: string) =>
-    `/api/admin/orders/${orderId}/manual-reassign`,
-  orderException: (orderId: string) => `/api/admin/orders/${orderId}/exception`,
+    `/api/v1/admin/orders/${orderId}/manual-reassign`,
+  orderException: (orderId: string) => `/api/v1/admin/orders/${orderId}/exception`,
 } as const;

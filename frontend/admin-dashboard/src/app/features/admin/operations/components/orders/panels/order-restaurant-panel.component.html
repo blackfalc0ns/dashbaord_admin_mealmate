@@ -74,21 +74,25 @@
       @if (order.phase === OrderLifecyclePhase.ConfirmationOverdue || order.phase === OrderLifecyclePhase.ReplacementWindowOpen) {
         <div class="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
           @if (order.phase === OrderLifecyclePhase.ConfirmationOverdue) {
+            <ng-container *mmHasPermission="perms.order72hOpenReplacement">
+              <button
+                type="button"
+                class="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-violet-700"
+                (click)="action.emit('replacement')"
+              >
+                {{ copy().openReplacement }}
+              </button>
+            </ng-container>
+          }
+          <ng-container *mmHasPermission="perms.order72hManualReassign">
             <button
               type="button"
-              class="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-violet-700"
-              (click)="action.emit('replacement')"
+              class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold hover:bg-slate-50"
+              (click)="action.emit('reassign')"
             >
-              {{ copy().openReplacement }}
+              {{ copy().manualReassign }}
             </button>
-          }
-          <button
-            type="button"
-            class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold hover:bg-slate-50"
-            (click)="action.emit('reassign')"
-          >
-            {{ copy().manualReassign }}
-          </button>
+          </ng-container>
         </div>
       }
     </mm-detail-panel-card>

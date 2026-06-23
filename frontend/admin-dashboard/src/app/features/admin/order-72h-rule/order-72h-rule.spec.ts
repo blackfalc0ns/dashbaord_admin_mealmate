@@ -1,4 +1,4 @@
-describe('Order72hFacade', () => {
+describe('Order72hStore', () => {
   it.todo('loads monitor rows with loading/success/error states');
   it.todo('loads confirmation-overdue list');
   it.todo('opens replacement window with permission check');

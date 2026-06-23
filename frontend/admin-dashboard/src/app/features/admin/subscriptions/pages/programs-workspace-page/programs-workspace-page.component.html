@@ -28,10 +28,12 @@
           </select>
         }
       }
-      <button type="button" class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700" (click)="openCreate()">
-        <ng-icon name="lucidePlus" size="14" /> {{ addLabel() }}
-      </button>
-      <button type="button" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white" (click)="savePublish()">{{ copy().savePublish }}</button>
+      <ng-container *mmHasPermission="perms.subscriptionsManage">
+        <button type="button" class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700" (click)="openCreate()">
+          <ng-icon name="lucidePlus" size="14" /> {{ addLabel() }}
+        </button>
+        <button type="button" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white" (click)="savePublish()">{{ copy().savePublish }}</button>
+      </ng-container>
     </div>
   </div>
 
@@ -51,7 +53,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            @for (d of state.durations(); track d.id) {
+            @for (d of store.durations(); track d.id) {
               <tr class="hover:bg-slate-50/50">
                 <td class="px-4 py-3">
                   <p class="font-bold">{{ locale.isRtl() ? d.nameAr : d.nameEn }}</p>
@@ -73,7 +75,9 @@
                     <button type="button" class="inline-flex items-center gap-1 text-xs font-bold text-slate-600" (click)="openEdit('duration', d.id)">
                       <ng-icon name="lucidePencil" size="14" /> {{ copy().edit }}
                     </button>
-                    <button type="button" class="text-xs font-bold text-amber-600" (click)="toggleDuration(d.id)">{{ d.status === 'active' ? copy().inactive : copy().active }}</button>
+                    <ng-container *mmHasPermission="perms.subscriptionsManage">
+                      <button type="button" class="text-xs font-bold text-amber-600" (click)="toggleDuration(d.id)">{{ d.status === 'active' ? copy().inactive : copy().active }}</button>
+                    </ng-container>
                   </div>
                 </td>
               </tr>

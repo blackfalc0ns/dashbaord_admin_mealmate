@@ -1,3 +1,3 @@
 export { SUBSCRIPTIONS_ROUTES } from './subscriptions.routes';
-export { SubscriptionsStateService } from './data/subscriptions-state.service';
+export { SubscriptionsStore, SubscriptionsStateService } from './data/subscriptions-store';
 export * from './models';

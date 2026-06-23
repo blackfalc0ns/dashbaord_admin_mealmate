@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AuthFacade } from '@/features/auth/state/auth.facade';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -124,6 +125,7 @@ const SIDEBAR_TRANSITION_MS = 360;
 })
 export class AdminSidebarComponent {
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthFacade);
   private readonly destroyRef = inject(DestroyRef);
   readonly locale = inject(AppLocaleService);
   readonly layout = inject(AdminShellLayoutService);
@@ -334,7 +336,7 @@ export class AdminSidebarComponent {
   }
 
   logout(): void {
-    void this.router.navigate(['/login']);
+    this.auth.logout();
   }
 
   private applyViewportLayout(viewport: AdminViewport): void {

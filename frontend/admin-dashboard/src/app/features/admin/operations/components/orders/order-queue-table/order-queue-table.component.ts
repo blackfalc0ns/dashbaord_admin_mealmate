@@ -1,8 +1,10 @@
 import { Component, Input, inject, computed, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { AdminOrderRow, OrderLifecyclePhase } from '../../../models';
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
+import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
 import {
   MmOrderLifecycleBadgeComponent,
   MmSlaCountdownComponent,
@@ -13,12 +15,13 @@ export type OrderActionType = 'replacement' | 'reassign' | 'exception';
 @Component({
   selector: 'mm-order-queue-table',
   standalone: true,
-  imports: [RouterLink, MmOrderLifecycleBadgeComponent, MmSlaCountdownComponent],
+  imports: [RouterLink, MmOrderLifecycleBadgeComponent, MmSlaCountdownComponent, HasPermissionDirective],
   templateUrl: './order-queue-table.component.html',
 })
 export class OrderQueueTableComponent {
   readonly locale = inject(AppLocaleService);
   readonly copy = computed(() => OPERATIONS_I18N[this.locale.locale()]);
+  readonly perms = AdminPermissions;
 
   @Input({ required: true }) rows: AdminOrderRow[] = [];
 

@@ -31,20 +31,24 @@
           @if (mode === 'overdue') {
             <td class="px-4 py-3">
               <div class="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  class="rounded-lg bg-violet-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-violet-700"
-                  (click)="onOpenReplacement?.(row.orderId)"
-                >
-                  {{ copy().openReplacement }}
-                </button>
-                <button
-                  type="button"
-                  class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-50"
-                  (click)="onManualReassign?.(row.orderId)"
-                >
-                  {{ copy().manualReassign }}
-                </button>
+                <ng-container *mmHasPermission="perms.order72hOpenReplacement">
+                  <button
+                    type="button"
+                    class="rounded-lg bg-violet-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-violet-700"
+                    (click)="onOpenReplacement?.(row.orderId)"
+                  >
+                    {{ copy().openReplacement }}
+                  </button>
+                </ng-container>
+                <ng-container *mmHasPermission="perms.order72hManualReassign">
+                  <button
+                    type="button"
+                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-50"
+                    (click)="onManualReassign?.(row.orderId)"
+                  >
+                    {{ copy().manualReassign }}
+                  </button>
+                </ng-container>
               </div>
             </td>
           }

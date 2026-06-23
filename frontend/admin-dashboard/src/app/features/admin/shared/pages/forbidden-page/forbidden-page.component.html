@@ -1,0 +1,32 @@
+<section
+  class="flex min-h-[60vh] flex-col items-center justify-center px-4 py-12 text-center"
+  [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'"
+>
+  <div
+    class="flex size-16 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 ring-1 ring-rose-100"
+    aria-hidden="true"
+  >
+    <ng-icon name="lucideShieldAlert" size="32" />
+  </div>
+
+  <h1 class="mt-6 text-2xl font-extrabold text-slate-900">{{ copy().title }}</h1>
+  <p class="mt-3 max-w-md text-sm leading-relaxed text-slate-600">{{ copy().message }}</p>
+  <p class="mt-2 max-w-md text-xs text-slate-400">{{ copy().hint }}</p>
+
+  <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+    <a
+      routerLink="/admin/overview"
+      class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-700"
+    >
+      <ng-icon name="lucideLayoutDashboard" size="16" />
+      {{ copy().backOverview }}
+    </a>
+    <a
+      routerLink="/login"
+      class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50"
+    >
+      <ng-icon name="lucideLogIn" size="16" />
+      {{ copy().backLogin }}
+    </a>
+  </div>
+</section>

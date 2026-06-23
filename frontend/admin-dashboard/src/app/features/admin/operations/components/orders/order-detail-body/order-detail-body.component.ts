@@ -14,7 +14,9 @@ import {
   RestaurantConfirmationStatus,
 } from '../../../models/order-lifecycle.enums';
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
+import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { DELIVERY_STATUS_LABELS, OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
+import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
 import { MmDetailFieldComponent, MmDetailPanelCardComponent } from '@/shared/components/accounts';
 import {
   MmAuditTimelineComponent,
@@ -33,12 +35,14 @@ import {
     MmAuditTimelineComponent,
     MmOrderLifecycleBadgeComponent,
     MmSlaCountdownComponent,
+    HasPermissionDirective,
   ],
   templateUrl: './order-detail-body.component.html',
 })
 export class OrderDetailBodyComponent {
   readonly locale = inject(AppLocaleService);
   readonly copy = computed(() => OPERATIONS_I18N[this.locale.locale()]);
+  readonly perms = AdminPermissions;
   readonly OrderLifecyclePhase = OrderLifecyclePhase;
   readonly RestaurantConfirmationStatus = RestaurantConfirmationStatus;
 

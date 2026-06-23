@@ -7,18 +7,21 @@ import {
   RestaurantConfirmationStatus,
 } from '../../../models/order-lifecycle.enums';
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
+import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
+import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
 import { MmDetailFieldComponent, MmDetailPanelCardComponent } from '@/shared/components/accounts';
 
 @Component({
   selector: 'mm-order-restaurant-panel',
   standalone: true,
-  imports: [RouterLink, NgIconComponent, MmDetailFieldComponent, MmDetailPanelCardComponent],
+  imports: [RouterLink, NgIconComponent, MmDetailFieldComponent, MmDetailPanelCardComponent, HasPermissionDirective],
   templateUrl: './order-restaurant-panel.component.html',
 })
 export class OrderRestaurantPanelComponent {
   readonly locale = inject(AppLocaleService);
   readonly copy = computed(() => OPERATIONS_I18N[this.locale.locale()]);
+  readonly perms = AdminPermissions;
   readonly OrderLifecyclePhase = OrderLifecyclePhase;
   readonly RestaurantConfirmationStatus = RestaurantConfirmationStatus;
 

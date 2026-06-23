@@ -4,7 +4,7 @@ import { lucideSearch } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { HOLD_STATUS_LABELS, OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
-import { OperationsStateService } from '../../../data/operations-state.service';
+import { OperationsStore } from '../../../data/operations-store';
 import { HoldCaseStatus } from '../../../models/delivery.model';
 
 @Component({
@@ -16,7 +16,7 @@ import { HoldCaseStatus } from '../../../models/delivery.model';
 })
 export class HoldPanelComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(OperationsStateService);
+  readonly state = inject(OperationsStore);
   readonly copy = computed(() => OPERATIONS_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
   readonly toast = signal<string | null>(null);

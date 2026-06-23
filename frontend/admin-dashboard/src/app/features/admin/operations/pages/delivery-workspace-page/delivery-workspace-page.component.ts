@@ -6,7 +6,7 @@ import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
 import { TrackingPanelComponent } from '../../components/delivery/tracking-panel/tracking-panel.component';
 import { HoldPanelComponent } from '../../components/delivery/hold-panel/hold-panel.component';
-import { OperationsStateService } from '../../data/operations-state.service';
+import { OperationsStore } from '../../data/operations-store';
 
 @Component({
   selector: 'mm-delivery-workspace-page',
@@ -17,7 +17,7 @@ import { OperationsStateService } from '../../data/operations-state.service';
 })
 export class DeliveryWorkspacePageComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(OperationsStateService);
+  readonly state = inject(OperationsStore);
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
 

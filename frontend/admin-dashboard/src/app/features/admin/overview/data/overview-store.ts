@@ -1,17 +1,17 @@
 import { Injectable, inject, signal } from '@angular/core';
-
-import { PageStateModel } from '../../../../shared/models/page-view-state.model';
+import { PageStateModel } from '@/shared/models/page-view-state.model';
 import {
   OverviewDashboardResponse,
   OverviewFilter,
   OverviewPeriod,
 } from '../models/overview.model';
-import { OverviewApiService } from '../data/overview-api.service';
+import { OverviewApiService } from './overview-api.service';
 
 const initialFilter: OverviewFilter = { period: 'today' };
 
+/** Signal store for F118 Admin Dashboard Overview. */
 @Injectable({ providedIn: 'root' })
-export class OverviewFacade {
+export class OverviewStore {
   private readonly api = inject(OverviewApiService);
 
   readonly page = signal<PageStateModel>({ viewState: 'idle' });
@@ -52,3 +52,6 @@ export class OverviewFacade {
     this.page.set({ viewState: 'idle' });
   }
 }
+
+/** @deprecated Use OverviewStore */
+export { OverviewStore as OverviewFacade };

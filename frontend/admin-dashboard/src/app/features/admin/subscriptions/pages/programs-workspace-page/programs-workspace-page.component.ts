@@ -16,8 +16,10 @@ import {
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
+import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { SUBSCRIPTIONS_I18N } from '@/core/i18n/translations/subscriptions.i18n';
-import { SubscriptionsStateService } from '../../data/subscriptions-state.service';
+import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
+import { SubscriptionsStore } from '../../data/subscriptions-store';
 import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
 import { MmDetailToastComponent } from '@/shared/components/accounts';
 import {
@@ -38,6 +40,7 @@ type ProgramsTab = 'durations' | 'programs' | 'bundles';
     MmOperationsKpiCardComponent,
     MmDetailToastComponent,
     CatalogItemDrawerComponent,
+    HasPermissionDirective,
   ],
   providers: [
     provideIcons({
@@ -59,7 +62,8 @@ type ProgramsTab = 'durations' | 'programs' | 'bundles';
 })
 export class ProgramsWorkspacePageComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(SubscriptionsStateService);
+  readonly store = inject(SubscriptionsStore);
+  readonly perms = AdminPermissions;
 
   readonly copy = computed(() => SUBSCRIPTIONS_I18N[this.locale.locale()]);
   readonly activeTab = signal<ProgramsTab>('durations');
@@ -72,12 +76,12 @@ export class ProgramsWorkspacePageComponent {
   readonly drawerMode = signal<CatalogDrawerMode>('view');
   readonly drawerItemId = signal<string | null>(null);
 
-  readonly stats = computed(() => this.state.stats());
-  readonly readinessGaps = computed(() => this.state.readinessGaps());
+  readonly stats = computed(() => this.store.stats());
+  readonly readinessGaps = computed(() => this.store.readinessGaps());
 
   readonly kpis = computed(() => ({
-    programs: this.state.programs().filter((p) => p.status === 'active').length,
-    bundles: this.state.bundles().filter((b) => b.status === 'active').length,
+    programs: this.store.programs().filter((p) => p.status === 'active').length,
+    bundles: this.store.bundles().filter((b) => b.status === 'active').length,
     awaiting: this.readinessGaps().length,
     activeSubs: this.stats().activeSubscriptions,
     frozen: this.stats().frozenSubscriptions,
@@ -85,7 +89,7 @@ export class ProgramsWorkspacePageComponent {
   }));
 
   readonly filteredPrograms = computed(() => {
-    let rows = this.state.programs();
+    let rows = this.store.programs();
     const q = this.searchQuery().toLowerCase().trim();
     const st = this.statusFilter();
     if (st !== 'all') {
@@ -103,7 +107,7 @@ export class ProgramsWorkspacePageComponent {
   });
 
   readonly filteredBundles = computed(() => {
-    let rows = this.state.bundles();
+    let rows = this.store.bundles();
     const q = this.searchQuery().toLowerCase().trim();
     if (q) {
       rows = rows.filter(
@@ -204,7 +208,7 @@ export class ProgramsWorkspacePageComponent {
   }
 
   toggleDuration(id: string): void {
-    this.state.toggleDuration(id);
+    this.store.toggleDuration(id);
     this.showToast(this.copy().saved);
   }
 

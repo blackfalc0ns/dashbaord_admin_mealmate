@@ -30,9 +30,9 @@
             </div>
             <div>
               <p class="mb-2 text-xs font-bold uppercase text-slate-500">{{ copy().linkedRestaurants }}</p>
-              @if (state.getRestaurantsForProgram(p.id).length) {
+              @if (store.getRestaurantsForProgram(p.id).length) {
                 <div class="flex flex-wrap gap-1">
-                  @for (name of state.getRestaurantsForProgram(p.id); track name) {
+                  @for (name of store.getRestaurantsForProgram(p.id); track name) {
                     <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium">{{ name }}</span>
                   }
                 </div>
@@ -43,7 +43,7 @@
             <div>
               <p class="mb-2 text-xs font-bold uppercase text-slate-500">{{ copy().programBundlesTitle }}</p>
               <ul class="space-y-1 text-sm">
-                @for (b of state.getBundlePricingForProgram(p.id); track b.bundleId) {
+                @for (b of store.getBundlePricingForProgram(p.id); track b.bundleId) {
                   <li class="flex justify-between rounded-lg border border-slate-100 px-3 py-2">
                     <span>{{ locale.isRtl() ? b.nameAr : b.nameEn }}</span>
                     <span class="text-xs font-bold" [class.text-emerald-600]="b.priced" [class.text-amber-600]="!b.priced">
@@ -68,7 +68,7 @@
             <div class="sm:col-span-2">
               <p class="mb-2 text-xs font-bold uppercase text-slate-500">{{ copy().bundleProgramsTitle }}</p>
               <ul class="space-y-1 text-sm">
-                @for (p of state.getProgramsForBundle(b.id); track p.programId) {
+                @for (p of store.getProgramsForBundle(b.id); track p.programId) {
                   <li class="flex justify-between rounded-lg border border-slate-100 px-3 py-2">
                     <span>{{ locale.isRtl() ? p.nameAr : p.nameEn }}</span>
                     <span class="text-xs font-bold" [class.text-emerald-600]="p.priced">{{ p.priced ? copy().priced : copy().notPriced }}</span>
@@ -185,9 +185,11 @@
       <div class="flex gap-2">
         <button type="button" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold" (click)="closed.emit()">{{ copy().cancel }}</button>
         @if (mode() !== 'view') {
-          <button type="button" class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white" (click)="save()">
-            <ng-icon name="lucideSave" size="14" /> {{ copy().save }}
-          </button>
+          <ng-container *mmHasPermission="perms.subscriptionsManage">
+            <button type="button" class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white" (click)="save()">
+              <ng-icon name="lucideSave" size="14" /> {{ copy().save }}
+            </button>
+          </ng-container>
         }
       </div>
     </div>

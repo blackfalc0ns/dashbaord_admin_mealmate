@@ -6,20 +6,25 @@ import {
 } from '@angular/forms';
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
+import { AdminAuthStore } from '@/core/auth/admin-auth.store';
+import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { ORDERS_72H_I18N } from '../../../../../core/i18n/translations/orders-72h.i18n';
-import { Order72hStateService } from '../../data/order-72h-state.service';
+import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
+import { Order72hStore } from '../../data/order-72h-store';
 import { OrderExceptionType } from '../../models';
 
 @Component({
   selector: 'mm-exception-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, HasPermissionDirective],
   templateUrl: './exception-form.component.html',
 })
 export class ExceptionFormComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AdminAuthStore);
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(Order72hStateService);
+  readonly store = inject(Order72hStore);
+  readonly perms = AdminPermissions;
 
   readonly copy = computed(() => ORDERS_72H_I18N[this.locale.locale()]);
   readonly submitted = signal(false);
@@ -37,13 +42,14 @@ export class ExceptionFormComponent {
   ]);
 
   onSubmit(): void {
+    if (!this.auth.canAccess(AdminPermissions.order72hException)) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     const v = this.form.getRawValue();
-    this.state.exceptionLogs.update((logs) => [
+    this.store.exceptionLogs.update((logs) => [
       {
         id: `EXC-${Date.now()}`,
         orderId: v.orderId,

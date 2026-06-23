@@ -2,7 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
 import { ORDERS_72H_I18N } from '../../../../../core/i18n/translations/orders-72h.i18n';
-import { Order72hStateService } from '../../data/order-72h-state.service';
+import { Order72hStore } from '../../data/order-72h-store';
 import { ExceptionFormComponent } from '../../components/exception-form/exception-form.component';
 import { OrderExceptionType } from '../../models';
 
@@ -15,10 +15,10 @@ import { OrderExceptionType } from '../../models';
 })
 export class OrderExceptionPageComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(Order72hStateService);
+  readonly store = inject(Order72hStore);
 
   readonly copy = computed(() => ORDERS_72H_I18N[this.locale.locale()]);
-  readonly logs = computed(() => this.state.exceptionLogs());
+  readonly logs = computed(() => this.store.exceptionLogs());
 
   exceptionLabel(type: OrderExceptionType): string {
     const c = this.copy();

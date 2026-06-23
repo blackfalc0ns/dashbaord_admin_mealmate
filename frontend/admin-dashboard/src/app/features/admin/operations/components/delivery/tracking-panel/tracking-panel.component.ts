@@ -5,7 +5,7 @@ import { lucideSearch, lucideRadar } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { DELIVERY_STATUS_LABELS, OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
-import { OperationsStateService } from '../../../data/operations-state.service';
+import { OperationsStore } from '../../../data/operations-store';
 import { DeliveryStatus } from '../../../models/delivery.model';
 
 @Component({
@@ -17,7 +17,7 @@ import { DeliveryStatus } from '../../../models/delivery.model';
 })
 export class TrackingPanelComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(OperationsStateService);
+  readonly state = inject(OperationsStore);
   readonly copy = computed(() => OPERATIONS_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
   readonly statusFilter = signal('all');

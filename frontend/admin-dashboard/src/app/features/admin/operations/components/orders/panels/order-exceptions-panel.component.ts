@@ -1,4 +1,6 @@
 import { Component, Input, inject, computed, output } from '@angular/core';
+import { AdminAuthStore } from '@/core/auth/admin-auth.store';
+import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { OrderExceptionLog, OrderExceptionType } from '../../../models';
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
@@ -8,9 +10,11 @@ import { OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
   standalone: true,
   template: `
     <div class="mb-4 flex justify-end">
-      <button type="button" class="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white" (click)="applyException.emit()">
-        {{ copy().applyException }}
-      </button>
+      @if (canApplyException()) {
+        <button type="button" class="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white" (click)="applyException.emit()">
+          {{ copy().applyException }}
+        </button>
+      }
     </div>
     @if (logs.length === 0) {
       <p class="text-sm text-slate-500">{{ copy().none }}</p>
@@ -41,10 +45,15 @@ import { OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
   `,
 })
 export class OrderExceptionsPanelComponent {
+  private readonly auth = inject(AdminAuthStore);
   readonly locale = inject(AppLocaleService);
   readonly copy = computed(() => OPERATIONS_I18N[this.locale.locale()]);
   @Input({ required: true }) logs: OrderExceptionLog[] = [];
   readonly applyException = output<void>();
+
+  canApplyException(): boolean {
+    return this.auth.canAccess(AdminPermissions.order72hException);
+  }
 
   exceptionLabel(type: OrderExceptionType): string {
     switch (type) {

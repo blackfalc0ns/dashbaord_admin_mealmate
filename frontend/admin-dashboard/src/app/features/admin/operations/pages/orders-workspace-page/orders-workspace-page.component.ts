@@ -12,7 +12,7 @@ import {
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
-import { OperationsStateService } from '../../data/operations-state.service';
+import { OperationsStore } from '../../data/operations-store';
 import { OrderWorkspaceView } from '../../models';
 import { OrderQueueTableComponent, OrderActionType } from '../../components/orders/order-queue-table/order-queue-table.component';
 import { OrderActionDrawerComponent } from '../../components/orders/order-action-drawer/order-action-drawer.component';
@@ -42,7 +42,7 @@ import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
 })
 export class OrdersWorkspacePageComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(OperationsStateService);
+  readonly state = inject(OperationsStore);
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
 

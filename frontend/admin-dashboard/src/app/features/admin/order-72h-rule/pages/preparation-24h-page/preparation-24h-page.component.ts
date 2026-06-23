@@ -11,7 +11,7 @@ import {
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
 import { ORDERS_72H_I18N } from '../../../../../core/i18n/translations/orders-72h.i18n';
-import { Order72hStateService } from '../../data/order-72h-state.service';
+import { Order72hStore } from '../../data/order-72h-store';
 
 @Component({
   selector: 'mm-preparation-24h-page',
@@ -31,13 +31,13 @@ import { Order72hStateService } from '../../data/order-72h-state.service';
 })
 export class Preparation24hPageComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(Order72hStateService);
+  readonly store = inject(Order72hStore);
 
   readonly copy = computed(() => ORDERS_72H_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
 
   readonly kpis = computed(() => {
-    const rows = this.state.preparationRows();
+    const rows = this.store.preparationRows();
     const ready = rows.filter(
       (r) => r.barcodeGenerated && r.invoiceGenerated && r.driverAssigned,
     ).length;
@@ -47,7 +47,7 @@ export class Preparation24hPageComponent {
   });
 
   readonly filteredRows = computed(() => {
-    let rows = this.state.preparationRows();
+    let rows = this.store.preparationRows();
     const q = this.searchQuery().toLowerCase().trim();
     if (q) {
       rows = rows.filter(

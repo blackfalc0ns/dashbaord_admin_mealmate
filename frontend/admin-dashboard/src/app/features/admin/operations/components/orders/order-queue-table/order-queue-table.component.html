@@ -31,30 +31,36 @@
                 </summary>
                 <div class="absolute z-10 mt-1 min-w-[10rem] rounded-lg border border-slate-200 bg-white py-1 shadow-lg end-0">
                   @if (canOpenReplacement(row)) {
-                    <button
-                      type="button"
-                      class="block w-full px-3 py-1.5 text-start text-xs hover:bg-slate-50"
-                      (click)="requestAction(row.orderId, 'replacement', $event)"
-                    >
-                      {{ copy().openReplacement }}
-                    </button>
+                    <ng-container *mmHasPermission="perms.order72hOpenReplacement">
+                      <button
+                        type="button"
+                        class="block w-full px-3 py-1.5 text-start text-xs hover:bg-slate-50"
+                        (click)="requestAction(row.orderId, 'replacement', $event)"
+                      >
+                        {{ copy().openReplacement }}
+                      </button>
+                    </ng-container>
                   }
                   @if (canReassign(row)) {
+                    <ng-container *mmHasPermission="perms.order72hManualReassign">
+                      <button
+                        type="button"
+                        class="block w-full px-3 py-1.5 text-start text-xs hover:bg-slate-50"
+                        (click)="requestAction(row.orderId, 'reassign', $event)"
+                      >
+                        {{ copy().manualReassign }}
+                      </button>
+                    </ng-container>
+                  }
+                  <ng-container *mmHasPermission="perms.order72hException">
                     <button
                       type="button"
                       class="block w-full px-3 py-1.5 text-start text-xs hover:bg-slate-50"
-                      (click)="requestAction(row.orderId, 'reassign', $event)"
+                      (click)="requestAction(row.orderId, 'exception', $event)"
                     >
-                      {{ copy().manualReassign }}
+                      {{ copy().applyException }}
                     </button>
-                  }
-                  <button
-                    type="button"
-                    class="block w-full px-3 py-1.5 text-start text-xs hover:bg-slate-50"
-                    (click)="requestAction(row.orderId, 'exception', $event)"
-                  >
-                    {{ copy().applyException }}
-                  </button>
+                  </ng-container>
                 </div>
               </details>
             </div>

@@ -8,7 +8,7 @@ import {
   DELIVERY_I18N,
   HOLD_STATUS_LABELS,
 } from '../../../../../core/i18n/translations/delivery.i18n';
-import { DeliveryStateService } from '../../data/delivery-state.service';
+import { DeliveryStore } from '../../data/delivery-store';
 import { HoldCaseStatus } from '../../models/delivery.model';
 
 @Component({
@@ -21,7 +21,7 @@ import { HoldCaseStatus } from '../../models/delivery.model';
 })
 export class HoldCasesPageComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(DeliveryStateService);
+  readonly store = inject(DeliveryStore);
 
   readonly copy = computed(() => DELIVERY_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
@@ -29,7 +29,7 @@ export class HoldCasesPageComponent {
   readonly toast = signal<string | null>(null);
 
   readonly kpis = computed(() => {
-    const cases = this.state.holdCases();
+    const cases = this.store.holdCases();
     return {
       active: cases.filter((c) => c.status === 'active').length,
       contactPending: cases.filter((c) => c.status === 'contact_pending').length,
@@ -39,7 +39,7 @@ export class HoldCasesPageComponent {
   });
 
   readonly filteredCases = computed(() => {
-    let cases = this.state.holdCases();
+    let cases = this.store.holdCases();
     const q = this.searchQuery().toLowerCase().trim();
     const status = this.statusFilter();
 
@@ -65,13 +65,13 @@ export class HoldCasesPageComponent {
   }
 
   resolveCase(caseId: string): void {
-    this.state.resolveHoldCase(caseId);
+    this.store.resolveHoldCase(caseId);
     this.toast.set(`${this.copy().resolve}: ${caseId}`);
     setTimeout(() => this.toast.set(null), 2500);
   }
 
   logContact(caseId: string): void {
-    this.state.recordContactAttempt(caseId);
+    this.store.recordContactAttempt(caseId);
     this.toast.set(`${this.copy().logContact}: ${caseId}`);
     setTimeout(() => this.toast.set(null), 2500);
   }

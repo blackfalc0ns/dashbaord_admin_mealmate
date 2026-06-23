@@ -23,7 +23,10 @@ import {
   lucideEye,
 } from '@ng-icons/lucide';
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
+import { AdminPermissions } from '@/core/auth/admin-permissions';
+import { AdminAuthStore } from '@/core/auth/admin-auth.store';
 import { PENDING_ACCOUNTS_I18N } from '../../../../../core/i18n/translations/pending-accounts.i18n';
+import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
 import { AccountsStateService } from '../../data/accounts-state.service';
 import { PendingAccount } from '../../models/accounts.model';
 import { AdminPageContextService } from '../../../../../core/navigation/admin-page-context.service';
@@ -31,7 +34,7 @@ import { AdminPageContextService } from '../../../../../core/navigation/admin-pa
 @Component({
   selector: 'mm-pending-account-detail-page',
   standalone: true,
-  imports: [CommonModule, NgClass, RouterLink, NgIconComponent],
+  imports: [CommonModule, NgClass, RouterLink, NgIconComponent, HasPermissionDirective],
   templateUrl: './pending-account-detail-page.component.html',
   providers: [
     provideIcons({
@@ -61,10 +64,12 @@ export class PendingAccountDetailPageComponent implements OnInit {
   readonly router = inject(Router);
   readonly locale = inject(AppLocaleService);
   readonly stateService = inject(AccountsStateService);
+  private readonly auth = inject(AdminAuthStore);
   private readonly pageContext = inject(AdminPageContextService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly copy = computed(() => PENDING_ACCOUNTS_I18N[this.locale.locale()]);
+  readonly perms = AdminPermissions;
 
   readonly accountId = signal<string | null>(null);
 
@@ -198,6 +203,7 @@ export class PendingAccountDetailPageComponent implements OnInit {
   }
 
   approveAccount(): void {
+    if (!this.auth.canAccess(AdminPermissions.accountsApprove)) return;
     const currentAccount = this.account();
     if (!currentAccount) return;
 
@@ -227,6 +233,7 @@ export class PendingAccountDetailPageComponent implements OnInit {
   }
 
   rejectAccount(): void {
+    if (!this.auth.canAccess(AdminPermissions.accountsApprove)) return;
     const currentAccount = this.account();
     if (!currentAccount) return;
 
@@ -241,6 +248,7 @@ export class PendingAccountDetailPageComponent implements OnInit {
   }
 
   requestMoreDocs(): void {
+    if (!this.auth.canAccess(AdminPermissions.accountsApprove)) return;
     const currentAccount = this.account();
     if (!currentAccount) return;
 

@@ -6,6 +6,7 @@ import {
 } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideZard } from '@/shared/core';
+import { provideAdminHttp } from '@/core/http/provide-admin-http';
 import { APP_ROUTES } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -14,5 +15,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(APP_ROUTES, withComponentInputBinding(), withViewTransitions()),
     provideAnimations(),
     provideZard(),
+    provideAdminHttp(),
   ],
 };

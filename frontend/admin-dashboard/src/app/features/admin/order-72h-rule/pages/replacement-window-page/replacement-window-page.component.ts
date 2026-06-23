@@ -5,7 +5,7 @@ import { lucideSearch, lucideRefreshCw, lucideClock } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
 import { ORDERS_72H_I18N } from '../../../../../core/i18n/translations/orders-72h.i18n';
-import { Order72hStateService } from '../../data/order-72h-state.service';
+import { Order72hStore } from '../../data/order-72h-store';
 import { ReplacementWindowStatus } from '../../models';
 
 @Component({
@@ -18,14 +18,14 @@ import { ReplacementWindowStatus } from '../../models';
 })
 export class ReplacementWindowPageComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(Order72hStateService);
+  readonly store = inject(Order72hStore);
 
   readonly copy = computed(() => ORDERS_72H_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
   readonly statusFilter = signal<string>('all');
 
   readonly kpis = computed(() => {
-    const rows = this.state.replacementWindows();
+    const rows = this.store.replacementWindows();
     return {
       open: rows.filter((r) => r.status === ReplacementWindowStatus.Open).length,
       expired: rows.filter((r) => r.status === ReplacementWindowStatus.Expired).length,
@@ -35,7 +35,7 @@ export class ReplacementWindowPageComponent {
   });
 
   readonly filteredRows = computed(() => {
-    let rows = this.state.replacementWindows();
+    let rows = this.store.replacementWindows();
     const q = this.searchQuery().toLowerCase().trim();
     const status = this.statusFilter();
 

@@ -25,7 +25,7 @@ import { OverviewQuickLinksComponent } from '../../components/overview-quick-lin
 import { OverviewTabBadge } from '../../components/overview-section-nav/overview-section-nav.component';
 import { OverviewOpsQueueComponent } from '../../components/overview-ops-queue/overview-ops-queue.component';
 import { OverviewPeriod } from '../../models/overview.model';
-import { OverviewFacade } from '../../state/overview.facade';
+import { OverviewStore } from '../../data/overview-store';
 
 @Component({
   selector: 'mm-overview-page',
@@ -46,16 +46,16 @@ import { OverviewFacade } from '../../state/overview.facade';
   styleUrl: './overview-page.component.scss',
 })
 export class OverviewPageComponent implements OnInit {
-  readonly facade = inject(OverviewFacade);
+  readonly store = inject(OverviewStore);
   readonly locale = inject(AppLocaleService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
   readonly activeTab = signal<OverviewTabId>(DEFAULT_OVERVIEW_TAB);
 
-  readonly data = this.facade.data;
-  readonly pageState = this.facade.page;
-  readonly filter = this.facade.filter;
+  readonly data = this.store.data;
+  readonly pageState = this.store.page;
+  readonly filter = this.store.filter;
 
   readonly countryLabel = computed(() => {
     const d = this.data();
@@ -98,15 +98,15 @@ export class OverviewPageComponent implements OnInit {
     if (isOverviewTabId(tabParam)) {
       this.activeTab.set(tabParam);
     }
-    this.facade.loadOverview();
+    this.store.loadOverview();
   }
 
   onPeriodChange(period: OverviewPeriod): void {
-    this.facade.setPeriod(period);
+    this.store.setPeriod(period);
   }
 
   onRetry(): void {
-    this.facade.retry();
+    this.store.retry();
   }
 
   onTabChange(tabId: OverviewTabId): void {

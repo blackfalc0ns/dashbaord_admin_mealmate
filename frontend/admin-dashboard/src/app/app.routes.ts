@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-import { order72hMonitorGuard } from './features/admin/order-72h-rule/guards/order-72h-permissions.guard';
+import { adminPermissionGuard } from '@/core/auth/admin-permission.guard';
+import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { ADMIN_STUB_ROUTES } from './features/admin/admin-stub.routes';
 
 export const APP_ROUTES: Routes = [
@@ -21,9 +22,17 @@ export const APP_ROUTES: Routes = [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
       {
         path: 'overview',
+        canActivate: [adminPermissionGuard(AdminPermissions.overviewView)],
         loadComponent: () =>
           import('./features/admin/overview/pages/overview-page/overview-page.component').then(
             (m) => m.OverviewPageComponent,
+          ),
+      },
+      {
+        path: 'forbidden',
+        loadComponent: () =>
+          import('./features/admin/shared/pages/forbidden-page/forbidden-page.component').then(
+            (m) => m.ForbiddenPageComponent,
           ),
       },
       {
@@ -61,6 +70,7 @@ export const APP_ROUTES: Routes = [
       ...ADMIN_STUB_ROUTES,
       {
         path: 'subscriptions',
+        canActivate: [adminPermissionGuard(AdminPermissions.subscriptionsView)],
         loadChildren: () =>
           import('./features/admin/subscriptions/subscriptions.routes').then(
             (m) => m.SUBSCRIPTIONS_ROUTES,
@@ -68,7 +78,7 @@ export const APP_ROUTES: Routes = [
       },
       {
         path: 'operations',
-        canActivate: [order72hMonitorGuard],
+        canActivate: [adminPermissionGuard(AdminPermissions.operationsView)],
         loadChildren: () =>
           import('./features/admin/operations/operations.routes').then(
             (m) => m.OPERATIONS_ROUTES,

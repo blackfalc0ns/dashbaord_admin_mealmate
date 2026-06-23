@@ -5,8 +5,10 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideX, lucidePencil, lucideTrash2, lucideSave } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
+import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { SUBSCRIPTIONS_I18N } from '@/core/i18n/translations/subscriptions.i18n';
-import { SubscriptionsStateService } from '../../data/subscriptions-state.service';
+import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
+import { SubscriptionsStore } from '../../data/subscriptions-store';
 import {
   BundleComponents,
   CatalogStatus,
@@ -21,13 +23,14 @@ export type CatalogDrawerMode = 'view' | 'edit' | 'create';
 @Component({
   selector: 'mm-catalog-item-drawer',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, NgIcon],
+  imports: [FormsModule, DecimalPipe, NgIcon, HasPermissionDirective],
   providers: [provideIcons({ lucideX, lucidePencil, lucideTrash2, lucideSave })],
   templateUrl: './catalog-item-drawer.component.html',
 })
 export class CatalogItemDrawerComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(SubscriptionsStateService);
+  readonly store = inject(SubscriptionsStore);
+  readonly perms = AdminPermissions;
 
   readonly entityType = input.required<CatalogEntityType>();
   readonly mode = input.required<CatalogDrawerMode>();
@@ -57,17 +60,17 @@ export class CatalogItemDrawerComponent {
 
   readonly program = computed(() => {
     const id = this.itemId();
-    return id ? this.state.programs().find((p) => p.id === id) ?? null : null;
+    return id ? this.store.programs().find((p) => p.id === id) ?? null : null;
   });
 
   readonly bundle = computed(() => {
     const id = this.itemId();
-    return id ? this.state.bundles().find((b) => b.id === id) ?? null : null;
+    return id ? this.store.bundles().find((b) => b.id === id) ?? null : null;
   });
 
   readonly duration = computed(() => {
     const id = this.itemId();
-    return id ? this.state.durations().find((d) => d.id === id) ?? null : null;
+    return id ? this.store.durations().find((d) => d.id === id) ?? null : null;
   });
 
   constructor() {
@@ -163,7 +166,7 @@ export class CatalogItemDrawerComponent {
 
     if (type === 'program') {
       if (mode === 'create') {
-        this.state.addProgram({
+        this.store.addProgram({
           nameAr: this.formNameAr(),
           nameEn: this.formNameEn(),
           descriptionAr: this.formDescAr(),
@@ -175,7 +178,7 @@ export class CatalogItemDrawerComponent {
       }
       const id = this.itemId();
       if (!id) return;
-      this.state.updateProgram(id, {
+      this.store.updateProgram(id, {
         nameAr: this.formNameAr(),
         nameEn: this.formNameEn(),
         descriptionAr: this.formDescAr(),
@@ -188,7 +191,7 @@ export class CatalogItemDrawerComponent {
 
     if (type === 'bundle') {
       if (mode === 'create') {
-        this.state.addBundle({
+        this.store.addBundle({
           nameAr: this.formNameAr(),
           nameEn: this.formNameEn(),
           components: this.formComponents(),
@@ -200,7 +203,7 @@ export class CatalogItemDrawerComponent {
       }
       const id = this.itemId();
       if (!id) return;
-      this.state.updateBundle(id, {
+      this.store.updateBundle(id, {
         nameAr: this.formNameAr(),
         nameEn: this.formNameEn(),
         components: this.formComponents(),
@@ -213,7 +216,7 @@ export class CatalogItemDrawerComponent {
 
     if (type === 'duration') {
       if (mode === 'create') {
-        this.state.addDuration({
+        this.store.addDuration({
           nameAr: this.formNameAr(),
           nameEn: this.formNameEn(),
           days: this.formDays(),
@@ -225,7 +228,7 @@ export class CatalogItemDrawerComponent {
       }
       const id = this.itemId();
       if (!id) return;
-      this.state.updateDuration(id, {
+      this.store.updateDuration(id, {
         nameAr: this.formNameAr(),
         nameEn: this.formNameEn(),
         days: this.duration()?.isCustom ? this.formDays() : this.duration()!.days,
@@ -246,18 +249,18 @@ export class CatalogItemDrawerComponent {
     const type = this.entityType();
 
     if (type === 'duration') {
-      const result = this.state.removeDuration(id);
+      const result = this.store.removeDuration(id);
       this.message.emit(result === 'blocked' ? c.cannotDeletePreset : c.deletedMsg);
       this.deleted.emit(result);
       return;
     }
     if (type === 'program') {
-      const result = this.state.removeProgram(id);
+      const result = this.store.removeProgram(id);
       this.message.emit(result === 'hidden' ? c.hideInsteadMsg : c.deletedMsg);
       this.deleted.emit(result);
       return;
     }
-    const result = this.state.removeBundle(id);
+    const result = this.store.removeBundle(id);
     this.message.emit(result === 'hidden' ? c.hideInsteadMsg : c.deletedMsg);
     this.deleted.emit(result);
   }

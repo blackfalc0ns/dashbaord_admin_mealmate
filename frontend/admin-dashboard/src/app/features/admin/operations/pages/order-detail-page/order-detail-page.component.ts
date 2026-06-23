@@ -5,7 +5,7 @@ import { ACCOUNTS_DETAIL_ICONS, MmDetailToastComponent } from '@/shared/componen
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
 import { AdminPageContextService } from '@/core/navigation/admin-page-context.service';
-import { OperationsStateService } from '../../data/operations-state.service';
+import { OperationsStore } from '../../data/operations-store';
 import { OrderDetailBodyComponent } from '../../components/orders/order-detail-body/order-detail-body.component';
 import { OrderActionDrawerComponent } from '../../components/orders/order-action-drawer/order-action-drawer.component';
 import { OrderActionType } from '../../components/orders/order-queue-table/order-queue-table.component';
@@ -26,7 +26,7 @@ import { OrderActionType } from '../../components/orders/order-queue-table/order
 export class OrderDetailPageComponent implements OnInit {
   readonly route = inject(ActivatedRoute);
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(OperationsStateService);
+  readonly state = inject(OperationsStore);
   private readonly pageContext = inject(AdminPageContextService);
   private readonly destroyRef = inject(DestroyRef);
 

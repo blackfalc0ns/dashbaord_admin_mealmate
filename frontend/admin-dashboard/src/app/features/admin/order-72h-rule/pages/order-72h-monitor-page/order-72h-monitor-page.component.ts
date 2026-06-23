@@ -11,7 +11,7 @@ import {
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
 import { ORDERS_72H_I18N } from '../../../../../core/i18n/translations/orders-72h.i18n';
-import { Order72hStateService } from '../../data/order-72h-state.service';
+import { Order72hStore } from '../../data/order-72h-store';
 import { Order72hTableComponent } from '../../components/order-72h-table/order-72h-table.component';
 import { Order72hPhase } from '../../models';
 
@@ -33,14 +33,14 @@ import { Order72hPhase } from '../../models';
 })
 export class Order72hMonitorPageComponent {
   readonly locale = inject(AppLocaleService);
-  readonly state = inject(Order72hStateService);
+  readonly store = inject(Order72hStore);
 
   readonly copy = computed(() => ORDERS_72H_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
   readonly phaseFilter = signal<string>('all');
 
   readonly kpis = computed(() => {
-    const rows = this.state.monitorRows();
+    const rows = this.store.monitorRows();
     return {
       inWindow: rows.length,
       locked: rows.filter((r) => r.isCustomerEditLocked).length,
@@ -54,7 +54,7 @@ export class Order72hMonitorPageComponent {
   });
 
   readonly filteredRows = computed(() => {
-    let rows = this.state.monitorRows();
+    let rows = this.store.monitorRows();
     const q = this.searchQuery().toLowerCase().trim();
     const phase = this.phaseFilter();
 

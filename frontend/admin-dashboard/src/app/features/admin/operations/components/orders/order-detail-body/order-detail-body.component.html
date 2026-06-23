@@ -137,21 +137,25 @@
         @if (showRestaurantActions()) {
           <div class="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
             @if (order.phase === OrderLifecyclePhase.ConfirmationOverdue) {
+              <ng-container *mmHasPermission="perms.order72hOpenReplacement">
+                <button
+                  type="button"
+                  class="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-violet-700"
+                  (click)="restaurantAction.emit('replacement')"
+                >
+                  {{ copy().openReplacement }}
+                </button>
+              </ng-container>
+            }
+            <ng-container *mmHasPermission="perms.order72hManualReassign">
               <button
                 type="button"
-                class="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-violet-700"
-                (click)="restaurantAction.emit('replacement')"
+                class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold hover:bg-slate-50"
+                (click)="restaurantAction.emit('reassign')"
               >
-                {{ copy().openReplacement }}
+                {{ copy().manualReassign }}
               </button>
-            }
-            <button
-              type="button"
-              class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold hover:bg-slate-50"
-              (click)="restaurantAction.emit('reassign')"
-            >
-              {{ copy().manualReassign }}
-            </button>
+            </ng-container>
           </div>
         }
       </mm-detail-panel-card>
@@ -218,13 +222,15 @@
           <div class="border-t border-slate-100 pt-3">
             <div class="mb-2 flex items-center justify-between gap-2">
               <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ copy().tabExceptions }}</p>
-              <button
-                type="button"
-                class="rounded-md bg-amber-600 px-2 py-1 text-[10px] font-bold text-white"
-                (click)="applyException.emit()"
-              >
-                {{ copy().applyException }}
-              </button>
+              <ng-container *mmHasPermission="perms.order72hException">
+                <button
+                  type="button"
+                  class="rounded-md bg-amber-600 px-2 py-1 text-[10px] font-bold text-white"
+                  (click)="applyException.emit()"
+                >
+                  {{ copy().applyException }}
+                </button>
+              </ng-container>
             </div>
             @if (exceptions.length === 0) {
               <p class="text-xs text-slate-400">{{ copy().noExceptionsYet }}</p>

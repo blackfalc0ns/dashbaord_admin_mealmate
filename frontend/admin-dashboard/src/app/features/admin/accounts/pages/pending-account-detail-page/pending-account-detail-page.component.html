@@ -646,34 +646,40 @@
         </a>
 
         <!-- Reject Request -->
-        <button
-          type="button"
-          class="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50/50 px-4 py-2.5 text-xs font-bold text-red-700 shadow-sm transition-all hover:bg-red-600 hover:text-white hover:border-red-600"
-          (click)="rejectAccount()"
-        >
-          <ng-icon name="lucideX" size="14" />
-          <span>{{ copy().rejectRequest }}</span>
-        </button>
+        <ng-container *mmHasPermission="perms.accountsApprove">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50/50 px-4 py-2.5 text-xs font-bold text-red-700 shadow-sm transition-all hover:bg-red-600 hover:text-white hover:border-red-600"
+            (click)="rejectAccount()"
+          >
+            <ng-icon name="lucideX" size="14" />
+            <span>{{ copy().rejectRequest }}</span>
+          </button>
+        </ng-container>
 
         <!-- Request More Docs -->
-        <button
-          type="button"
-          class="inline-flex items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-2.5 text-xs font-bold text-amber-700 shadow-sm transition-all hover:bg-amber-500 hover:text-white hover:border-amber-500"
-          (click)="requestMoreDocs()"
-        >
-          <ng-icon name="lucideClock" size="14" />
-          <span>{{ copy().requestDocs }}</span>
-        </button>
+        <ng-container *mmHasPermission="perms.accountsApprove">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50/30 px-4 py-2.5 text-xs font-bold text-amber-700 shadow-sm transition-all hover:bg-amber-500 hover:text-white hover:border-amber-500"
+            (click)="requestMoreDocs()"
+          >
+            <ng-icon name="lucideClock" size="14" />
+            <span>{{ copy().requestDocs }}</span>
+          </button>
+        </ng-container>
 
         <!-- Approve & Activate (Primary Action) -->
-        <button
-          type="button"
-          class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-bold text-white shadow-[0_4px_14px_-4px_rgba(16,185,129,0.4)] transition-all hover:from-emerald-700 hover:to-teal-700 hover:shadow-[0_6px_20px_-4px_rgba(16,185,129,0.6)] hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-          (click)="approveAccount()"
-        >
-          <ng-icon name="lucideCheck" size="14" />
-          <span>{{ copy().approveAndActivate }}</span>
-        </button>
+        <ng-container *mmHasPermission="perms.accountsApprove">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-bold text-white shadow-[0_4px_14px_-4px_rgba(16,185,129,0.4)] transition-all hover:from-emerald-700 hover:to-teal-700 hover:shadow-[0_6px_20px_-4px_rgba(16,185,129,0.6)] hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+            (click)="approveAccount()"
+          >
+            <ng-icon name="lucideCheck" size="14" />
+            <span>{{ copy().approveAndActivate }}</span>
+          </button>
+        </ng-container>
       </div>
     </div>
 

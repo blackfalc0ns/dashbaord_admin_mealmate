@@ -1,3 +1,3 @@
 export * from './operations.routes';
-export * from './data/operations-state.service';
+export * from './data/operations-store';
 export * from './models';
