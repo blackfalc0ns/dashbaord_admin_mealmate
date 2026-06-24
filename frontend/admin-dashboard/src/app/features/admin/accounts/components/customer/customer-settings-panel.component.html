@@ -1,0 +1,64 @@
+@if (customer(); as item) {
+<div class="grid gap-4 lg:grid-cols-3">
+  <div class="flex flex-col gap-4 lg:col-span-2">
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+        <ng-icon name="lucideSettings" size="16" class="text-emerald-600" />
+        <span>{{ locale.isRtl() ? 'معلومات الحساب' : 'Account information' }}</span>
+      </h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ copy().serviceArea }}</span>
+          <span class="text-sm font-bold text-slate-800">{{ t(item.areaAr, item.areaEn) }}</span>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ copy().status }}</span>
+          <span class="text-sm font-bold text-slate-800">{{ t(item.statusAr, item.statusEn) }}</span>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ copy().joinedAt }}</span>
+          <span class="text-sm font-bold text-slate-800">{{ t(item.joinedAtAr, item.joinedAtEn) }}</span>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ copy().lastActivity }}</span>
+          <span class="text-sm font-bold text-slate-800">{{ t(item.lastActivityAr, item.lastActivityEn) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h2 class="mb-3 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2 flex items-center gap-2">
+        <ng-icon name="lucideSettings" size="16" class="text-emerald-600" />
+        <span>{{ copy().quickActions }}</span>
+      </h2>
+      <div class="flex flex-col gap-2.5">
+        @if (canFreeze(item)) {
+          <button type="button"
+            class="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-bold shadow-sm transition-all"
+            [ngClass]="{
+              'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100': item.status === 'Active',
+              'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100': item.status === 'Frozen'
+            }"
+            (click)="onToggleFreeze()">
+            <ng-icon name="lucideSnowflake" size="14" />
+            <span>{{ item.status === 'Frozen' ? copy().unfreezeSubscription : copy().freezeSubscription }}</span>
+          </button>
+        }
+
+        <button type="button"
+          class="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-bold shadow-sm transition-all"
+          [ngClass]="{
+            'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100': item.status === 'Suspended',
+            'border-red-200 bg-red-50 text-red-700 hover:bg-red-100': item.status !== 'Suspended'
+          }"
+          (click)="onToggleSuspension()">
+          <ng-icon [name]="item.status === 'Suspended' ? 'lucideCheck' : 'lucideX'" size="14" />
+          <span>{{ item.status === 'Suspended' ? copy().unsuspendAccount : copy().suspendAccount }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}

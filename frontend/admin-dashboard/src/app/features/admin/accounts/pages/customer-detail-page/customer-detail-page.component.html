@@ -1,0 +1,35 @@
+@if (customer(); as item) {
+  <section class="flex flex-col gap-4" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+    <mm-detail-tab-nav
+      [tabs]="tabs()"
+      [activeTab]="activeTab()"
+      (tabChange)="setActiveTab($event)"
+    />
+
+    @switch (activeTab()) {
+      @case ('overview') {
+        <mm-customer-overview-panel [customer]="item" />
+      }
+      @case ('details') {
+        <mm-customer-details-panel [customer]="item" />
+      }
+      @case ('subscription') {
+        <mm-customer-subscription-panel [customer]="item" />
+      }
+      @case ('wallet') {
+        <mm-customer-wallet-panel [customer]="item" />
+      }
+      @case ('settings') {
+        <mm-customer-settings-panel
+          [customer]="item"
+          (toggleSuspension)="toggleSuspension()"
+          (toggleFreeze)="toggleFreeze()"
+        />
+      }
+    }
+  </section>
+}
+
+@if (toastMessage(); as message) {
+  <mm-detail-toast [message]="message" [type]="toastType()" />
+}

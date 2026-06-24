@@ -1,0 +1,120 @@
+@if (customer(); as item) {
+<div class="grid gap-4 lg:grid-cols-3">
+  <div class="flex flex-col gap-4 lg:col-span-2">
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h2 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2.5 flex items-center gap-2">
+        <ng-icon name="lucideUser" size="16" class="text-emerald-600" />
+        <span>{{ copy().contactDetails }}</span>
+      </h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucideUser" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ locale.isRtl() ? 'الاسم' : 'Name' }}</span>
+            <span class="text-sm font-bold text-slate-800">{{ name(item) }}</span>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucideHash" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().customerId }}</span>
+            <span class="text-sm font-mono font-bold text-slate-800">{{ item.id }}</span>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucidePhone" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().phone }}</span>
+            <span class="text-sm font-bold text-slate-800" dir="ltr">{{ item.phoneNumber }}</span>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucideMail" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().email }}</span>
+            <span class="text-sm font-bold text-slate-800">{{ item.email }}</span>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 sm:col-span-2">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+            <ng-icon name="lucideMapPin" size="16" />
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ copy().serviceArea }}</span>
+            <span class="text-sm font-bold text-slate-800">{{ t(item.areaAr, item.areaEn) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h2 class="mb-3 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2">{{ copy().allergies }}</h2>
+      @if (item.allergiesAr?.length) {
+        <div class="flex flex-wrap gap-2">
+          @for (a of (locale.isRtl() ? item.allergiesAr : item.allergiesEn); track $index) {
+            <span class="rounded-full bg-red-50 px-2.5 py-0.5 text-[10px] font-bold text-red-700 ring-1 ring-red-600/20">{{ a }}</span>
+          }
+        </div>
+      } @else {
+        <p class="text-xs text-slate-400 font-medium">{{ locale.isRtl() ? 'لا توجد حساسية مسجّلة' : 'No allergies recorded' }}</p>
+      }
+    </div>
+
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h2 class="mb-3 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2">{{ copy().dislikes }}</h2>
+      @if (item.dislikesAr?.length) {
+        <div class="flex flex-wrap gap-2">
+          @for (d of (locale.isRtl() ? item.dislikesAr : item.dislikesEn); track $index) {
+            <span class="rounded-full bg-amber-50 px-2.5 py-0.5 text-[10px] font-bold text-amber-700 ring-1 ring-amber-600/20">{{ d }}</span>
+          }
+        </div>
+      } @else {
+        <p class="text-xs text-slate-400 font-medium">{{ locale.isRtl() ? 'لا توجد تفضيلات مسجّلة' : 'No dislikes recorded' }}</p>
+      }
+    </div>
+
+    @if (item.subscriptionType === 'Family') {
+      <div class="rounded-2xl border border-violet-100 bg-violet-50/20 p-5 shadow-sm">
+        <h2 class="mb-3 text-sm font-extrabold text-slate-900 border-b border-violet-100 pb-2 flex items-center gap-2">
+          <ng-icon name="lucideUsers" size="16" class="text-violet-600" />
+          <span>{{ copy().familySubscription }}</span>
+        </h2>
+        <div class="flex flex-col gap-2 text-xs">
+          <div class="flex justify-between">
+            <span class="text-slate-400 font-bold">{{ copy().familyGroup }}</span>
+            <span class="font-bold text-slate-700">{{ t(item.familyGroupNameAr ?? '', item.familyGroupNameEn ?? '') }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400 font-bold">{{ copy().memberRole }}</span>
+            <span class="font-bold text-violet-700">{{ t(item.familyRoleAr ?? '', item.familyRoleEn ?? '') }}</span>
+          </div>
+          @if (item.familyManagerCustomerId) {
+            <a [routerLink]="['/admin/accounts/customers', item.familyManagerCustomerId]"
+              class="mt-1 inline-flex items-center gap-1 font-bold text-emerald-600 hover:text-emerald-700">
+              {{ copy().familyManager }}: {{ t(item.familyManagerNameAr ?? '', item.familyManagerNameEn ?? '') }}
+            </a>
+          }
+        </div>
+      </div>
+    }
+
+    @if (item.notesAr || item.notesEn) {
+      <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <h2 class="mb-3 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2">{{ locale.isRtl() ? 'ملاحظات' : 'Notes' }}</h2>
+        <p class="text-xs font-medium text-slate-600 leading-relaxed">{{ t(item.notesAr ?? '', item.notesEn ?? '') }}</p>
+      </div>
+    }
+  </div>
+</div>
+}

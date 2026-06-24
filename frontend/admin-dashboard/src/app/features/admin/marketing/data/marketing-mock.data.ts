@@ -470,7 +470,7 @@ export const MOCK_INFLUENCERS: InfluencerProfile[] = [
         newRate: 10,
         changedAtUtc: daysAgo(20),
         changedBy: 'admin-01',
-        reason: 'تفاوض حملة رمضان',
+        reason: 'ترقية شريك متميز',
       },
     ],
     auditLog: [
@@ -491,14 +491,6 @@ export const MOCK_INFLUENCERS: InfluencerProfile[] = [
         atUtc: daysAgo(20),
         detailAr: 'من 8% إلى 10%',
         detailEn: 'From 8% to 10%',
-      },
-      {
-        id: 'aud-003',
-        action: 'CampaignLinked',
-        actionAr: 'ربط بحملة رمضان 2026',
-        actionEn: 'Linked to Ramadan 2026 campaign',
-        actor: 'admin-01',
-        atUtc: daysAgo(20),
       },
       {
         id: 'aud-004',

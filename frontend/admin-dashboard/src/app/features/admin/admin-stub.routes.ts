@@ -53,11 +53,43 @@ export const ADMIN_STUB_ROUTES: Routes = [
         (m) => m.DriverDetailPageComponent,
       ),
   },
+  {
+    path: 'accounts/customers',
+    loadComponent: () =>
+      import('./accounts/pages/customers-accounts-page/customers-accounts-page.component').then(
+        (m) => m.CustomersAccountsPageComponent,
+      ),
+  },
+  {
+    path: 'accounts/customers/:id',
+    loadComponent: () =>
+      import('./accounts/pages/customer-detail-page/customer-detail-page.component').then(
+        (m) => m.CustomerDetailPageComponent,
+      ),
+  },
+  { path: 'accounts/documents', loadComponent: loadPlaceholder },
+  { path: 'operations/capacity', loadComponent: loadPlaceholder },
+  { path: 'operations/auto-selection', loadComponent: loadPlaceholder },
+  { path: 'operations/invoices', loadComponent: loadPlaceholder },
+  { path: 'operations/menus', loadComponent: loadPlaceholder },
+  { path: 'subscriptions/family', loadComponent: loadPlaceholder },
+  { path: 'subscriptions/freeze', loadComponent: loadPlaceholder },
+  { path: 'subscriptions/renewals', loadComponent: loadPlaceholder },
+  { path: 'subscriptions/upgrades', loadComponent: loadPlaceholder },
+  { path: 'marketing/referrals', loadComponent: loadPlaceholder },
+  { path: 'marketing/ads', loadComponent: loadPlaceholder },
   { path: 'finance/cancellations', loadComponent: loadPlaceholder },
   { path: 'finance/settlements', loadComponent: loadPlaceholder },
   { path: 'finance/reports', loadComponent: loadPlaceholder },
   { path: 'support/complaints', loadComponent: loadPlaceholder },
   { path: 'support/wallet', loadComponent: loadPlaceholder },
+  { path: 'support/loyalty', loadComponent: loadPlaceholder },
+  { path: 'support/ratings', loadComponent: loadPlaceholder },
   { path: 'settings/areas', loadComponent: loadPlaceholder },
   { path: 'settings/general', loadComponent: loadPlaceholder },
+  { path: 'settings/exit-policy', loadComponent: loadPlaceholder },
+  { path: 'settings/communication', loadComponent: loadPlaceholder },
+  { path: 'settings/languages', loadComponent: loadPlaceholder },
+  { path: 'settings/privacy', loadComponent: loadPlaceholder },
+  { path: 'settings/multitenancy', loadComponent: loadPlaceholder },
 ];

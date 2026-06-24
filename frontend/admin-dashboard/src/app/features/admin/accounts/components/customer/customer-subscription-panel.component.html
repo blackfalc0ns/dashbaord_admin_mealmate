@@ -1,0 +1,150 @@
+@if (customer(); as item) {
+<div class="flex flex-col gap-4">
+  <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-50 pb-2.5">
+      <h2 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+        <ng-icon name="lucideCalendar" size="16" class="text-emerald-600" />
+        <span>{{ copy().tabSubscription }}</span>
+      </h2>
+      @if (isFamily(item)) {
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-0.5 text-[10px] font-bold text-violet-700 ring-1 ring-violet-600/20">
+          <ng-icon name="lucideUsers" size="12" />
+          {{ copy().familySubscription }}
+        </span>
+      } @else if (item.subscriptionId) {
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 ring-1 ring-slate-200">
+          {{ copy().individualSubscription }}
+        </span>
+      }
+    </div>
+
+    @if (item.subscriptionId) {
+      @if (isFamily(item)) {
+        <div class="mb-4 rounded-xl border border-violet-100 bg-violet-50/30 p-4">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase">{{ copy().familyGroup }}</span>
+              <p class="mt-1 text-sm font-extrabold text-slate-900">{{ t(item.familyGroupNameAr ?? '', item.familyGroupNameEn ?? '') }}</p>
+              <p class="mt-0.5 text-[10px] font-mono text-slate-400">{{ item.familyGroupId }}</p>
+            </div>
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase">{{ copy().memberRole }}</span>
+              <p class="mt-1 text-sm font-extrabold text-violet-700">{{ t(item.familyRoleAr ?? '', item.familyRoleEn ?? '') }}</p>
+              @if (item.familyManagerCustomerId) {
+                <a [routerLink]="['/admin/accounts/customers', item.familyManagerCustomerId]"
+                  class="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 hover:text-emerald-700">
+                  <ng-icon name="lucideUser" size="10" />
+                  {{ copy().familyManager }}: {{ t(item.familyManagerNameAr ?? '', item.familyManagerNameEn ?? '') }}
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-xl border border-slate-100 bg-slate-50/30 p-4">
+          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ copy().program }}</span>
+          <p class="mt-1 text-sm font-extrabold text-slate-900">{{ t(item.programAr ?? '', item.programEn ?? '') }}</p>
+        </div>
+        <div class="rounded-xl border border-slate-100 bg-slate-50/30 p-4">
+          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ copy().bundle }}</span>
+          <p class="mt-1 text-sm font-extrabold text-slate-900">{{ t(item.bundleAr ?? '', item.bundleEn ?? '') }}</p>
+        </div>
+        <div class="rounded-xl border border-slate-100 bg-slate-50/30 p-4">
+          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ copy().tier }}</span>
+          <p class="mt-1 text-sm font-extrabold text-slate-900">{{ t(item.tierAr ?? '', item.tierEn ?? '') }}</p>
+        </div>
+        <div class="rounded-xl border border-slate-100 bg-slate-50/30 p-4">
+          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ locale.isRtl() ? 'تاريخ البدء' : 'Start date' }}</span>
+          <p class="mt-1 text-sm font-extrabold text-slate-900">{{ t(item.subscriptionStartAr ?? '', item.subscriptionStartEn ?? '') }}</p>
+        </div>
+        <div class="rounded-xl border border-slate-100 bg-slate-50/30 p-4">
+          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ copy().subscriptionDays }}</span>
+          <p class="mt-1 text-sm font-extrabold text-slate-900">{{ item.subscriptionDays }}</p>
+        </div>
+        <div class="rounded-xl border border-slate-100 bg-slate-50/30 p-4">
+          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ copy().usedDays }}</span>
+          <p class="mt-1 text-sm font-extrabold text-slate-900">{{ item.usedDays }}</p>
+        </div>
+      </div>
+
+      <div class="mt-6 rounded-xl border border-emerald-100 bg-emerald-50/20 p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-slate-600">{{ copy().remainingDays }}</span>
+          <span class="text-sm font-extrabold text-emerald-700">{{ remainingDays(item) }} {{ locale.isRtl() ? 'يوم' : 'days' }}</span>
+        </div>
+        <div class="h-2.5 overflow-hidden rounded-full bg-white">
+          <div class="h-full rounded-full bg-emerald-500"
+            [style.width.%]="item.subscriptionDays ? (item.usedDays ?? 0) / item.subscriptionDays * 100 : 0"></div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold ring-1"
+          [ngClass]="{
+            'bg-emerald-50 text-emerald-700 ring-emerald-600/20': item.status === 'Active',
+            'bg-amber-50 text-amber-700 ring-amber-600/20': item.status === 'Frozen',
+            'bg-blue-50 text-blue-700 ring-blue-600/20': item.status === 'Cancelled',
+            'bg-red-50 text-red-700 ring-red-600/20': item.status === 'Suspended'
+          }">
+          {{ t(item.statusAr, item.statusEn) }}
+        </span>
+        <span class="text-[10px] font-mono text-slate-400">{{ item.subscriptionId }}</span>
+      </div>
+    } @else {
+      <div class="flex flex-col items-center justify-center gap-3 py-12 text-center">
+        <div class="flex size-14 items-center justify-center rounded-full bg-slate-50 text-slate-300">
+          <ng-icon name="lucideCalendar" size="28" />
+        </div>
+        <p class="text-sm font-bold text-slate-500">{{ copy().noActiveSubscription }}</p>
+      </div>
+    }
+  </div>
+
+  @if (item.familyMembers?.length) {
+    <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <h3 class="mb-4 text-sm font-extrabold text-slate-900 border-b border-slate-50 pb-2 flex items-center gap-2">
+        <ng-icon name="lucideUsers" size="16" class="text-violet-600" />
+        <span>{{ copy().familyMembers }}</span>
+        <span class="rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-700">{{ item.familyMembers!.length }}</span>
+      </h3>
+
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-slate-100 text-slate-500 font-bold">
+              <th class="px-3 py-2 text-start">{{ locale.isRtl() ? 'الاسم' : 'Name' }}</th>
+              <th class="px-3 py-2 text-start">{{ copy().memberRole }}</th>
+              <th class="px-3 py-2 text-start">{{ copy().memberQuota }}</th>
+              <th class="px-3 py-2 text-start">{{ copy().status }}</th>
+              <th class="px-3 py-2 text-end">{{ copy().actions }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-50">
+            @for (member of item.familyMembers; track member.customerId) {
+              <tr class="hover:bg-slate-50/50">
+                <td class="px-3 py-2.5 font-bold text-slate-800">{{ memberName(member.nameAr, member.nameEn) }}</td>
+                <td class="px-3 py-2.5 text-slate-600">{{ t(member.roleAr, member.roleEn) }}</td>
+                <td class="px-3 py-2.5 text-slate-600">{{ member.usedDays }} / {{ member.quotaDays }}</td>
+                <td class="px-3 py-2.5">
+                  <span class="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                    {{ t(member.statusAr, member.statusEn) }}
+                  </span>
+                </td>
+                <td class="px-3 py-2.5 text-end">
+                  <a [routerLink]="['/admin/accounts/customers', member.customerId]"
+                    class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 hover:text-emerald-700">
+                    {{ copy().viewMember }}
+                    <ng-icon name="lucideChevronRight" size="10" class="rtl:rotate-180" />
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>
+}

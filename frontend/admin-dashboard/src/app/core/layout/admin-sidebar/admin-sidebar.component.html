@@ -1,202 +1,191 @@
-<aside class="mm-sb" [class.mm-sb--collapsed]="collapsed()">
-  <!-- Header -->
-  <header class="mm-sb-header">
-    <div class="mm-sb-header__layer mm-sb-header__layer--open">
-      <div class="mm-sb-header__brand">
-        <img
-          class="mm-sb-header__logo"
-          [src]="brandLogoSrc"
-          alt="MealMate"
-          width="132"
-          height="26"
-        />
+<aside
+  class="mm-sb"
+  [class.mm-sb--collapsed]="collapsed()"
+  [class.mm-sb--dual]="true"
+  [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'"
+>
+  <!-- Tier 1 — Icon rail -->
+  <div class="mm-sb-rail">
+    <div class="mm-sb-rail__top">
+      <a routerLink="/admin/overview" class="mm-sb-rail__logo" [attr.title]="locale.isRtl() ? 'MealMate' : 'MealMate'">
+        <img [src]="brandIconSrc" alt="MealMate" width="32" height="32" />
+      </a>
+      @if (!layout.isMobile()) {
         <button
           type="button"
-          class="mm-sb-toggle"
+          class="mm-sb-rail__toggle"
           (click)="toggleCollapsed()"
-          [attr.aria-label]="locale.isRtl() ? 'طي القائمة' : 'Collapse sidebar'"
+          [attr.aria-label]="collapsed() ? expandLabel() : collapseLabel()"
+          [attr.title]="collapsed() ? expandLabel() : collapseLabel()"
         >
-          <ng-icon name="lucidePanelLeftClose" class="size-4 rtl:rotate-180" />
+          <ng-icon
+            [name]="collapsed() ? 'lucidePanelLeftOpen' : 'lucidePanelLeftClose'"
+            class="mm-sb-rail__toggle-icon size-[1.05rem] rtl:rotate-180"
+          />
         </button>
-      </div>
+      }
     </div>
 
-    <div class="mm-sb-header__layer mm-sb-header__layer--rail">
-      <div class="mm-sb-header__rail-logo">
-        <img
-          [src]="brandIconSrc"
-          alt="MealMate"
-          width="36"
-          height="36"
-        />
-      </div>
-      <button
-        type="button"
-        class="mm-sb-toggle mm-sb-toggle--rail"
-        (click)="toggleCollapsed()"
-        [attr.aria-label]="locale.isRtl() ? 'فتح القائمة' : 'Expand sidebar'"
-      >
-        <ng-icon name="lucidePanelLeftOpen" class="size-4 rtl:rotate-180" />
-      </button>
-    </div>
-  </header>
-
-  <!-- Profile -->
-  <div class="mm-sb-profile">
-    <div class="mm-sb-profile__avatar" aria-hidden="true">M</div>
-    @if (showDetails()) {
-      <div class="mm-sb-profile__meta">
-        <div class="mm-sb-profile__status">
-          <span class="mm-sb-profile__dot"></span>
-          <span>{{ onlineLabel() }}</span>
-        </div>
-        <p class="mm-sb-profile__name">{{ adminLabel() }}</p>
-        <p class="mm-sb-profile__sub">{{ shiftLabel() }}</p>
-      </div>
-    }
-  </div>
-
-  <!-- Navigation -->
-  <nav class="mm-sb-nav" aria-label="Admin navigation">
-    @for (section of navSections; track section.id) {
-      <section class="mm-sb-section" [class.mm-sb-section--rail]="collapsed()">
-        @if (showDetails()) {
-          <h2 class="mm-sb-section__title" [class.mm-sb-section__title--rtl]="locale.isRtl()">
-            {{ sectionLabel(section) }}
-          </h2>
-        } @else if (collapsed() && !$first) {
-          <div class="mm-sb-section__rail-rule" aria-hidden="true"></div>
-        }
-
-        <ul class="mm-sb-list">
-          @for (item of section.items; track item.id) {
-            <li
-              class="mm-sb-list__item"
-              (mouseenter)="showFlyout(item.id)"
-              (mouseleave)="hideFlyout()"
-            >
-              @if (item.children?.length) {
-                <button
-                  type="button"
-                  [class]="navItemClass(item)"
-                  [attr.title]="collapsed() ? label(item) : null"
-                  (click)="onNavGroupClick(item)"
-                >
-                  <span class="mm-sb-item__icon">
-                    <ng-icon [name]="item.icon" class="size-[1.05rem]" />
-                  </span>
-                  @if (showNavBadges && collapsed() && hasCollapsedBadge(item)) {
-                    <span class="mm-sb-item__badge-dot" aria-hidden="true"></span>
-                  }
-                  @if (showDetails()) {
-                    <span class="mm-sb-item__label">{{ label(item) }}</span>
-                    @if (showNavBadges && groupBadgeTotal(item) > 0) {
-                      <span [class]="groupBadgeClasses(item)">{{ formatBadge(groupBadgeTotal(item)) }}</span>
-                    }
-                    <ng-icon
-                      [name]="isGroupExpanded(item.id) ? 'lucideChevronDown' : 'lucideChevronRight'"
-                      class="mm-sb-item__chevron rtl:rotate-180"
-                    />
-                  }
-                </button>
-
-                @if (showDetails() && isGroupExpanded(item.id)) {
-                  <ul class="mm-sb-sublist" role="list">
-                    @for (child of item.children; track child.id) {
-                      <li>
-                        <a
-                          [routerLink]="child.route!"
-                          routerLinkActive="mm-sb-subitem--active"
-                          [routerLinkActiveOptions]="{ exact: isExactNavRoute(child.route) }"
-                          class="mm-sb-subitem"
-                          (click)="closeMobileNav()"
-                        >
-                          <span class="mm-sb-subitem__label">{{ label(child) }}</span>
-                          @if (showNavBadges && child.badge) {
-                            <span [class]="badgeClasses(child.badge)">{{ formatBadge(child.badge) }}</span>
-                          }
-                        </a>
-                      </li>
-                    }
-                  </ul>
-                }
-
-                @if (isFlyoutOpen(item.id)) {
-                  <div [class]="flyoutClass()">
-                    <p class="mm-sb-flyout__heading">{{ label(item) }}</p>
-                    <ul class="mm-sb-flyout__list" role="list">
-                      @for (child of item.children; track child.id) {
-                        <li>
-                          <a
-                            [routerLink]="child.route!"
-                            routerLinkActive="mm-sb-flyout__link--active"
-                            [routerLinkActiveOptions]="{ exact: isExactNavRoute(child.route) }"
-                            class="mm-sb-flyout__link"
-                            (click)="hideFlyout(); closeMobileNav()"
-                          >
-                            <span>{{ label(child) }}</span>
-                            @if (showNavBadges && child.badge) {
-                              <span [class]="badgeClasses(child.badge)">{{ formatBadge(child.badge) }}</span>
-                            }
-                          </a>
-                        </li>
-                      }
-                    </ul>
-                  </div>
-                }
-              } @else if (item.route) {
-                <a
-                  [routerLink]="item.route"
-                  routerLinkActive="mm-sb-item--active"
-                  [routerLinkActiveOptions]="{ exact: isExactNavRoute(item.route) }"
-                  [class]="navItemClass(item)"
-                  [attr.title]="collapsed() ? label(item) : null"
-                  (click)="closeMobileNav()"
-                >
-                  <span class="mm-sb-item__icon">
-                    <ng-icon [name]="item.icon" class="size-[1.05rem]" />
-                  </span>
-                  @if (showDetails()) {
-                    <span class="mm-sb-item__label">{{ label(item) }}</span>
-                  }
-                </a>
-              }
-            </li>
+    <nav class="mm-sb-rail__nav" aria-label="Primary navigation">
+      @for (section of navSections; track section.id) {
+        <button
+          type="button"
+          class="mm-sb-rail__btn"
+          [class.mm-sb-rail__btn--active]="isSectionActive(section)"
+          [attr.title]="sectionLabel(section)"
+          [attr.aria-current]="isSectionActive(section) ? 'page' : null"
+          (click)="onRailSectionClick(section)"
+          (mouseenter)="onRailHover(section.id)"
+          (mouseleave)="onRailLeave()"
+        >
+          <span class="mm-sb-rail__btn-glow" aria-hidden="true"></span>
+          <ng-icon [name]="sectionIcon(section)" class="mm-sb-rail__btn-icon size-[1.15rem]" />
+          @if (showNavBadges && sectionBadgeTotal(section) > 0) {
+            <span class="mm-sb-rail__badge" aria-hidden="true"></span>
           }
-        </ul>
-      </section>
-    }
-  </nav>
+        </button>
+      }
+    </nav>
 
-  <!-- Footer -->
-  <footer class="mm-sb-footer" [class.mm-sb-footer--rail]="collapsed()">
-    @if (showDetails() && !collapsed()) {
-      <a [routerLink]="quickAction.route" class="mm-sb-cta">
-        <span class="mm-sb-cta__icon">
-          <ng-icon [name]="quickAction.icon" class="size-[1.05rem]" />
-        </span>
-        <span class="mm-sb-cta__copy">
-          <span class="mm-sb-cta__title">{{ label(quickAction) }}</span>
-          <span class="mm-sb-cta__hint">{{ quickActionHint() }}</span>
-        </span>
-        <ng-icon name="lucideChevronRight" class="mm-sb-cta__arrow rtl:rotate-180" />
-      </a>
-    } @else {
+    <div class="mm-sb-rail__bottom">
       <a
         [routerLink]="quickAction.route"
-        class="mm-sb-cta mm-sb-cta--icon"
+        class="mm-sb-rail__btn mm-sb-rail__btn--cta"
         [attr.title]="label(quickAction)"
+        (click)="closeMobileNav()"
       >
         <ng-icon [name]="quickAction.icon" class="size-[1.05rem]" />
       </a>
-    }
+      <button
+        type="button"
+        class="mm-sb-rail__btn"
+        [attr.title]="locale.isRtl() ? 'المساعدة' : 'Help'"
+      >
+        <ng-icon name="lucideCircleHelp" class="size-[1.15rem]" />
+      </button>
+      <button
+        type="button"
+        class="mm-sb-rail__btn mm-sb-rail__btn--logout"
+        [attr.title]="logoutLabel()"
+        (click)="logout()"
+      >
+        <ng-icon name="lucideLogOut" class="size-[1.05rem]" />
+      </button>
+    </div>
+  </div>
 
-    <mm-sidebar-logout-button
-      [label]="logoutLabel()"
-      [hint]="logoutHint()"
-      [collapsed]="collapsed()"
-      [showDetails]="showDetails()"
-      (logout)="logout()"
-    />
-  </footer>
+  <!-- Tier 2 — Secondary panel -->
+  @if (showDetails()) {
+    <div class="mm-sb-panel mm-sb-panel--in">
+      <header class="mm-sb-panel__header">
+        <h2 class="mm-sb-panel__title">
+          @for (title of [activeSectionTitle()]; track activeSection().id) {
+            <span class="mm-sb-panel__title-text">{{ title }}</span>
+          }
+        </h2>
+      </header>
+
+      @if (panelItems().length > 4) {
+        <div class="mm-sb-panel__search">
+          <ng-icon name="lucideSearch" class="mm-sb-panel__search-icon size-4" />
+          <input
+            type="search"
+            class="mm-sb-panel__search-input"
+            [placeholder]="searchPlaceholder()"
+            [value]="navSearchQuery()"
+            (input)="onNavSearch($event)"
+          />
+        </div>
+      }
+
+      @for (navKey of [activeSection().id]; track navKey) {
+        <nav class="mm-sb-panel__nav mm-sb-panel__nav--in" aria-label="Section navigation">
+          <ul class="mm-sb-panel__list" role="list">
+            @for (item of filteredPanelItems(); track item.id; let i = $index) {
+              <li class="mm-sb-panel__item" [style.--mm-sb-item-i]="i">
+                <a
+                  [routerLink]="item.route!"
+                  routerLinkActive="mm-sb-panel__link--active"
+                  [routerLinkActiveOptions]="{ exact: isExactNavRoute(item.route) }"
+                  class="mm-sb-panel__link"
+                  (click)="closeMobileNav()"
+                >
+                  <span class="mm-sb-panel__link-icon">
+                    <ng-icon [name]="item.icon" class="size-[0.95rem]" />
+                  </span>
+                  <span class="mm-sb-panel__link-label">{{ label(item) }}</span>
+                  @if (showNavBadges && item.badge) {
+                    <span [class]="badgeClasses(item.badge, false)">{{ formatBadge(item.badge) }}</span>
+                  }
+                </a>
+              </li>
+            } @empty {
+              <li class="mm-sb-panel__empty">
+                {{ locale.isRtl() ? 'لا توجد نتائج' : 'No results' }}
+              </li>
+            }
+          </ul>
+        </nav>
+      }
+
+      <footer class="mm-sb-panel__footer">
+        <a [routerLink]="quickAction.route" class="mm-sb-panel__cta" (click)="closeMobileNav()">
+          <span class="mm-sb-panel__cta-icon">
+            <ng-icon [name]="quickAction.icon" class="size-[1.05rem]" />
+          </span>
+          <span class="mm-sb-panel__cta-copy">
+            <span class="mm-sb-panel__cta-title">{{ label(quickAction) }}</span>
+            <span class="mm-sb-panel__cta-hint">{{ quickActionHint() }}</span>
+          </span>
+          <ng-icon name="lucideChevronRight" class="mm-sb-panel__cta-arrow rtl:rotate-180" />
+        </a>
+      </footer>
+    </div>
+  }
+
+  <!-- Collapsed flyout (rail-only mode) -->
+  @if (collapsed() && flyoutSection(); as section) {
+    @for (flyoutKey of [section.id]; track flyoutKey) {
+    <div
+      [class]="flyoutClass()"
+      (mouseenter)="onFlyoutEnter()"
+      (mouseleave)="onRailLeave()"
+    >
+      <p class="mm-sb-flyout__heading">{{ sectionLabel(section) }}</p>
+      @if (flyoutPanelItems(section).length > 4) {
+        <div class="mm-sb-panel__search mm-sb-panel__search--flyout">
+          <ng-icon name="lucideSearch" class="mm-sb-panel__search-icon size-3.5" />
+          <input
+            type="search"
+            class="mm-sb-panel__search-input"
+            [placeholder]="searchPlaceholder()"
+            [value]="flyoutSearchQuery()"
+            (input)="onFlyoutSearch($event)"
+          />
+        </div>
+      }
+      <ul class="mm-sb-flyout__list" role="list">
+        @for (item of filteredFlyoutItems(section); track item.id) {
+          <li>
+            <a
+              [routerLink]="item.route!"
+              routerLinkActive="mm-sb-flyout__link--active"
+              [routerLinkActiveOptions]="{ exact: isExactNavRoute(item.route) }"
+              class="mm-sb-flyout__link"
+              (click)="hideFlyout(); closeMobileNav()"
+            >
+              <span class="flex items-center gap-2 min-w-0">
+                <ng-icon [name]="item.icon" class="size-3.5 shrink-0 opacity-70" />
+                <span class="truncate">{{ label(item) }}</span>
+              </span>
+              @if (showNavBadges && item.badge) {
+                <span [class]="badgeClasses(item.badge)">{{ formatBadge(item.badge) }}</span>
+              }
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+    }
+  }
 </aside>

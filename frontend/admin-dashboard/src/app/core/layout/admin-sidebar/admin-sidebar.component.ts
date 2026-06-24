@@ -16,10 +16,20 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideAward,
   lucideChartBar,
-  lucideCircleAlert,
+  lucideChevronDown,
+  lucideChevronRight,
+  lucideCircleHelp,
   lucideClock,
+  lucideContactRound,
   lucideCreditCard,
+  lucideDoorOpen,
+  lucideEyeOff,
   lucideFileText,
+  lucideFolderOpen,
+  lucideGauge,
+  lucideGift,
+  lucideGlobe,
+  lucideLanguages,
   lucideLayers,
   lucideLayoutDashboard,
   lucideLifeBuoy,
@@ -28,30 +38,39 @@ import {
   lucideMapPinned,
   lucideMegaphone,
   lucideMessageSquare,
+  lucideMessagesSquare,
   lucidePackage,
   lucidePanelLeftClose,
   lucidePanelLeftOpen,
   lucidePercent,
   lucidePhone,
   lucidePlus,
+  lucideQrCode,
   lucideRadar,
+  lucideRadio,
   lucideReceipt,
   lucideRefreshCw,
+  lucideSearch,
   lucideSettings,
+  lucideShare2,
   lucideShieldAlert,
   lucideSlidersHorizontal,
+  lucideSnowflake,
+  lucideStar,
   lucideStore,
   lucideTags,
   lucideTarget,
   lucideTicket,
+  lucideTrendingUp,
   lucideTruck,
   lucideUndo2,
   lucideUserCheck,
   lucideUserRound,
   lucideUsers,
+  lucideUsersRound,
+  lucideUtensils,
   lucideWallet,
-  lucideChevronDown,
-  lucideChevronRight,
+  lucideWandSparkles,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
@@ -61,14 +80,10 @@ import {
   AdminViewport,
 } from '@/core/layout/admin-shell-layout.service';
 import {
-  ADMIN_NAV_ITEMS,
   ADMIN_NAV_SECTIONS,
   ADMIN_QUICK_ACTION,
 } from '@/core/navigation/admin-nav.config';
 import { AdminNavItem, AdminNavSection } from '@/core/navigation/admin-nav.model';
-import {
-  MmSidebarLogoutButtonComponent,
-} from '@/shared/components/layout';
 import { mergeClasses } from '@/shared/utils/merge-classes';
 
 /** Demo badges — hide until wired to live counts */
@@ -79,7 +94,7 @@ const SIDEBAR_TRANSITION_MS = 360;
 @Component({
   selector: 'mm-admin-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, NgIcon, MmSidebarLogoutButtonComponent],
+  imports: [RouterLink, RouterLinkActive, NgIcon],
   templateUrl: './admin-sidebar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -93,12 +108,21 @@ const SIDEBAR_TRANSITION_MS = 360;
   viewProviders: [
     provideIcons({
       lucideAward,
-      lucideCircleAlert,
+      lucideChartBar,
       lucideChevronDown,
       lucideChevronRight,
+      lucideCircleHelp,
       lucideClock,
+      lucideContactRound,
       lucideCreditCard,
+      lucideDoorOpen,
+      lucideEyeOff,
       lucideFileText,
+      lucideFolderOpen,
+      lucideGauge,
+      lucideGift,
+      lucideGlobe,
+      lucideLanguages,
       lucideLayers,
       lucideLayoutDashboard,
       lucideLifeBuoy,
@@ -107,29 +131,39 @@ const SIDEBAR_TRANSITION_MS = 360;
       lucideMapPinned,
       lucideMegaphone,
       lucideMessageSquare,
+      lucideMessagesSquare,
       lucidePackage,
       lucidePanelLeftClose,
       lucidePanelLeftOpen,
       lucidePercent,
       lucidePhone,
       lucidePlus,
+      lucideQrCode,
       lucideRadar,
+      lucideRadio,
       lucideReceipt,
       lucideRefreshCw,
+      lucideSearch,
       lucideSettings,
+      lucideShare2,
       lucideShieldAlert,
       lucideSlidersHorizontal,
+      lucideSnowflake,
+      lucideStar,
       lucideStore,
       lucideTags,
-      lucideChartBar,
       lucideTarget,
       lucideTicket,
+      lucideTrendingUp,
       lucideTruck,
       lucideUndo2,
       lucideUserCheck,
       lucideUserRound,
       lucideUsers,
+      lucideUsersRound,
+      lucideUtensils,
       lucideWallet,
+      lucideWandSparkles,
     }),
   ],
 })
@@ -142,11 +176,17 @@ export class AdminSidebarComponent {
 
   readonly navSections = ADMIN_NAV_SECTIONS;
   readonly quickAction = ADMIN_QUICK_ACTION;
-  readonly brandLogoSrc = BRAND_ASSETS.full;
   readonly brandIconSrc = BRAND_ASSETS.icon;
   readonly collapsed = signal(false);
   readonly showDetails = signal(true);
   readonly animating = signal(false);
+  readonly currentUrl = signal(this.router.url);
+  readonly navSearchQuery = signal('');
+  readonly flyoutSearchQuery = signal('');
+  readonly flyoutSectionId = signal<string | null>(null);
+  readonly showNavBadges = SHOW_NAV_BADGES;
+
+  private flyoutHideTimer: ReturnType<typeof setTimeout> | null = null;
 
   @HostBinding('style.width')
   get sidebarWidth(): string | null {
@@ -159,44 +199,50 @@ export class AdminSidebarComponent {
       : 'var(--mm-sidebar-expanded)';
   }
 
-  readonly expandedGroups = signal<Record<string, boolean>>({
-    'operations-72h': true,
-    'accounts-group': true,
+  readonly activeSection = computed(() => {
+    const url = this.currentUrl();
+    for (const section of ADMIN_NAV_SECTIONS) {
+      if (this.sectionMatchesUrl(section, url)) {
+        return section;
+      }
+    }
+    return ADMIN_NAV_SECTIONS[0];
   });
-  readonly flyoutGroupId = signal<string | null>(null);
-  readonly showNavBadges = SHOW_NAV_BADGES;
 
-  readonly greeting = computed(() =>
-    this.locale.isRtl() ? 'مرحباً 👋' : 'Hello 👋',
+  readonly activeSectionTitle = computed(() => {
+    const section = this.activeSection();
+    return this.locale.isRtl() ? section.labelAr : section.labelEn;
+  });
+
+  readonly panelItems = computed(() => this.resolvePanelItems(this.activeSection()));
+
+  readonly filteredPanelItems = computed(() =>
+    this.filterItems(this.panelItems(), this.navSearchQuery()),
   );
 
-  readonly adminLabel = computed(() =>
-    this.locale.isRtl() ? 'مسؤول النظام' : 'System Admin',
-  );
+  readonly flyoutSection = computed(() => {
+    const id = this.flyoutSectionId();
+    if (!id) return null;
+    return ADMIN_NAV_SECTIONS.find((s) => s.id === id) ?? null;
+  });
 
   readonly quickActionHint = computed(() =>
     this.locale.isRtl() ? 'فتح نموذج الاستثناء' : 'Open exception form',
-  );
-
-  readonly shiftLabel = computed(() =>
-    this.locale.isRtl() ? 'وردية الصباح' : 'Morning shift',
-  );
-
-  readonly onlineLabel = computed(() =>
-    this.locale.isRtl() ? 'متصل الآن' : 'Online now',
   );
 
   readonly logoutLabel = computed(() =>
     this.locale.isRtl() ? 'تسجيل الخروج' : 'Log out',
   );
 
-  readonly logoutHint = computed(() =>
-    this.locale.isRtl() ? 'إنهاء الجلسة الحالية' : 'End current session',
+  readonly collapseLabel = computed(() =>
+    this.locale.isRtl() ? 'طي القائمة' : 'Collapse sidebar',
+  );
+
+  readonly expandLabel = computed(() =>
+    this.locale.isRtl() ? 'فتح القائمة' : 'Expand sidebar',
   );
 
   constructor() {
-    this.syncExpandedFromUrl(this.router.url);
-
     effect(() => {
       this.applyViewportLayout(this.layout.viewport());
     });
@@ -206,14 +252,38 @@ export class AdminSidebarComponent {
         filter((event) => event instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(() => {
-        this.syncExpandedFromUrl(this.router.url);
+      .subscribe((event) => {
+        const url = (event as NavigationEnd).urlAfterRedirects;
+        this.currentUrl.set(url);
+        this.navSearchQuery.set('');
+        this.flyoutSearchQuery.set('');
+        this.flyoutSectionId.set(null);
         this.layout.onRouteChange();
       });
   }
 
   sectionLabel(section: AdminNavSection): string {
     return this.locale.isRtl() ? section.labelAr : section.labelEn;
+  }
+
+  sectionIcon(section: AdminNavSection): string {
+    return section.items[0]?.icon ?? 'lucideLayoutDashboard';
+  }
+
+  sectionBadgeTotal(section: AdminNavSection): number {
+    const item = section.items[0];
+    if (!item?.children?.length) {
+      return item?.badge ?? 0;
+    }
+    return item.children.reduce((total, child) => total + (child.badge ?? 0), 0);
+  }
+
+  isSectionActive(section: AdminNavSection): boolean {
+    return this.activeSection().id === section.id;
+  }
+
+  searchPlaceholder(): string {
+    return this.locale.isRtl() ? 'بحث...' : 'Search...';
   }
 
   toggleCollapsed(): void {
@@ -235,44 +305,71 @@ export class AdminSidebarComponent {
     this.layout.closeMobileNav();
   }
 
-  onNavGroupClick(item: AdminNavItem): void {
+  onRailSectionClick(section: AdminNavSection): void {
     if (this.collapsed()) {
-      this.flyoutGroupId.set(item.id);
+      this.flyoutSectionId.set(section.id);
+      this.flyoutSearchQuery.set('');
       return;
     }
 
-    this.toggleGroup(item.id);
+    const target = this.defaultRouteForSection(section);
+    if (target && !this.sectionMatchesUrl(section, this.currentUrl())) {
+      void this.router.navigateByUrl(target);
+    }
   }
 
-  toggleGroup(id: string): void {
-    this.expandedGroups.update((groups) => ({
-      ...groups,
-      [id]: !groups[id],
-    }));
-  }
-
-  isGroupExpanded(id: string): boolean {
-    return this.expandedGroups()[id] ?? false;
-  }
-
-  isGroupActive(item: AdminNavItem): boolean {
-    if (!item.children?.length) {
-      return item.route ? this.router.url.startsWith(item.route) : false;
+  onRailHover(sectionId: string): void {
+    if (!this.collapsed()) {
+      return;
     }
 
-    return item.children.some((child) =>
-      child.route ? this.router.url.startsWith(child.route) : false,
-    );
+    if (this.flyoutHideTimer) {
+      clearTimeout(this.flyoutHideTimer);
+      this.flyoutHideTimer = null;
+    }
+
+    this.flyoutSectionId.set(sectionId);
+  }
+
+  onRailLeave(): void {
+    if (!this.collapsed()) {
+      return;
+    }
+
+    this.flyoutHideTimer = setTimeout(() => this.flyoutSectionId.set(null), 180);
+  }
+
+  onFlyoutEnter(): void {
+    if (this.flyoutHideTimer) {
+      clearTimeout(this.flyoutHideTimer);
+      this.flyoutHideTimer = null;
+    }
+  }
+
+  hideFlyout(): void {
+    this.flyoutSectionId.set(null);
+  }
+
+  onNavSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.navSearchQuery.set(input.value);
+  }
+
+  onFlyoutSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.flyoutSearchQuery.set(input.value);
+  }
+
+  flyoutPanelItems(section: AdminNavSection): AdminNavItem[] {
+    return this.resolvePanelItems(section);
+  }
+
+  filteredFlyoutItems(section: AdminNavSection): AdminNavItem[] {
+    return this.filterItems(this.flyoutPanelItems(section), this.flyoutSearchQuery());
   }
 
   label(item: AdminNavItem): string {
     return this.locale.isRtl() ? item.labelAr : item.labelEn;
-  }
-
-  groupBadgeTotal(item: AdminNavItem): number {
-    return (
-      item.children?.reduce((total, child) => total + (child.badge ?? 0), 0) ?? 0
-    );
   }
 
   formatBadge(value: number): string {
@@ -304,53 +401,76 @@ export class AdminSidebarComponent {
     return `${sizing} bg-amber-400 text-amber-950`;
   }
 
-  groupBadgeClasses(item: AdminNavItem): string {
-    return this.badgeClasses(this.groupBadgeTotal(item), this.isGroupActive(item));
-  }
-
-  navItemClass(item: AdminNavItem): string {
-    const active = this.isGroupActive(item);
-
-    if (this.collapsed()) {
-      return mergeClasses('mm-sb-item mm-sb-item--rail', active ? 'mm-sb-item--active' : '');
-    }
-
-    return mergeClasses('mm-sb-item', active ? 'mm-sb-item--active' : '');
-  }
-
   flyoutClass(): string {
     return mergeClasses(
-      'mm-sb-flyout',
-      this.locale.isRtl() ? 'end-full me-2.5' : 'start-full ms-2.5',
+      'mm-sb-flyout mm-sb-flyout--dual mm-sb-flyout--in',
+      this.locale.isRtl() ? 'end-full me-2' : 'start-full ms-2',
     );
-  }
-
-  hasCollapsedBadge(item: AdminNavItem): boolean {
-    return this.groupBadgeTotal(item) > 0;
-  }
-
-  showFlyout(id: string): void {
-    if (!this.collapsed()) {
-      return;
-    }
-
-    this.flyoutGroupId.set(id);
-  }
-
-  hideFlyout(): void {
-    this.flyoutGroupId.set(null);
-  }
-
-  isFlyoutOpen(id: string): boolean {
-    return this.collapsed() && this.flyoutGroupId() === id;
   }
 
   logout(): void {
     this.auth.logout();
   }
 
+  private resolvePanelItems(section: AdminNavSection): AdminNavItem[] {
+    const item = section.items[0];
+    if (!item) {
+      return [];
+    }
+
+    if (item.children?.length) {
+      return item.children;
+    }
+
+    if (item.route) {
+      return [item];
+    }
+
+    return [];
+  }
+
+  private filterItems(items: AdminNavItem[], query: string): AdminNavItem[] {
+    const q = query.toLowerCase().trim();
+    if (!q) {
+      return items;
+    }
+
+    return items.filter((item) => {
+      const ar = item.labelAr.toLowerCase();
+      const en = item.labelEn.toLowerCase();
+      return ar.includes(q) || en.includes(q);
+    });
+  }
+
+  private sectionMatchesUrl(section: AdminNavSection, url: string): boolean {
+    for (const item of section.items) {
+      if (item.route && url.startsWith(item.route)) {
+        return true;
+      }
+
+      if (item.children?.some((child) => child.route && url.startsWith(child.route))) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private defaultRouteForSection(section: AdminNavSection): string | null {
+    const item = section.items[0];
+    if (!item) {
+      return null;
+    }
+
+    if (item.route) {
+      return item.route;
+    }
+
+    return item.children?.[0]?.route ?? null;
+  }
+
   private applyViewportLayout(viewport: AdminViewport): void {
-    this.flyoutGroupId.set(null);
+    this.flyoutSectionId.set(null);
 
     if (viewport === 'mobile') {
       this.setCollapsed(false, { animate: false });
@@ -372,7 +492,7 @@ export class AdminSidebarComponent {
       this.animating.set(true);
     }
 
-    this.flyoutGroupId.set(null);
+    this.flyoutSectionId.set(null);
 
     if (collapsed) {
       this.showDetails.set(false);
@@ -392,22 +512,6 @@ export class AdminSidebarComponent {
 
     if (animate) {
       window.setTimeout(() => this.animating.set(false), SIDEBAR_TRANSITION_MS + 20);
-    }
-  }
-
-  private syncExpandedFromUrl(url: string): void {
-    for (const item of ADMIN_NAV_ITEMS) {
-      if (!item.children?.length) {
-        continue;
-      }
-
-      const active = item.children.some((child) =>
-        child.route ? url.startsWith(child.route) : false,
-      );
-
-      if (active) {
-        this.expandedGroups.update((groups) => ({ ...groups, [item.id]: true }));
-      }
     }
   }
 }

@@ -194,3 +194,83 @@ export interface DriverAccount {
   notesAr?: string;
   notesEn?: string;
 }
+
+export type CustomerAccountStatus =
+  | 'Active'
+  | 'Frozen'
+  | 'NoSubscription'
+  | 'Cancelled'
+  | 'Suspended';
+
+export type CustomerSubscriptionType = 'Individual' | 'Family';
+export type FamilyMemberRole = 'Manager' | 'Member';
+
+export interface FamilyMemberSummary {
+  customerId: string;
+  nameAr: string;
+  nameEn: string;
+  role: FamilyMemberRole;
+  roleAr: string;
+  roleEn: string;
+  status: 'Active' | 'Pending' | 'Detached';
+  statusAr: string;
+  statusEn: string;
+  quotaDays: number;
+  usedDays: number;
+}
+
+export interface CustomerAccount {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  phoneNumber: string;
+  email: string;
+  areaAr: string;
+  areaEn: string;
+  status: CustomerAccountStatus;
+  statusAr: string;
+  statusEn: string;
+  statusTone: 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+
+  subscriptionId?: string;
+  programAr?: string;
+  programEn?: string;
+  bundleAr?: string;
+  bundleEn?: string;
+  tierAr?: string;
+  tierEn?: string;
+  subscriptionDays?: number;
+  usedDays?: number;
+  subscriptionStartAr?: string;
+  subscriptionStartEn?: string;
+
+  subscriptionType?: CustomerSubscriptionType;
+  familyGroupId?: string;
+  familyGroupNameAr?: string;
+  familyGroupNameEn?: string;
+  familyRole?: FamilyMemberRole;
+  familyRoleAr?: string;
+  familyRoleEn?: string;
+  familyManagerCustomerId?: string;
+  familyManagerNameAr?: string;
+  familyManagerNameEn?: string;
+  familyMembers?: FamilyMemberSummary[];
+
+  walletBalanceKd: number;
+  loyaltyPoints: number;
+  totalOrders: number;
+  complaintsCount: number;
+
+  joinedAtAr: string;
+  joinedAtEn: string;
+  lastActivityAr: string;
+  lastActivityEn: string;
+
+  allergiesAr?: string[];
+  allergiesEn?: string[];
+  dislikesAr?: string[];
+  dislikesEn?: string[];
+
+  notesAr?: string;
+  notesEn?: string;
+}

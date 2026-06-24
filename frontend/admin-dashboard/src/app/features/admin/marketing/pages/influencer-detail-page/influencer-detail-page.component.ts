@@ -7,7 +7,6 @@ import {
   lucideBan,
   lucideCopy,
   lucideMail,
-  lucideMegaphone,
   lucidePause,
   lucidePhone,
 } from '@ng-icons/lucide';
@@ -67,7 +66,6 @@ type InfluencerDetailTab =
       lucideBan,
       lucidePhone,
       lucideMail,
-      lucideMegaphone,
       lucideArrowRight,
     }),
   ],

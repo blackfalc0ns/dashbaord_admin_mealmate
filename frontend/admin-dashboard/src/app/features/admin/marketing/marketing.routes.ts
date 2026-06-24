@@ -1,13 +1,7 @@
 import { Routes } from '@angular/router';
 
 export const MARKETING_ROUTES: Routes = [
-  {
-    path: '',
-    loadComponent: () =>
-      import('./pages/marketing-overview-page/marketing-overview-page.component').then(
-        (m) => m.MarketingOverviewPageComponent,
-      ),
-  },
+  { path: '', pathMatch: 'full', redirectTo: 'influencers' },
   {
     path: 'influencers',
     loadComponent: () =>
