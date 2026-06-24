@@ -16,6 +16,9 @@ export const AdminPermissions = {
   supportView: 'support:view',
   securityManage: 'security:manage',
   settingsManage: 'settings:manage',
+  marketingView: 'marketing:view',
+  marketingManage: 'marketing:manage',
+  marketingCommissions: 'marketing:commissions',
 } as const;
 
 export type AdminPermission =

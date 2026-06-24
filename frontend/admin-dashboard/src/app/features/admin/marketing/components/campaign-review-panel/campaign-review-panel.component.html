@@ -1,0 +1,42 @@
+<mm-detail-panel-card [title]="copy().tabReview" icon="lucideTrendingUp">
+  @if (!agreedParticipants(campaign()).length) {
+    <p class="py-8 text-center text-sm text-slate-500">{{ copy().noData }}</p>
+  } @else {
+    @if (campaign().reviewTiers?.length) {
+      <div class="mb-4 grid gap-3 sm:grid-cols-3">
+        @for (t of campaign().reviewTiers!; track t.tier) {
+          <div class="rounded-2xl border border-slate-100 bg-gradient-to-br from-emerald-50 to-white p-4 text-center">
+            <p class="text-[10px] font-bold uppercase text-slate-400">{{ t.tier }}</p>
+            <p class="mt-1 text-2xl font-extrabold text-emerald-700">{{ t.avgDiscountedDailyPrice }} KD</p>
+            <p class="text-xs text-slate-500">{{ t.restaurantCount }} {{ copy().tabParticipants }}</p>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="overflow-x-auto rounded-2xl border border-slate-100">
+      <table class="w-full min-w-[640px] text-sm">
+        <thead class="bg-slate-50 text-[10px] font-bold uppercase text-slate-500">
+          <tr>
+            <th class="px-4 py-3 text-start">{{ copy().colInfluencer }}</th>
+            <th class="px-4 py-3">{{ copy().originalPrice }}</th>
+            <th class="px-4 py-3">{{ copy().discountedPrice }}</th>
+            <th class="px-4 py-3">{{ copy().netPrice }}</th>
+            <th class="px-4 py-3">{{ copy().dailyCapacity }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          @for (p of agreedParticipants(campaign()); track p.id) {
+            <tr class="hover:bg-slate-50/50">
+              <td class="px-4 py-3 font-bold">{{ restaurantName(p) }}</td>
+              <td class="px-4 py-3 text-center text-slate-600">{{ p.originalDailyPrice }} KD</td>
+              <td class="px-4 py-3 text-center font-bold text-emerald-700">{{ p.discountedDailyPrice }} KD</td>
+              <td class="px-4 py-3 text-center font-bold text-violet-700">{{ p.netDailyPrice }} KD</td>
+              <td class="px-4 py-3 text-center">{{ p.campaignDailyCapacity }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</mm-detail-panel-card>

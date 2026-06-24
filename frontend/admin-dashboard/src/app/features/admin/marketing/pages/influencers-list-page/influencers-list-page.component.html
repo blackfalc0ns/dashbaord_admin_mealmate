@@ -1,0 +1,165 @@
+<section class="mm-page flex flex-col gap-4" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-xl font-extrabold text-slate-900">{{ copy().influencers }}</h1>
+    <button
+      type="button"
+      *mmHasPermission="perms.marketingManage"
+      class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-emerald-700"
+      (click)="openWizard()"
+    >
+      <ng-icon name="lucidePlus" size="16" />
+      {{ copy().addInfluencer }}
+    </button>
+  </div>
+
+  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <span class="text-xs font-bold text-slate-500">{{ copy().kpiActive }}</span>
+      <p class="text-2xl font-extrabold text-emerald-600">{{ kpis().active }}</p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <span class="text-xs font-bold text-slate-500">{{ copy().paused }}</span>
+      <p class="text-2xl font-extrabold text-amber-600">{{ kpis().paused }}</p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <span class="text-xs font-bold text-slate-500">{{ copy().draft }}</span>
+      <p class="text-2xl font-extrabold text-slate-600">{{ kpis().draft }}</p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <span class="text-xs font-bold text-slate-500">{{ copy().colInfluencer }}</span>
+      <p class="text-2xl font-extrabold text-slate-900">{{ kpis().total }}</p>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div class="relative w-full sm:max-w-xs">
+        <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+          <ng-icon name="lucideSearch" size="16" />
+        </span>
+        <input
+          type="text"
+          [placeholder]="copy().searchPlaceholder"
+          class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-xs focus:border-emerald-500 focus:outline-none"
+          (input)="onSearch($event)"
+        />
+      </div>
+      <div class="flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
+        @for (f of [
+          { id: 'all', label: copy().all },
+          { id: 'Active', label: copy().active },
+          { id: 'Paused', label: copy().paused },
+          { id: 'Draft', label: copy().draft },
+          { id: 'BlockedForFraud', label: copy().fraud },
+        ]; track f.id) {
+          <button
+            type="button"
+            class="rounded-md px-3 py-1 font-semibold transition-all"
+            [class.bg-white]="statusFilter() === f.id"
+            [class.shadow-sm]="statusFilter() === f.id"
+            [class.text-slate-900]="statusFilter() === f.id"
+            [class.text-slate-500]="statusFilter() !== f.id"
+            (click)="onStatusFilter(f.id)"
+          >
+            {{ f.label }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  @if (viewState() === 'loading') {
+    <mm-page-state [viewState]="'loading'" [emptyMessage]="copy().loading" />
+  } @else if (viewState() === 'empty') {
+    <mm-page-state [viewState]="'empty'" [emptyMessage]="copy().emptyInfluencers" (retry)="retry()" />
+  } @else {
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[900px] text-start text-sm">
+          <thead class="border-b border-slate-100 bg-slate-50/80 text-xs font-bold text-slate-500">
+            <tr>
+              <th class="px-4 py-3">{{ copy().colInfluencer }}</th>
+              <th class="px-4 py-3">{{ copy().colStatus }}</th>
+              <th class="px-4 py-3">{{ copy().colCode }}</th>
+              <th class="px-4 py-3">{{ copy().colLink }}</th>
+              <th class="px-4 py-3">{{ copy().colCommission }}</th>
+              <th class="px-4 py-3">{{ copy().colPerformance }}</th>
+              <th class="px-4 py-3">{{ copy().colLastActivity }}</th>
+              <th class="px-4 py-3">{{ copy().colAction }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (item of filtered(); track item.id) {
+              <tr class="hover:bg-slate-50/50">
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-2">
+                    <span class="flex size-8 items-center justify-center rounded-full bg-emerald-50 text-xs font-bold text-emerald-700">
+                      {{ displayName(item).charAt(0) }}
+                    </span>
+                    <span class="font-semibold text-slate-900">{{ displayName(item) }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="statusClass(item.status)">
+                    {{ statusLabel(item.status) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  @if (item.promotionCode; as code) {
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-1 font-mono text-xs font-bold text-emerald-700"
+                      (click)="copyText(code.code, item.id + '-code')"
+                    >
+                      {{ code.code }}
+                      <ng-icon name="lucideCopy" size="12" />
+                    </button>
+                  } @else {
+                    <span class="text-slate-400">—</span>
+                  }
+                </td>
+                <td class="px-4 py-3">
+                  @if (item.promotionLink; as link) {
+                    <button
+                      type="button"
+                      class="text-xs font-semibold text-slate-600 hover:text-emerald-700"
+                      (click)="copyText(link.targetUrl, item.id + '-link')"
+                    >
+                      /{{ link.slug }}
+                    </button>
+                  } @else {
+                    <span class="text-slate-400">—</span>
+                  }
+                </td>
+                <td class="px-4 py-3 font-semibold">{{ item.defaultCommissionRate }}%</td>
+                <td class="px-4 py-3 text-xs text-slate-600">
+                  {{ item.stats.referralsCount }} {{ copy().referrals }} ·
+                  {{ item.stats.paidSubscriptionsCount }} {{ copy().paidSubs }}
+                </td>
+                <td class="px-4 py-3 text-xs text-slate-500">
+                  {{ item.lastActivityAtUtc | date: 'mediumDate' }}
+                </td>
+                <td class="px-4 py-3">
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:underline"
+                    (click)="openProfile(item)"
+                  >
+                    {{ copy().openProfile }}
+                    <ng-icon name="lucideExternalLink" size="12" />
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</section>
+
+<mm-influencer-form-wizard
+  [open]="wizardOpen()"
+  (closed)="onWizardClosed()"
+  (created)="onCreated($event)"
+/>

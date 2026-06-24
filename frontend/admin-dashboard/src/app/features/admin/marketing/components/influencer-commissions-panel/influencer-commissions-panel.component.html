@@ -1,0 +1,58 @@
+<mm-detail-panel-card [title]="copy().tabCommissions" icon="lucideWallet">
+  @if (!sortedCommissions().length) {
+    <p class="py-8 text-center text-sm text-slate-500">{{ copy().noData }}</p>
+  } @else {
+    <div class="mb-4 grid gap-3 sm:grid-cols-3">
+      <div class="rounded-xl bg-amber-50/60 p-3 text-center">
+        <p class="text-[10px] font-bold uppercase text-amber-700">{{ copy().commissionStatusPending }}</p>
+        <p class="text-xl font-extrabold text-amber-900">{{ influencer().stats.pendingCommissionTotal }} KD</p>
+      </div>
+      <div class="rounded-xl bg-emerald-50/60 p-3 text-center">
+        <p class="text-[10px] font-bold uppercase text-emerald-700">{{ copy().commissionStatusPaid }}</p>
+        <p class="text-xl font-extrabold text-emerald-900">{{ influencer().stats.paidCommissionTotal }} KD</p>
+      </div>
+      <div class="rounded-xl bg-slate-50 p-3 text-center">
+        <p class="text-[10px] font-bold uppercase text-slate-500">{{ copy().paidSubs }}</p>
+        <p class="text-xl font-extrabold text-slate-900">{{ influencer().stats.paidSubscriptionsCount }}</p>
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-slate-100">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+          <tr>
+            <th class="px-4 py-3 text-start">{{ copy().subscription }}</th>
+            <th class="px-4 py-3">{{ copy().amount }}</th>
+            <th class="px-4 py-3">{{ copy().rate }}</th>
+            <th class="px-4 py-3">{{ copy().status }}</th>
+            <th class="px-4 py-3">{{ copy().date }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          @for (c of sortedCommissions(); track c.id) {
+            <tr class="hover:bg-slate-50/50">
+              <td class="px-4 py-3 font-mono text-xs text-slate-700">{{ c.subscriptionId }}</td>
+              <td class="px-4 py-3 text-center font-semibold text-slate-800">{{ c.subscriptionAmount }} KD</td>
+              <td class="px-4 py-3 text-center text-xs">
+                <span class="font-bold text-slate-600">{{ c.appliedCommissionRate }}%</span>
+                <span class="text-slate-400"> → </span>
+                <span class="font-bold text-emerald-700">{{ c.commissionAmount | number: '1.2-2' }} KD</span>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span class="inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-bold ring-1" [ngClass]="statusClass(c.status)">
+                  {{ statusLabel(c.status) }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-center text-xs text-slate-500">
+                {{ c.createdAtUtc | date: 'mediumDate' }}
+                @if (c.paidAtUtc) {
+                  <span class="block text-[10px] text-emerald-600">{{ copy().paid }}: {{ c.paidAtUtc | date: 'shortDate' }}</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</mm-detail-panel-card>

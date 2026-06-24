@@ -1,0 +1,160 @@
+@if (influencer(); as item) {
+  <section class="flex flex-col gap-4" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="bg-gradient-to-br from-emerald-600/10 via-white to-slate-50 px-5 py-5 sm:px-6">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div class="flex items-start gap-4">
+            <div
+              class="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-500 text-xl font-extrabold text-white shadow-lg shadow-emerald-600/20"
+              [attr.aria-label]="copy().detailInitials"
+            >
+              {{ initials(item) }}
+            </div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <h1 class="text-2xl font-extrabold text-slate-900">{{ displayName(item) }}</h1>
+                <span
+                  class="inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-bold ring-1"
+                  [ngClass]="statusClass(item.status)"
+                >
+                  {{ statusLabel(item.status) }}
+                </span>
+              </div>
+
+              <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
+                @if (item.contactPhone) {
+                  <span class="inline-flex items-center gap-1">
+                    <ng-icon name="lucidePhone" size="12" class="text-slate-400" />
+                    {{ item.contactPhone }}
+                  </span>
+                }
+                @if (item.contactEmail) {
+                  <span class="inline-flex items-center gap-1">
+                    <ng-icon name="lucideMail" size="12" class="text-slate-400" />
+                    {{ item.contactEmail }}
+                  </span>
+                }
+                <span class="font-mono text-slate-400">{{ item.id }}</span>
+              </div>
+
+              <div class="mt-3 flex flex-wrap gap-2">
+                @if (item.promotionCode) {
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
+                    (click)="copyText(item.promotionCode!.code)"
+                  >
+                    <ng-icon name="lucideCopy" size="12" />
+                    {{ item.promotionCode.code }}
+                  </button>
+                }
+                @if (item.promotionLink) {
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                    (click)="copyText(item.promotionLink!.targetUrl)"
+                  >
+                    <ng-icon name="lucideCopy" size="12" />
+                    /{{ item.promotionLink.slug }}
+                  </button>
+                }
+                <span class="inline-flex items-center rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700">
+                  {{ item.defaultCommissionRate }}% {{ copy().colCommission }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3 sm:items-end">
+            <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+              <div class="rounded-xl border border-slate-100 bg-white/80 px-3 py-2 text-center backdrop-blur-sm">
+                <p class="text-[10px] font-bold text-slate-400">{{ copy().referrals }}</p>
+                <p class="text-lg font-extrabold text-slate-900">{{ item.stats.referralsCount }}</p>
+              </div>
+              <div class="rounded-xl border border-slate-100 bg-white/80 px-3 py-2 text-center backdrop-blur-sm">
+                <p class="text-[10px] font-bold text-slate-400">{{ copy().paidSubs }}</p>
+                <p class="text-lg font-extrabold text-emerald-700">{{ item.stats.paidSubscriptionsCount }}</p>
+              </div>
+              <div class="rounded-xl border border-slate-100 bg-white/80 px-3 py-2 text-center backdrop-blur-sm">
+                <p class="text-[10px] font-bold text-slate-400">{{ copy().pendingCommission }}</p>
+                <p class="text-lg font-extrabold text-amber-700">{{ item.stats.pendingCommissionTotal }} KD</p>
+              </div>
+              <div class="rounded-xl border border-slate-100 bg-white/80 px-3 py-2 text-center backdrop-blur-sm">
+                <p class="text-[10px] font-bold text-slate-400">{{ copy().detailPaidCommission }}</p>
+                <p class="text-lg font-extrabold text-slate-900">{{ item.stats.paidCommissionTotal }} KD</p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2" *mmHasPermission="perms.marketingManage">
+              <span class="w-full text-[10px] font-bold uppercase tracking-wider text-slate-400 sm:w-auto sm:self-center">
+                {{ copy().detailQuickActions }}
+              </span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100"
+                (click)="setStatus('Paused')"
+              >
+                <ng-icon name="lucidePause" size="12" />
+                {{ copy().pause }}
+              </button>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-800 hover:bg-red-100"
+                (click)="setStatus('Suspended')"
+              >
+                <ng-icon name="lucideBan" size="12" />
+                {{ copy().suspend }}
+              </button>
+              <button
+                type="button"
+                class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                (click)="setStatus('Closed')"
+              >
+                {{ copy().close }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-100 px-2 py-1 text-[10px] text-slate-400 sm:px-5">
+        {{ copy().detailLastActivity }}: {{ item.lastActivityAtUtc | date: 'medium' }}
+      </div>
+    </div>
+
+    <mm-detail-tab-nav [tabs]="tabs()" [activeTab]="activeTab()" (tabChange)="setActiveTab($event)" />
+
+    @switch (activeTab()) {
+      @case ('overview') {
+        <mm-influencer-overview-panel [influencer]="item" (viewAttributions)="setActiveTab('attributions')" />
+      }
+      @case ('profile') {
+        <mm-influencer-profile-panel [influencer]="item" />
+      }
+      @case ('promotion') {
+        <mm-influencer-promotion-panel [influencer]="item" (copyText)="copyText($event)" />
+      }
+      @case ('commission') {
+        <mm-influencer-commission-panel
+          [influencer]="item"
+          [commissionRate]="newCommissionRate()"
+          (commissionRateChange)="newCommissionRate.set($event)"
+          (saveRate)="saveCommissionRate()"
+        />
+      }
+      @case ('attributions') {
+        <mm-influencer-attributions-panel [influencer]="item" />
+      }
+      @case ('commissions') {
+        <mm-influencer-commissions-panel [influencer]="item" />
+      }
+      @case ('audit') {
+        <mm-influencer-audit-panel [influencer]="item" />
+      }
+    }
+  </section>
+}
+
+@if (toastMessage(); as message) {
+  <mm-detail-toast [message]="message" type="success" />
+}

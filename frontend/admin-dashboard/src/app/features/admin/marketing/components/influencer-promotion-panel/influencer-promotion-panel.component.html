@@ -1,0 +1,121 @@
+@if (influencer(); as item) {
+  <div class="grid gap-4 lg:grid-cols-2">
+    @if (item.promotionLink; as link) {
+      <mm-detail-panel-card [title]="copy().link" icon="lucideLink">
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <span
+              class="rounded-full px-2.5 py-0.5 text-[10px] font-bold ring-1"
+              [class.bg-emerald-50]="link.status === 'Active'"
+              [class.text-emerald-700]="link.status === 'Active'"
+              [class.ring-emerald-200]="link.status === 'Active'"
+              [class.bg-slate-100]="link.status !== 'Active'"
+              [class.text-slate-600]="link.status !== 'Active'"
+            >
+              {{ link.status }}
+            </span>
+            <span class="font-mono text-xs font-bold text-slate-600">/{{ link.slug }}</span>
+          </div>
+          <p class="break-all rounded-xl bg-slate-50 p-3 font-mono text-xs text-slate-700">{{ link.targetUrl }}</p>
+          <div class="grid gap-2 text-xs sm:grid-cols-2">
+            <div class="rounded-lg border border-slate-100 p-2.5">
+              <span class="text-slate-400">{{ copy().detailValidFrom }}</span>
+              <p class="font-semibold text-slate-800">{{ link.startAtUtc | date: 'mediumDate' }}</p>
+            </div>
+            <div class="rounded-lg border border-slate-100 p-2.5">
+              <span class="text-slate-400">{{ copy().detailValidUntil }}</span>
+              <p class="font-semibold text-slate-800">
+                @if (link.endAtUtc) {
+                  {{ link.endAtUtc | date: 'mediumDate' }}
+                } @else {
+                  {{ copy().detailNoExpiry }}
+                }
+              </p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-700"
+              (click)="copyText.emit(link.targetUrl)"
+            >
+              <ng-icon name="lucideCopy" size="14" />
+              {{ copy().copy }}
+            </button>
+            <div class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600">
+              <ng-icon name="lucideQrCode" size="14" />
+              QR
+            </div>
+          </div>
+        </div>
+      </mm-detail-panel-card>
+    }
+
+    @if (item.promotionCode; as code) {
+      <mm-detail-panel-card [title]="copy().code" icon="lucideTicket">
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <span
+              class="rounded-full px-2.5 py-0.5 text-[10px] font-bold ring-1"
+              [class.bg-emerald-50]="code.status === 'Active'"
+              [class.text-emerald-700]="code.status === 'Active'"
+              [class.ring-emerald-200]="code.status === 'Active'"
+            >
+              {{ code.status }}
+            </span>
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:underline"
+              (click)="copyText.emit(code.code)"
+            >
+              <ng-icon name="lucideCopy" size="12" />
+              {{ copy().copy }}
+            </button>
+          </div>
+          <p class="text-center font-mono text-3xl font-extrabold tracking-widest text-emerald-700">{{ code.code }}</p>
+          <div class="grid gap-2 text-xs sm:grid-cols-2">
+            <div class="rounded-lg border border-slate-100 p-2.5">
+              <span class="text-slate-400">{{ copy().detailValidFrom }}</span>
+              <p class="font-semibold text-slate-800">{{ code.startAtUtc | date: 'mediumDate' }}</p>
+            </div>
+            <div class="rounded-lg border border-slate-100 p-2.5">
+              <span class="text-slate-400">{{ copy().detailValidUntil }}</span>
+              <p class="font-semibold text-slate-800">
+                @if (code.endAtUtc) {
+                  {{ code.endAtUtc | date: 'mediumDate' }}
+                } @else {
+                  {{ copy().detailNoExpiry }}
+                }
+              </p>
+            </div>
+          </div>
+          <div>
+            <div class="mb-1 flex justify-between text-xs">
+              <span class="font-bold text-slate-500">{{ copy().detailUsageProgress }}</span>
+              <span class="font-bold text-slate-800">
+                {{ code.usageCount }}
+                @if (code.usageLimit) {
+                  / {{ code.usageLimit }}
+                } @else {
+                  ({{ copy().detailUnlimited }})
+                }
+              </span>
+            </div>
+            @if (code.usageLimit) {
+              <div class="h-2 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all"
+                  [style.width.%]="usagePercent(code)"
+                ></div>
+              </div>
+            }
+          </div>
+          <p class="flex items-center gap-1.5 text-xs text-slate-500">
+            <ng-icon name="lucideShare2" size="12" />
+            {{ copy().detailShareHint }}
+          </p>
+        </div>
+      </mm-detail-panel-card>
+    }
+  </div>
+}

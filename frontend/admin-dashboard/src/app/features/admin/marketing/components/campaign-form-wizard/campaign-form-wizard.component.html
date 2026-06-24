@@ -1,0 +1,156 @@
+@if (open()) {
+  <div class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center" role="dialog" aria-modal="true">
+    <div class="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+      <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <div>
+          <h2 class="text-lg font-extrabold text-slate-900">{{ copy().campaignWizardTitle }}</h2>
+          <p class="text-xs text-slate-500">{{ copy().collabCampaignsSubtitle }}</p>
+        </div>
+        <button type="button" class="text-slate-400 hover:text-slate-700" (click)="close()">
+          <ng-icon name="lucideX" size="20" />
+        </button>
+      </div>
+
+      <div class="flex flex-wrap gap-2 border-b border-slate-100 px-5 py-3 text-xs font-bold">
+        <span [class.text-emerald-700]="step() === 0" [class.text-slate-400]="step() !== 0">1. {{ copy().campaignStepBasics }}</span>
+        <span [class.text-emerald-700]="step() === 1" [class.text-slate-400]="step() !== 1">2. {{ copy().tabPrograms }}</span>
+        <span [class.text-emerald-700]="step() === 2" [class.text-slate-400]="step() !== 2">3. {{ copy().campaignStepReview }}</span>
+      </div>
+
+      <div class="p-5">
+        @if (step() === 0) {
+          <form class="flex flex-col gap-3" [formGroup]="basicsForm">
+            <div class="grid gap-3 sm:grid-cols-2">
+              <label class="text-xs font-semibold text-slate-700">{{ copy().displayNameAr }}
+                <input formControlName="nameAr" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+              </label>
+              <label class="text-xs font-semibold text-slate-700">{{ copy().displayNameEn }}
+                <input formControlName="nameEn" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+              </label>
+            </div>
+            <div class="grid grid-cols-3 gap-2 rounded-xl border border-violet-100 bg-violet-50/40 p-3">
+              <label class="text-xs font-bold text-violet-800">{{ copy().totalDiscount }}
+                <input formControlName="totalDiscountPercent" type="number" class="mt-1 h-10 w-full rounded-lg border border-violet-200 px-2 text-sm font-bold" />
+              </label>
+              <label class="text-xs font-bold text-violet-800">{{ copy().restaurantShare }}
+                <input formControlName="restaurantSharePercent" type="number" class="mt-1 h-10 w-full rounded-lg border border-violet-200 px-2 text-sm font-bold" />
+              </label>
+              <label class="text-xs font-bold text-violet-800">{{ copy().platformShare }}
+                <input formControlName="platformSharePercent" type="number" class="mt-1 h-10 w-full rounded-lg border border-violet-200 px-2 text-sm font-bold" />
+              </label>
+            </div>
+            @if (splitInvalid()) {
+              <p class="rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">{{ copy().discountSplitError }}</p>
+            }
+            <label class="text-xs font-semibold text-slate-700">{{ copy().commissionOption }}
+              <select formControlName="commissionOption" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm">
+                <option value="full">{{ copy().commissionFull }}</option>
+                <option value="half">{{ copy().commissionHalf }}</option>
+                <option value="none">{{ copy().commissionNone }}</option>
+              </select>
+            </label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="text-xs font-semibold text-slate-700">{{ copy().campaignStartDate }}
+                <input formControlName="startAtUtc" type="date" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+              </label>
+              <label class="text-xs font-semibold text-slate-700">{{ copy().campaignEndDate }}
+                <input formControlName="endAtUtc" type="date" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+              </label>
+            </div>
+            <label class="text-xs font-semibold text-slate-700">{{ copy().subscriberCap }}
+              <input formControlName="maxSubscribers" type="number" min="1" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+            </label>
+          </form>
+        }
+
+        @if (step() === 1) {
+          <form [formGroup]="programsForm" class="flex flex-col gap-4">
+            <div formArrayName="programs">
+              @for (prog of programs.controls; track $index; let pi = $index) {
+                <div [formGroupName]="pi" class="rounded-xl border border-slate-200 p-4">
+                  <div class="mb-3 grid gap-2 sm:grid-cols-2">
+                    <label class="text-xs font-semibold">{{ copy().programNameAr }}
+                      <input formControlName="nameAr" class="mt-1 h-9 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+                    </label>
+                    <label class="text-xs font-semibold">{{ copy().programNameEn }}
+                      <input formControlName="nameEn" class="mt-1 h-9 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+                    </label>
+                  </div>
+                  <div formArrayName="bundles" class="flex flex-col gap-2">
+                    @for (bun of bundlesAt(pi).controls; track $index; let bi = $index) {
+                      <div [formGroupName]="bi" class="grid gap-2 rounded-lg bg-slate-50 p-3 sm:grid-cols-4">
+                        <label class="text-[10px] font-bold text-slate-600 sm:col-span-1">{{ copy().bundleNameAr }}
+                          <input formControlName="nameAr" class="mt-1 h-8 w-full rounded border border-slate-200 px-2 text-xs" />
+                        </label>
+                        <label class="text-[10px] font-bold text-slate-600 sm:col-span-1">{{ copy().bundleNameEn }}
+                          <input formControlName="nameEn" class="mt-1 h-8 w-full rounded border border-slate-200 px-2 text-xs" />
+                        </label>
+                        <label class="text-[10px] font-bold text-slate-600 sm:col-span-2">{{ copy().linkedBundle }}
+                          <select formControlName="linkedBundleId" class="mt-1 h-8 w-full rounded border border-slate-200 px-2 text-xs">
+                            @for (sb of systemBundles; track sb.id) {
+                              <option [value]="sb.id">{{ bundleLabel(sb.id) }}</option>
+                            }
+                          </select>
+                        </label>
+                        @if (bundlesAt(pi).length > 1) {
+                          <button type="button" class="text-red-500 sm:col-span-4" (click)="removeBundle(pi, bi)">
+                            <ng-icon name="lucideTrash2" size="14" />
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                  <button type="button" class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-emerald-700" (click)="addBundle(pi)">
+                    <ng-icon name="lucidePlus" size="12" /> {{ copy().addBundle }}
+                  </button>
+                </div>
+              }
+            </div>
+            <button type="button" class="inline-flex items-center gap-1 text-sm font-bold text-violet-700" (click)="addProgram()">
+              <ng-icon name="lucidePlus" size="14" /> {{ copy().addProgram }}
+            </button>
+          </form>
+        }
+
+        @if (step() === 2) {
+          <form [formGroup]="reviewForm" class="flex flex-col gap-4">
+            <div class="rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm">
+              <dl class="grid gap-2">
+                <div class="flex justify-between"><dt class="text-slate-500">{{ copy().campaignName }}</dt><dd class="font-bold">{{ basicsForm.value.nameAr }}</dd></div>
+                <div class="flex justify-between"><dt class="text-slate-500">{{ copy().totalDiscount }}</dt><dd>{{ basicsForm.value.totalDiscountPercent }}% ({{ basicsForm.value.restaurantSharePercent }}+{{ basicsForm.value.platformSharePercent }})</dd></div>
+                <div class="flex justify-between"><dt class="text-slate-500">{{ copy().subscriberCap }}</dt><dd class="font-bold">{{ basicsForm.value.maxSubscribers }}</dd></div>
+                <div class="flex justify-between"><dt class="text-slate-500">{{ copy().tabPrograms }}</dt><dd>{{ programs.length }} / {{ programs.controls.length ? bundlesAt(0).length : 0 }}+</dd></div>
+              </dl>
+            </div>
+            <label class="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <input formControlName="sendToRestaurants" type="checkbox" class="size-4 rounded border-slate-300 text-emerald-600" />
+              {{ copy().sendToRestaurants }}
+            </label>
+          </form>
+        }
+      </div>
+
+      <div class="flex flex-wrap justify-between gap-2 border-t border-slate-100 px-5 py-4">
+        @if (step() > 0) {
+          <button type="button" class="inline-flex items-center gap-1 text-sm font-bold text-slate-600" (click)="prevStep()">
+            <ng-icon name="lucideChevronLeft" size="16" /> {{ copy().back }}
+          </button>
+        } @else { <span></span> }
+        <div class="flex flex-wrap gap-2">
+          @if (step() < 2) {
+            <button type="button" class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white" (click)="nextStep()">
+              {{ copy().next }} <ng-icon name="lucideChevronRight" size="16" />
+            </button>
+          } @else {
+            <button type="button" class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700" [disabled]="submitting()" (click)="submit(true)">
+              {{ copy().saveAsDraft }}
+            </button>
+            <button type="button" class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white" [disabled]="submitting()" (click)="submit(false)">
+              <ng-icon name="lucideCheck" size="16" /> {{ copy().campaignCreate }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

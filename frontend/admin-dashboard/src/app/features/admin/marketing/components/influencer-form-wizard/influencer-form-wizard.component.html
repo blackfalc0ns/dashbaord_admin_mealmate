@@ -1,0 +1,115 @@
+@if (open()) {
+  <div
+    class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div
+      class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl"
+      [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'"
+    >
+      <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <h2 class="text-lg font-extrabold text-slate-900">{{ copy().wizardTitle }}</h2>
+        <button type="button" class="text-slate-400 hover:text-slate-700" (click)="close()">
+          <ng-icon name="lucideX" size="20" />
+        </button>
+      </div>
+
+      <div class="flex gap-2 border-b border-slate-100 px-5 py-3 text-xs font-bold">
+        <span [class.text-emerald-700]="step() === 0" [class.text-slate-400]="step() !== 0">1. {{ copy().stepIdentity }}</span>
+        <span [class.text-emerald-700]="step() === 1" [class.text-slate-400]="step() !== 1">2. {{ copy().stepPromotion }}</span>
+        <span [class.text-emerald-700]="step() === 2" [class.text-slate-400]="step() !== 2">3. {{ copy().stepCommission }}</span>
+      </div>
+
+      <div class="p-5">
+        @if (step() === 0) {
+          <form class="flex flex-col gap-3" [formGroup]="identityForm">
+            <label class="text-xs font-semibold text-slate-700">
+              {{ copy().displayNameAr }}
+              <input formControlName="displayNameAr" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+            </label>
+            <label class="text-xs font-semibold text-slate-700">
+              {{ copy().displayNameEn }}
+              <input formControlName="displayNameEn" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+            </label>
+            <label class="text-xs font-semibold text-slate-700">
+              {{ copy().contactPhone }}
+              <input formControlName="contactPhone" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+            </label>
+            <label class="text-xs font-semibold text-slate-700">
+              {{ copy().contactEmail }}
+              <input formControlName="contactEmail" type="email" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+            </label>
+            <label class="text-xs font-semibold text-slate-700">
+              {{ copy().userId }}
+              <input formControlName="userId" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+            </label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="text-xs font-semibold text-slate-700">
+                {{ copy().socialPlatform }}
+                <input formControlName="socialPlatform" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+              </label>
+              <label class="text-xs font-semibold text-slate-700">
+                {{ copy().socialHandle }}
+                <input formControlName="socialHandle" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+              </label>
+            </div>
+          </form>
+        }
+
+        @if (step() === 1) {
+          <form class="flex flex-col gap-3" [formGroup]="promotionForm">
+            <label class="text-xs font-semibold text-slate-700">
+              {{ copy().slug }}
+              <input formControlName="slug" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" placeholder="sara-fit" />
+            </label>
+            <label class="text-xs font-semibold text-slate-700">
+              {{ copy().promoCode }}
+              <input formControlName="code" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm uppercase" />
+            </label>
+          </form>
+        }
+
+        @if (step() === 2) {
+          <form class="flex flex-col gap-3" [formGroup]="commissionForm">
+            <label class="text-xs font-semibold text-slate-700">
+              {{ copy().commissionRate }}
+              <input formControlName="defaultCommissionRate" type="number" min="1" max="30" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm" />
+            </label>
+            <p class="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">{{ copy().commissionNote }}</p>
+            <label class="flex items-center gap-2 text-sm font-medium text-slate-700">
+              <input type="checkbox" formControlName="activateNow" class="size-4 rounded border-slate-300" />
+              {{ copy().activateNow }}
+            </label>
+          </form>
+        }
+      </div>
+
+      <div class="flex justify-between gap-2 border-t border-slate-100 px-5 py-4">
+        @if (step() > 0) {
+          <button type="button" class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700" (click)="prevStep()">
+            {{ copy().back }}
+          </button>
+        } @else {
+          <button type="button" class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700" (click)="close()">
+            {{ copy().cancel }}
+          </button>
+        }
+        @if (step() < 2) {
+          <button type="button" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white" (click)="nextStep()">
+            {{ copy().next }}
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+            [disabled]="submitting()"
+            (click)="submit()"
+          >
+            {{ copy().create }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}

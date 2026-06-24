@@ -1,0 +1,212 @@
+@if (influencer(); as item) {
+  <div class="flex flex-col gap-4">
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ copy().referrals }}</span>
+          <span class="text-2xl font-extrabold text-slate-900">{{ item.stats.referralsCount }}</span>
+        </div>
+        <div class="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+          <ng-icon name="lucideUsers" size="20" />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ copy().paidSubs }}</span>
+          <span class="text-2xl font-extrabold text-emerald-600">{{ item.stats.paidSubscriptionsCount }}</span>
+        </div>
+        <div class="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+          <ng-icon name="lucideTrendingUp" size="20" />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ copy().kpiConversion }}</span>
+          <span class="text-2xl font-extrabold text-slate-900">{{ item.stats.conversionRate }}%</span>
+        </div>
+        <div class="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+          <ng-icon name="lucideActivity" size="20" />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ copy().pendingCommission }}</span>
+          <span class="text-2xl font-extrabold text-amber-600">{{ item.stats.pendingCommissionTotal }} KD</span>
+        </div>
+        <div class="flex size-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
+          <ng-icon name="lucideWallet" size="20" />
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-4 lg:grid-cols-3">
+      <div class="flex flex-col gap-4 lg:col-span-2">
+        @if (trend().length) {
+          <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <h3 class="mb-4 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+              <ng-icon name="lucideTrendingUp" size="16" class="text-emerald-600" />
+              <span>{{ copy().detailPerformanceChart }}</span>
+            </h3>
+            <div class="flex items-end justify-between gap-2" style="min-height: 9rem">
+              @for (point of trend(); track point.labelEn) {
+                <div class="flex flex-1 flex-col items-center gap-2">
+                  <div class="flex w-full flex-col items-center justify-end gap-1" style="height: 7rem">
+                    <span class="text-[10px] font-bold text-emerald-700">{{ point.paidSubscriptions }}</span>
+                    <div
+                      class="w-full max-w-12 rounded-t-lg bg-gradient-to-t from-emerald-600 to-emerald-400 transition-all"
+                      [style.height]="barHeight(point.referrals)"
+                    ></div>
+                  </div>
+                  <span class="text-center text-[10px] font-bold text-slate-500">{{ trendLabel(point) }}</span>
+                  <span class="text-[10px] text-slate-400">{{ point.commissionKd }} KD</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (channelStats(); as stats) {
+          <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <h3 class="mb-4 flex items-center gap-2 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+              <ng-icon name="lucideLink" size="16" class="text-emerald-600" />
+              <span>{{ copy().detailChannelBreakdown }}</span>
+            </h3>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div class="rounded-xl border border-blue-100 bg-blue-50/40 p-4">
+                <div class="mb-2 flex items-center gap-2 text-xs font-bold text-blue-800">
+                  <ng-icon name="lucideLink" size="14" />
+                  {{ copy().detailLinkChannel }}
+                </div>
+                <dl class="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div>
+                    <dt class="text-slate-500">{{ copy().detailVisits }}</dt>
+                    <dd class="text-lg font-extrabold text-slate-900">{{ stats.linkVisits }}</dd>
+                  </div>
+                  <div>
+                    <dt class="text-slate-500">{{ copy().detailConversions }}</dt>
+                    <dd class="text-lg font-extrabold text-emerald-700">{{ stats.linkConversions }}</dd>
+                  </div>
+                  <div>
+                    <dt class="text-slate-500">{{ copy().kpiConversion }}</dt>
+                    <dd class="text-lg font-extrabold text-slate-900">
+                      {{ (stats.linkConversions / stats.linkVisits * 100) | number: '1.1-1' }}%
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+              <div class="rounded-xl border border-emerald-100 bg-emerald-50/40 p-4">
+                <div class="mb-2 flex items-center gap-2 text-xs font-bold text-emerald-800">
+                  <ng-icon name="lucideTicket" size="14" />
+                  {{ copy().detailCodeChannel }}
+                </div>
+                <dl class="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div>
+                    <dt class="text-slate-500">{{ copy().detailRedemptions }}</dt>
+                    <dd class="text-lg font-extrabold text-slate-900">{{ stats.codeRedemptions }}</dd>
+                  </div>
+                  <div>
+                    <dt class="text-slate-500">{{ copy().detailConversions }}</dt>
+                    <dd class="text-lg font-extrabold text-emerald-700">{{ stats.codeConversions }}</dd>
+                  </div>
+                  <div>
+                    <dt class="text-slate-500">{{ copy().kpiConversion }}</dt>
+                    <dd class="text-lg font-extrabold text-slate-900">
+                      {{ (stats.codeConversions / stats.codeRedemptions * 100) | number: '1.1-1' }}%
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </div>
+        }
+
+        <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+          <div class="mb-4 flex items-center justify-between border-b border-slate-50 pb-2">
+            <h3 class="flex items-center gap-2 text-sm font-extrabold text-slate-900">
+              <ng-icon name="lucideClipboardList" size="16" class="text-emerald-600" />
+              <span>{{ copy().detailRecentAttributions }}</span>
+            </h3>
+            @if (item.attributions.length > 5) {
+              <button
+                type="button"
+                class="text-xs font-bold text-emerald-700 hover:underline"
+                (click)="viewAttributions.emit()"
+              >
+                {{ copy().detailViewAll }}
+              </button>
+            }
+          </div>
+          @if (!recentAttributions().length) {
+            <p class="text-sm text-slate-500">{{ copy().noData }}</p>
+          } @else {
+            <div class="flex flex-col gap-2">
+              @for (attr of recentAttributions(); track attr.id) {
+                <div class="flex items-center justify-between gap-3 rounded-xl border border-slate-50 bg-slate-50/30 p-3">
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1"
+                      [class.bg-blue-50]="attr.sourceType === 'link'"
+                      [class.text-blue-700]="attr.sourceType === 'link'"
+                      [class.ring-blue-200]="attr.sourceType === 'link'"
+                      [class.bg-emerald-50]="attr.sourceType === 'code'"
+                      [class.text-emerald-700]="attr.sourceType === 'code'"
+                      [class.ring-emerald-200]="attr.sourceType === 'code'"
+                    >
+                      {{ attr.sourceType === 'link' ? copy().sourceLink : copy().sourceCode }}
+                    </span>
+                    <div>
+                      <p class="text-xs font-bold text-slate-800">{{ customerName(attr) }}</p>
+                      <p class="font-mono text-[10px] text-slate-500">{{ attr.subscriptionId }}</p>
+                    </div>
+                  </div>
+                  <span class="shrink-0 text-[10px] font-bold text-slate-400">{{ attr.attributedAtUtc | date: 'short' }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+          <h3 class="mb-3 border-b border-slate-50 pb-2 text-sm font-extrabold text-slate-900">
+            {{ copy().detailPartnerStatus }}
+          </h3>
+          <div class="flex flex-col gap-3 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-500">{{ copy().colStatus }}</span>
+              <span class="inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-bold ring-1" [ngClass]="statusClass(item.status)">
+                {{ statusLabel(item.status) }}
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-500">{{ copy().colCommission }}</span>
+              <span class="font-bold text-slate-900">{{ item.defaultCommissionRate }}%</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-500">{{ copy().detailPaidCommission }}</span>
+              <span class="font-bold text-emerald-700">{{ item.stats.paidCommissionTotal }} KD</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-500">{{ copy().detailLastActivity }}</span>
+              <span class="text-xs font-semibold text-slate-700">{{ item.lastActivityAtUtc | date: 'medium' }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-500">{{ copy().detailCreatedAt }}</span>
+              <span class="text-xs font-semibold text-slate-700">{{ item.createdAtUtc | date: 'mediumDate' }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-500">{{ copy().payoutStatus }}</span>
+              <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-200">
+                {{ item.payoutInfoStatus }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

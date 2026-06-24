@@ -1,0 +1,86 @@
+<mm-detail-panel-card [title]="copy().tabCapacity" icon="lucideUsers">
+  @if (campaign(); as item) {
+    <div class="mb-4 grid gap-3 sm:grid-cols-3">
+      <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4 text-center">
+        <p class="text-[10px] font-bold uppercase text-slate-500">{{ copy().capacityTarget }}</p>
+        <p class="mt-1 text-3xl font-extrabold text-slate-900">{{ item.maxSubscribers }}</p>
+      </div>
+      <div
+        class="rounded-2xl border p-4 text-center"
+        [class.border-emerald-200]="capacityOk(item)"
+        [class.bg-emerald-50]="capacityOk(item)"
+        [class.border-amber-200]="!capacityOk(item)"
+        [class.bg-amber-50]="!capacityOk(item)"
+      >
+        <p class="text-[10px] font-bold uppercase">{{ copy().capacityCurrent }}</p>
+        <p class="mt-1 text-3xl font-extrabold" [class.text-emerald-700]="capacityOk(item)" [class.text-amber-700]="!capacityOk(item)">
+          {{ totalCapacity(item) }}
+        </p>
+      </div>
+      <div class="rounded-2xl border border-red-100 bg-red-50 p-4 text-center">
+        <p class="text-[10px] font-bold uppercase text-red-600">{{ copy().capacityGap }}</p>
+        <p class="mt-1 text-3xl font-extrabold text-red-700">{{ gap(item) }}</p>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="mb-1 flex justify-between text-xs text-slate-500">
+        <span>{{ copy().capacityCurrent }}</span>
+        <span>{{ capacityPct(item) }}%</span>
+      </div>
+      <div class="h-3 overflow-hidden rounded-full bg-slate-100">
+        <div
+          class="h-full rounded-full transition-all"
+          [class.bg-emerald-500]="capacityOk(item)"
+          [class.bg-amber-500]="!capacityOk(item)"
+          [style.width.%]="capacityPct(item)"
+        ></div>
+      </div>
+    </div>
+
+    @if (!capacityOk(item)) {
+      <div class="mb-4 flex items-start gap-2 rounded-xl border border-amber-100 bg-amber-50 p-3 text-xs text-amber-900">
+        <ng-icon name="lucideTriangle" size="16" class="shrink-0 text-amber-600" />
+        <p>{{ copy().modalLaunchBlocked }}</p>
+      </div>
+    }
+
+  @if (item.participants.length) {
+    <div class="mb-4 overflow-hidden rounded-xl border border-slate-100">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-[10px] font-bold uppercase text-slate-500">
+          <tr>
+            <th class="px-4 py-2 text-start">{{ copy().colInfluencer }}</th>
+            <th class="px-4 py-2">{{ copy().dailyCapacity }}</th>
+            <th class="px-4 py-2">{{ copy().modalAdditionalCap }}</th>
+            <th class="px-4 py-2">{{ copy().status }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          @for (p of item.participants; track p.id) {
+            <tr>
+              <td class="px-4 py-2 font-bold">{{ locale.isRtl() ? p.restaurantNameAr : p.restaurantNameEn }}</td>
+              <td class="px-4 py-2 text-center">{{ p.campaignDailyCapacity }}</td>
+              <td class="px-4 py-2 text-center text-violet-700">+{{ p.additionalCapacity }}</td>
+              <td class="px-4 py-2 text-center text-xs">{{ p.enrollmentStatus }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+    <div class="flex flex-wrap gap-2">
+      @if (!capacityOk(item) && (item.status === 'Reviewed' || item.status === 'OpenForJoin')) {
+        <button type="button" class="rounded-lg bg-violet-600 px-4 py-2 text-sm font-bold text-white" (click)="openAction.emit('redistribute')">
+          {{ copy().redistributeCapacity }}
+        </button>
+      }
+      @if (item.status === 'Active') {
+        <button type="button" class="rounded-lg border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-bold text-violet-800" (click)="openAction.emit('increaseCap')">
+          {{ copy().modalIncreaseCapTitle }}
+        </button>
+      }
+    </div>
+  }
+</mm-detail-panel-card>

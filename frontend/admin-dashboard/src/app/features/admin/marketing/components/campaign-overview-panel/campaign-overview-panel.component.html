@@ -1,0 +1,133 @@
+@if (campaign(); as item) {
+  <div class="flex flex-col gap-4">
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+        <div>
+          <span class="text-[10px] font-bold uppercase text-slate-400">{{ copy().totalDiscount }}</span>
+          <p class="text-2xl font-extrabold text-violet-700">{{ item.totalDiscountPercent }}%</p>
+        </div>
+        <div class="flex size-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+          <ng-icon name="lucidePercent" size="20" />
+        </div>
+      </div>
+      <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+        <div>
+          <span class="text-[10px] font-bold uppercase text-slate-400">{{ copy().currentSubscribers }}</span>
+          <p class="text-2xl font-extrabold text-emerald-600">{{ item.currentSubscribers }}</p>
+        </div>
+        <div class="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+          <ng-icon name="lucideUsers" size="20" />
+        </div>
+      </div>
+      <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+        <div>
+          <span class="text-[10px] font-bold uppercase text-slate-400">{{ copy().capacityCurrent }}</span>
+          <p class="text-2xl font-extrabold">{{ totalCapacity(item) }}</p>
+        </div>
+        <div class="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+          <ng-icon name="lucideStore" size="20" />
+        </div>
+      </div>
+      <div class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+        <div>
+          <span class="text-[10px] font-bold uppercase text-slate-400">{{ copy().tabPrograms }}</span>
+          <p class="text-2xl font-extrabold">{{ item.programs.length }}</p>
+        </div>
+        <div class="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+          <ng-icon name="lucideLayers" size="20" />
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-4 lg:grid-cols-3">
+      <div class="flex flex-col gap-4 lg:col-span-2">
+        @if (item.performanceTrend?.length) {
+          <mm-detail-panel-card [title]="copy().detailPerformanceChart" icon="lucideTrendingUp">
+            <div class="flex items-end justify-between gap-2" style="min-height: 8rem">
+              @for (p of item.performanceTrend!; track p.labelEn) {
+                <div class="flex flex-1 flex-col items-center gap-1">
+                  <span class="text-[10px] font-bold text-violet-700">{{ p.newSubs }}</span>
+                  <div class="w-full max-w-10 rounded-t-md bg-gradient-to-t from-violet-600 to-violet-400" [style.height.%]="Math.min(100, p.usages * 2)"></div>
+                  <span class="text-[10px] text-slate-500">{{ locale.isRtl() ? p.labelAr : p.labelEn }}</span>
+                </div>
+              }
+            </div>
+          </mm-detail-panel-card>
+        }
+
+        <mm-detail-panel-card [title]="copy().workflowStep" icon="lucideMegaphone">
+          <ol class="flex flex-col gap-0 sm:flex-row sm:items-center sm:justify-between">
+            @for (step of workflowSteps; track step; let i = $index; let last = $last) {
+              <li class="flex flex-1 flex-col items-center gap-1 py-2">
+                <span
+                  class="flex size-8 items-center justify-center rounded-full text-xs font-extrabold ring-2"
+                  [ngClass]="item.status === step ? statusClass(step) : 'bg-slate-50 text-slate-400 ring-slate-100'"
+                >
+                  {{ i + 1 }}
+                </span>
+                <span class="text-center text-[10px] font-bold" [class.text-violet-700]="item.status === step">{{ statusLabel(step) }}</span>
+              </li>
+              @if (!last) {
+                <div class="hidden h-px flex-1 bg-slate-200 sm:block"></div>
+              }
+            }
+          </ol>
+        </mm-detail-panel-card>
+
+        <mm-detail-panel-card [title]="copy().modalQuickActions" icon="lucideCalendar">
+          <div class="flex flex-wrap gap-2">
+            @if (item.status === 'Draft') {
+              <button type="button" class="rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white" (click)="openAction.emit('send')">{{ copy().sendCampaign }}</button>
+            }
+            @if (item.status === 'OpenForJoin') {
+              <button type="button" class="rounded-lg bg-violet-600 px-3 py-2 text-xs font-bold text-white" (click)="openAction.emit('review')">{{ copy().markReviewed }}</button>
+            }
+            @if (item.status === 'Reviewed') {
+              <button type="button" class="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white" (click)="openAction.emit('launch')">{{ copy().launchCampaign }}</button>
+              <button type="button" class="rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800" (click)="openAction.emit('redistribute')">{{ copy().redistributeCapacity }}</button>
+            }
+            @if (item.status === 'Active') {
+              <button type="button" class="rounded-lg bg-violet-600 px-3 py-2 text-xs font-bold text-white" (click)="openAction.emit('increaseCap')">{{ copy().modalIncreaseCapTitle }}</button>
+              <button type="button" class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-800" (click)="openAction.emit('stop')">{{ copy().stopCampaign }}</button>
+            }
+          </div>
+        </mm-detail-panel-card>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <mm-detail-panel-card [title]="copy().campaignDefaultRules" icon="lucidePercent">
+          <dl class="space-y-2 text-sm">
+            <div class="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+              <dt class="text-slate-500">{{ copy().restaurantShare }}</dt>
+              <dd class="font-bold">{{ item.restaurantSharePercent }}%</dd>
+            </div>
+            <div class="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+              <dt class="text-slate-500">{{ copy().platformShare }}</dt>
+              <dd class="font-bold">{{ item.platformSharePercent }}%</dd>
+            </div>
+            <div class="flex justify-between rounded-lg bg-violet-50 px-3 py-2">
+              <dt class="text-violet-700">{{ copy().totalDiscount }}</dt>
+              <dd class="font-extrabold text-violet-800">{{ item.totalDiscountPercent }}%</dd>
+            </div>
+          </dl>
+        </mm-detail-panel-card>
+
+        <mm-detail-panel-card [title]="copy().campaignProgress" icon="lucideUsers">
+          <p class="mb-1 text-xs text-slate-500">{{ copy().subscriberCap }}: {{ item.maxSubscribers }}</p>
+          <div class="h-2 overflow-hidden rounded-full bg-slate-100">
+            <div class="h-full rounded-full bg-emerald-500" [style.width.%]="subscriberPct(item)"></div>
+          </div>
+          <p class="mt-3 mb-1 text-xs text-slate-500">{{ copy().capacityCurrent }}</p>
+          <div class="h-2 overflow-hidden rounded-full bg-slate-100">
+            <div class="h-full rounded-full bg-violet-500" [style.width.%]="capacityPct(item)"></div>
+          </div>
+        </mm-detail-panel-card>
+
+        <mm-detail-panel-card [title]="copy().detailCreatedAt" icon="lucideCalendar">
+          <p class="text-sm font-semibold">{{ item.createdAtUtc | date: 'medium' }}</p>
+          <p class="mt-1 font-mono text-xs text-slate-500">{{ item.createdByAdminId }}</p>
+        </mm-detail-panel-card>
+      </div>
+    </div>
+  </div>
+}

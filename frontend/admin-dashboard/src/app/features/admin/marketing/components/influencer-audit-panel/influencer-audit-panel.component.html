@@ -1,0 +1,28 @@
+<mm-detail-panel-card [title]="copy().tabAudit" icon="lucideActivity">
+  @if (!sortedEvents().length) {
+    <p class="py-8 text-center text-sm text-slate-500">{{ copy().noData }}</p>
+  } @else {
+    <ul class="relative flex flex-col gap-0">
+      @for (e of sortedEvents(); track e.id; let last = $last) {
+        <li class="relative flex gap-4 pb-6 ps-1">
+          @if (!last) {
+            <span class="absolute start-[0.4rem] top-3 h-full w-px bg-slate-200"></span>
+          }
+          <span class="relative z-10 mt-1 flex size-3 shrink-0 rounded-full bg-emerald-500 ring-4 ring-white"></span>
+          <div class="min-w-0 flex-1 rounded-xl border border-slate-100 bg-slate-50/40 p-4">
+            <div class="flex flex-wrap items-start justify-between gap-2">
+              <p class="text-sm font-extrabold text-slate-900">{{ actionLabel(e) }}</p>
+              <span class="shrink-0 text-[10px] font-bold text-slate-400">{{ e.atUtc | date: 'medium' }}</span>
+            </div>
+            <p class="mt-1 text-xs text-slate-500">
+              {{ copy().detailActor }}: <span class="font-mono font-semibold">{{ e.actor }}</span>
+            </p>
+            @if (detailLabel(e); as detail) {
+              <p class="mt-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-slate-700">{{ detail }}</p>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</mm-detail-panel-card>

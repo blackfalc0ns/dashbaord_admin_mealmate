@@ -1,0 +1,63 @@
+<section class="mm-page flex flex-col gap-4" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+  <h1 class="text-xl font-extrabold text-slate-900">{{ copy().promoCodes }}</h1>
+
+  <div class="flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs w-fit">
+    @for (f of [
+      { id: 'all', label: copy().all },
+      { id: 'influencer', label: copy().influencers },
+      { id: 'campaign', label: copy().campaigns },
+      { id: 'customer_referral', label: copy().link },
+    ]; track f.id) {
+      <button
+        type="button"
+        class="rounded-md px-3 py-1 font-semibold"
+        [class.bg-white]="sourceFilter() === f.id"
+        [class.shadow-sm]="sourceFilter() === f.id"
+        (click)="sourceFilter.set(f.id)"
+      >
+        {{ f.label }}
+      </button>
+    }
+  </div>
+
+  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <table class="w-full min-w-[800px] text-sm">
+      <thead class="border-b border-slate-100 bg-slate-50 text-xs font-bold text-slate-500">
+        <tr>
+          <th class="px-4 py-3 text-start">{{ copy().code }}</th>
+          <th class="px-4 py-3">{{ copy().promoSource }}</th>
+          <th class="px-4 py-3">{{ copy().promoDiscount }}</th>
+          <th class="px-4 py-3">{{ copy().promoValidity }}</th>
+          <th class="px-4 py-3">{{ copy().promoUsage }}</th>
+          <th class="px-4 py-3">{{ copy().promoLinked }}</th>
+          <th class="px-4 py-3">{{ copy().status }}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        @for (p of filtered(); track p.id) {
+          <tr class="hover:bg-slate-50/50">
+            <td class="px-4 py-3 font-mono font-bold text-emerald-700">{{ p.code }}</td>
+            <td class="px-4 py-3 text-xs">{{ sourceLabel(p.source) }}</td>
+            <td class="px-4 py-3">
+              @if (p.discountType === 'percent') {
+                {{ p.discountValue }}%
+              } @else {
+                {{ p.discountValue }} KD
+              }
+            </td>
+            <td class="px-4 py-3 text-xs text-slate-500">
+              {{ p.endAtUtc | date: 'mediumDate' }}
+            </td>
+            <td class="px-4 py-3 text-xs">
+              {{ p.usageCount }}@if (p.usageLimit) { / {{ p.usageLimit }} }
+            </td>
+            <td class="px-4 py-3 text-xs">{{ locale.isRtl() ? p.sourceLabelAr : p.sourceLabelEn }}</td>
+            <td class="px-4 py-3">
+              <span class="rounded-full px-2 py-0.5 text-[10px] font-bold" [ngClass]="statusClass(p.status)">{{ p.status }}</span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

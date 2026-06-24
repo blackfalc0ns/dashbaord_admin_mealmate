@@ -77,6 +77,14 @@ export const APP_ROUTES: Routes = [
           ),
       },
       {
+        path: 'marketing',
+        canActivate: [adminPermissionGuard(AdminPermissions.marketingView)],
+        loadChildren: () =>
+          import('./features/admin/marketing/marketing.routes').then(
+            (m) => m.MARKETING_ROUTES,
+          ),
+      },
+      {
         path: 'operations',
         canActivate: [adminPermissionGuard(AdminPermissions.operationsView)],
         loadChildren: () =>

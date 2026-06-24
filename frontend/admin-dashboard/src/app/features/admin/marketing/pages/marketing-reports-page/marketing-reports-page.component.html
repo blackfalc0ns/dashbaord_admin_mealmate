@@ -1,0 +1,80 @@
+<section class="mm-page flex flex-col gap-4" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+  <h1 class="text-xl font-extrabold text-slate-900">{{ copy().reports }}</h1>
+
+  <div class="flex flex-wrap gap-3 rounded-xl border border-slate-200 bg-white p-4">
+    <label class="text-xs font-semibold text-slate-700">
+      {{ copy().reportPeriod }}
+      <select class="mt-1 block h-9 rounded-lg border border-slate-200 px-3 text-sm" [ngModel]="periodDays()" (ngModelChange)="periodDays.set(+$event)">
+        <option [ngValue]="7">7</option>
+        <option [ngValue]="30">30</option>
+        <option [ngValue]="90">90</option>
+      </select>
+    </label>
+    <label class="text-xs font-semibold text-slate-700">
+      {{ copy().reportAllInfluencers }}
+      <select class="mt-1 block h-9 rounded-lg border border-slate-200 px-3 text-sm" [ngModel]="influencerFilter()" (ngModelChange)="influencerFilter.set($event)">
+        <option value="all">{{ copy().all }}</option>
+        @for (inf of influencers(); track inf.id) {
+          <option [value]="inf.id">{{ locale.isRtl() ? inf.displayNameAr : inf.displayNameEn }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="rounded-xl border border-slate-200 bg-white p-4">
+      <span class="text-xs font-bold text-slate-500">{{ copy().kpiPendingCommission }}</span>
+      <p class="text-2xl font-extrabold text-amber-600">{{ kpis().pendingCommission }} KD</p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-4">
+      <span class="text-xs font-bold text-slate-500">{{ copy().paid }}</span>
+      <p class="text-2xl font-extrabold text-emerald-600">{{ kpis().paidCommission }} KD</p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-4">
+      <span class="text-xs font-bold text-slate-500">{{ copy().kpiConversion }}</span>
+      <p class="text-2xl font-extrabold">{{ kpis().conversionRate }}%</p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-4">
+      <span class="text-xs font-bold text-slate-500">{{ copy().kpiPaidSubs }}</span>
+      <p class="text-2xl font-extrabold">{{ kpis().paidSubscriptionsThisMonth }}</p>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-4">
+    <h2 class="mb-3 text-sm font-bold text-slate-800">{{ copy().reportChannelBreakdown }}</h2>
+    <div class="flex gap-6 text-sm">
+      <span>{{ copy().link }}: <strong>{{ channelBreakdown().link }}</strong></span>
+      <span>{{ copy().code }}: <strong>{{ channelBreakdown().code }}</strong></span>
+    </div>
+  </div>
+
+  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <h2 class="border-b border-slate-100 px-4 py-3 text-sm font-bold text-slate-800">{{ copy().reportCommissionStatus }}</h2>
+    @if (!commissionRows().length) {
+      <p class="p-6 text-center text-sm text-slate-500">{{ copy().noData }}</p>
+    } @else {
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-xs font-bold text-slate-500">
+          <tr>
+            <th class="px-4 py-3 text-start">{{ copy().colInfluencer }}</th>
+            <th class="px-4 py-3">{{ copy().subscription }}</th>
+            <th class="px-4 py-3">{{ copy().amount }}</th>
+            <th class="px-4 py-3">{{ copy().status }}</th>
+            <th class="px-4 py-3">{{ copy().date }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          @for (row of commissionRows(); track row.id) {
+            <tr>
+              <td class="px-4 py-3 font-semibold">{{ row.influencerName }}</td>
+              <td class="px-4 py-3 font-mono text-xs">{{ row.subscriptionId }}</td>
+              <td class="px-4 py-3">{{ row.commissionAmount }} KD ({{ row.appliedCommissionRate }}%)</td>
+              <td class="px-4 py-3 text-xs">{{ row.status }}</td>
+              <td class="px-4 py-3 text-xs text-slate-500">{{ row.createdAtUtc | date: 'short' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</section>

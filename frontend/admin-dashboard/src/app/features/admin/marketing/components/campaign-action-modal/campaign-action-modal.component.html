@@ -1,0 +1,35 @@
+<mm-campaign-modal-shell
+  [open]="open()"
+  [locale]="locale"
+  [title]="title()"
+  [subtitle]="description()"
+  size="md"
+  (closed)="close()"
+>
+  <div class="flex flex-col gap-4">
+    @if (action() === 'increaseCap') {
+      <label class="text-xs font-semibold text-slate-700">
+        {{ copy().modalNewCap }}
+        <input type="number" min="1" class="mt-1 h-11 w-full rounded-lg border border-slate-200 px-3 text-lg font-bold" [ngModel]="newCap()" (ngModelChange)="newCap.set(+$event)" />
+      </label>
+    }
+
+    <label class="text-xs font-semibold text-slate-700">
+      {{ copy().detailReason }}
+      <textarea class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" rows="3" [ngModel]="reason()" (ngModelChange)="reason.set($event)" [placeholder]="copy().modalReasonPlaceholder"></textarea>
+    </label>
+
+    <div class="flex justify-end gap-2 border-t border-slate-100 pt-4">
+      <button type="button" class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600" (click)="close()">{{ copy().cancel }}</button>
+      <button
+        type="button"
+        class="rounded-lg px-4 py-2 text-sm font-bold text-white"
+        [class.bg-red-600]="danger()"
+        [class.bg-emerald-600]="!danger()"
+        (click)="confirm()"
+      >
+        {{ confirmLabel() }}
+      </button>
+    </div>
+  </div>
+</mm-campaign-modal-shell>

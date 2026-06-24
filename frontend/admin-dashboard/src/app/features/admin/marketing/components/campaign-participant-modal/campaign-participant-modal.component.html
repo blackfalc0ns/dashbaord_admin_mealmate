@@ -1,0 +1,62 @@
+@if (open() && participant(); as p) {
+  <mm-campaign-modal-shell
+    [open]="true"
+    [locale]="locale"
+    [title]="restaurantName(p)"
+    [subtitle]="bundleName(p)"
+    size="xl"
+    (closed)="close()"
+  >
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-3 py-1 text-xs font-bold text-violet-800 ring-1 ring-violet-200">
+          <ng-icon name="lucideStore" size="12" />
+          {{ p.restaurantId }}
+        </span>
+        <span
+          class="rounded-full px-3 py-1 text-xs font-bold ring-1"
+          [class.bg-emerald-50]="p.enrollmentStatus === 'Agreed'"
+          [class.text-emerald-800]="p.enrollmentStatus === 'Agreed'"
+          [class.ring-emerald-200]="p.enrollmentStatus === 'Agreed'"
+          [class.bg-amber-50]="p.enrollmentStatus === 'Pending'"
+          [class.text-amber-800]="p.enrollmentStatus === 'Pending'"
+        >
+          {{ statusLabel(p.enrollmentStatus) }}
+        </span>
+      </div>
+
+      <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 text-sm">
+          <div class="text-center">
+            <p class="text-[10px] font-bold text-slate-500">{{ copy().originalPrice }}</p>
+            <p class="text-xl font-extrabold">{{ p.originalDailyPrice }} KD</p>
+          </div>
+          <ng-icon name="lucideArrowRight" size="16" class="text-slate-300" [class.rotate-180]="locale.isRtl()" />
+          <div class="text-center">
+            <p class="text-[10px] font-bold text-slate-500">{{ copy().discountedPrice }}</p>
+            <p class="text-xl font-extrabold text-emerald-700">{{ p.discountedDailyPrice }} KD</p>
+          </div>
+          <ng-icon name="lucideArrowRight" size="16" class="text-slate-300" [class.rotate-180]="locale.isRtl()" />
+          <div class="text-center">
+            <p class="text-[10px] font-bold text-slate-500">{{ copy().netPrice }}</p>
+            <p class="text-xl font-extrabold text-violet-700">{{ p.netDailyPrice }} KD</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div class="rounded-xl border border-slate-100 p-4">
+          <p class="text-[10px] font-bold uppercase text-slate-500">{{ copy().dailyCapacity }}</p>
+          <p class="text-2xl font-extrabold">{{ p.campaignDailyCapacity + p.additionalCapacity }}</p>
+          @if (p.additionalCapacity) {
+            <p class="text-xs text-emerald-700">+{{ p.additionalCapacity }} {{ copy().modalAdditionalCap }}</p>
+          }
+        </div>
+        <div class="rounded-xl border border-slate-100 p-4">
+          <p class="text-[10px] font-bold uppercase text-slate-500">{{ copy().linkedBundle }}</p>
+          <p class="text-sm font-bold text-slate-800">{{ bundleName(p) }}</p>
+        </div>
+      </div>
+    </div>
+  </mm-campaign-modal-shell>
+}
