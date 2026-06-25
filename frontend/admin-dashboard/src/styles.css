@@ -55,22 +55,23 @@
   --mm-content-pad-x: 0.875rem;
   --mm-content-pad-y: 0.875rem;
 
-  /* Sidebar — light soft mix (MealMate #379640 accent) */
-  --mm-sidebar-brand: #379640;
-  --mm-sidebar-brand-soft: #4aab54;
-  --mm-sidebar-bg: linear-gradient(180deg, #f9fcfa 0%, #f3f9f5 48%, #edf5f0 100%);
-  --mm-sidebar-bg-flat: #f4faf6;
-  --mm-sidebar-bg-soft: #eef6f1;
-  --mm-sidebar-bg-muted: #e5f0e8;
-  --mm-sidebar-border: rgba(55, 150, 64, 0.12);
-  --mm-sidebar-text: #1f3d27;
-  --mm-sidebar-text-muted: #5f7364;
-  --mm-sidebar-hover: #e7f2eb;
-  --mm-sidebar-active: #dceee3;
-  --mm-sidebar-input-bg: #ffffff;
-  --mm-sidebar-input-border: rgba(55, 150, 64, 0.16);
-  --mm-sidebar-promo-bg: #e2f0e6;
-  --mm-sidebar-promo-text: #2a5c32;
+  /* Sidebar — flat solid palette (MealMate #04994E) */
+  --mm-sidebar-brand: #04994E;
+  --mm-sidebar-brand-soft: #06b35c;
+  --mm-sidebar-bg: #04994E;
+  --mm-sidebar-bg-flat: #04994E;
+  --mm-sidebar-bg-soft: #04994E;
+  --mm-sidebar-bg-muted: #04994E;
+  --mm-sidebar-border: rgba(255, 255, 255, 0.18);
+  --mm-sidebar-text: #ffffff;
+  --mm-sidebar-text-muted: #c5e8d4;
+  --mm-sidebar-hover: #038743;
+  --mm-sidebar-active: #ffffff;
+  --mm-sidebar-active-text: #04994E;
+  --mm-sidebar-input-bg: #04994E;
+  --mm-sidebar-input-border: rgba(255, 255, 255, 0.22);
+  --mm-sidebar-promo-bg: #04994E;
+  --mm-sidebar-promo-text: #ffffff;
 
   --radius: 0.75rem;
   --background: oklch(0.99 0.002 247);
@@ -209,7 +210,7 @@
   }
 
   mm-shell-card {
-    @apply block overflow-hidden border border-slate-200/70 bg-white shadow-[0_4px_14px_-10px_rgba(15,41,24,0.1)];
+    @apply block overflow-hidden border border-[#e0e0e0] bg-white;
     border-radius: var(--mm-shell-radius);
   }
 
@@ -340,12 +341,11 @@
   }
 
   .mm-core-sb {
-    @apply relative z-10 flex h-full min-h-0 w-full flex-col overflow-hidden;
+    @apply relative z-10 flex h-full min-h-0 w-full flex-col overflow-hidden shadow-none;
     background: var(--mm-sidebar-bg);
     color: var(--mm-sidebar-text);
     border: 1px solid var(--mm-sidebar-border);
     border-radius: calc(var(--mm-shell-radius) + 0.125rem);
-    box-shadow: none;
   }
 
   .mm-core-sb--collapsed {
@@ -371,7 +371,7 @@
   }
 
   .mm-core-sb--collapsed .mm-core-sb__brand-icon {
-    @apply size-10 ring-0;
+    @apply size-full;
   }
 
   .mm-core-sb--collapsed .mm-core-sb__collapse {
@@ -397,12 +397,13 @@
   }
 
   .mm-core-sb__rail-cta {
-    @apply flex size-10 shrink-0 items-center justify-center rounded-full text-white transition-colors duration-200 active:scale-95;
-    background: var(--mm-sidebar-brand);
+    @apply flex size-10 shrink-0 items-center justify-center rounded-full border border-[rgba(255,255,255,0.28)] text-white shadow-none transition-colors duration-200;
+    background: transparent;
   }
 
   .mm-core-sb__rail-cta:hover {
-    background: var(--mm-sidebar-brand-soft);
+    background: var(--mm-sidebar-hover);
+    color: var(--mm-sidebar-text);
   }
 
   .mm-core-sb__rail-bottom {
@@ -416,17 +417,17 @@
 
   .mm-core-sb__rail-icon-btn:hover {
     background: var(--mm-sidebar-hover);
-    color: var(--mm-sidebar-brand);
+    color: var(--mm-sidebar-text);
   }
 
   .mm-core-sb__rail-icon-btn--logout:hover {
-    @apply text-rose-600;
-    background: #fce8ea;
+    @apply text-rose-200;
+    background: var(--mm-sidebar-hover);
   }
 
   .mm-core-sb__rail-avatar {
-    @apply flex size-8 shrink-0 items-center justify-center rounded-full text-white;
-    background: var(--mm-sidebar-brand);
+    @apply flex size-8 shrink-0 items-center justify-center rounded-full border border-[rgba(255,255,255,0.28)] text-white shadow-none;
+    background: transparent;
   }
 
   /* Header / brand */
@@ -437,11 +438,24 @@
   }
 
   .mm-core-sb__brand {
-    @apply flex min-w-0 flex-1 items-center gap-2.5 rounded-xl p-1 transition-colors hover:bg-white/60;
+    @apply flex min-w-0 flex-1 items-center gap-2.5 rounded-xl p-1 transition-colors;
+  }
+
+  .mm-core-sb__brand:hover {
+    background: var(--mm-sidebar-hover);
+  }
+
+  .mm-core-sb__brand-icon-wrap {
+    @apply flex size-9 shrink-0 items-center justify-center overflow-hidden;
   }
 
   .mm-core-sb__brand-icon {
-    @apply size-9 shrink-0 rounded-xl bg-white object-contain p-0.5 ring-1 ring-emerald-100;
+    @apply size-full object-contain shadow-none;
+    mix-blend-mode: screen;
+  }
+
+  .mm-core-sb--collapsed .mm-core-sb__brand-icon-wrap {
+    @apply size-10;
   }
 
   .mm-core-sb__brand-copy {
@@ -459,15 +473,15 @@
   }
 
   .mm-core-sb__collapse {
-    @apply flex size-8 shrink-0 items-center justify-center rounded-lg border transition-[transform,color,background-color] duration-200 active:scale-95;
+    @apply flex size-8 shrink-0 items-center justify-center rounded-lg border shadow-none transition-[color,background-color] duration-200;
     border-color: var(--mm-sidebar-border);
-    background: var(--mm-sidebar-input-bg);
+    background: transparent;
     color: var(--mm-sidebar-text-muted);
   }
 
   .mm-core-sb__collapse:hover {
     background: var(--mm-sidebar-hover);
-    color: var(--mm-sidebar-brand);
+    color: var(--mm-sidebar-text);
   }
 
   /* Search */
@@ -481,16 +495,16 @@
   }
 
   .mm-core-sb__search-input {
-    @apply h-10 w-full rounded-xl ps-9 pe-3 text-sm outline-none transition-[border-color,background-color] duration-200;
+    @apply h-10 w-full rounded-xl ps-9 pe-3 text-sm shadow-none outline-none transition-[border-color] duration-200;
     border: 1px solid var(--mm-sidebar-input-border);
-    background: var(--mm-sidebar-input-bg);
+    background: transparent;
     color: var(--mm-sidebar-text);
   }
 
   .mm-core-sb__search-input:focus {
-    border-color: rgba(55, 150, 64, 0.35);
-    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.45);
     outline: none;
+    box-shadow: none;
   }
 
   .mm-core-sb__search-input::placeholder {
@@ -498,7 +512,7 @@
   }
 
   .mm-core-sb__search:focus-within .mm-core-sb__search-icon {
-    color: var(--mm-sidebar-brand);
+    color: var(--mm-sidebar-text);
   }
 
   /* Nav scroll area */
@@ -511,19 +525,19 @@
   }
 
   .mm-core-sb__rail-btn {
-    @apply relative flex size-10 items-center justify-center rounded-xl transition-[transform,background-color,color] duration-200 active:scale-95;
+    @apply relative flex size-10 items-center justify-center rounded-xl shadow-none transition-[background-color,color] duration-200;
     color: var(--mm-sidebar-text-muted);
   }
 
   .mm-core-sb__rail-btn:hover {
     background: var(--mm-sidebar-hover);
-    color: var(--mm-sidebar-brand);
+    color: var(--mm-sidebar-text);
   }
 
   .mm-core-sb__rail-btn--active {
     background: var(--mm-sidebar-active);
     @apply font-semibold;
-    color: var(--mm-sidebar-brand);
+    color: var(--mm-sidebar-active-text);
   }
 
   .mm-core-sb__rail-badge {
@@ -541,17 +555,17 @@
   .mm-core-sb__group-icon {
     @apply flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-200;
     background: var(--mm-sidebar-bg-muted);
-    color: var(--mm-sidebar-brand);
+    color: var(--mm-sidebar-text);
   }
 
   .mm-core-sb__group-head--active .mm-core-sb__group-icon {
     background: var(--mm-sidebar-active);
-    color: var(--mm-sidebar-brand);
+    color: var(--mm-sidebar-active-text);
   }
 
   .mm-core-sb__group-head--active .mm-core-sb__group-label {
     @apply font-semibold;
-    color: var(--mm-sidebar-brand);
+    color: var(--mm-sidebar-text);
   }
 
   .mm-core-sb__group-label {
@@ -591,7 +605,7 @@
 
   /* Nav links */
   .mm-core-sb__link {
-    @apply flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[0.8125rem] font-medium transition-[background-color,color] duration-150 active:scale-[0.99];
+    @apply flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[0.8125rem] font-medium shadow-none transition-[background-color,color] duration-150;
     color: var(--mm-sidebar-text-muted);
   }
 
@@ -603,7 +617,7 @@
   .mm-core-sb__link--active {
     background: var(--mm-sidebar-active);
     @apply font-semibold;
-    color: var(--mm-sidebar-brand);
+    color: var(--mm-sidebar-active-text);
   }
 
   .mm-core-sb__link-icon {
@@ -612,11 +626,11 @@
   }
 
   .mm-core-sb__link--active .mm-core-sb__link-icon {
-    color: var(--mm-sidebar-brand);
+    color: var(--mm-sidebar-active-text);
   }
 
   .mm-core-sb__link:hover .mm-core-sb__link-icon {
-    color: var(--mm-sidebar-brand-soft);
+    color: var(--mm-sidebar-text);
   }
 
   .mm-core-sb__link--solo {
@@ -640,20 +654,20 @@
   }
 
   .mm-core-sb__promo {
-    @apply flex items-center gap-2.5 rounded-2xl border px-3 py-2.5 transition-colors duration-200 active:scale-[0.99];
-    background: var(--mm-sidebar-promo-bg);
-    border-color: rgba(55, 150, 64, 0.16);
+    @apply flex items-center gap-2.5 rounded-2xl border px-3 py-2.5 shadow-none transition-colors duration-200;
+    background: transparent;
+    border-color: var(--mm-sidebar-border);
     color: var(--mm-sidebar-promo-text);
-    box-shadow: none;
   }
 
   .mm-core-sb__promo:hover {
-    background: var(--mm-sidebar-active);
+    background: var(--mm-sidebar-hover);
   }
 
   .mm-core-sb__promo-icon {
-    @apply flex size-8 shrink-0 items-center justify-center rounded-xl text-white;
-    background: var(--mm-sidebar-brand);
+    @apply flex size-8 shrink-0 items-center justify-center rounded-xl text-white shadow-none;
+    background: transparent;
+    border: 1px solid var(--mm-sidebar-border);
   }
 
   .mm-core-sb__promo-copy {
@@ -673,14 +687,15 @@
   }
 
   .mm-core-sb__account {
-    @apply flex items-center gap-2 rounded-xl border px-2 py-1.5;
-    background: var(--mm-sidebar-input-bg);
+    @apply flex items-center gap-2 rounded-xl border px-2 py-1.5 shadow-none;
+    background: transparent;
     border-color: var(--mm-sidebar-border);
   }
 
   .mm-core-sb__account-avatar {
-    @apply flex size-8 shrink-0 items-center justify-center rounded-full text-white;
-    background: var(--mm-sidebar-brand);
+    @apply flex size-8 shrink-0 items-center justify-center rounded-full text-white shadow-none;
+    background: transparent;
+    border: 1px solid var(--mm-sidebar-border);
   }
 
   .mm-core-sb__account-copy {
@@ -703,7 +718,7 @@
   }
 
   .mm-core-sb__logout:hover {
-    @apply text-rose-600;
+    @apply text-rose-200;
     background: var(--mm-sidebar-hover);
   }
 

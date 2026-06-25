@@ -6,7 +6,9 @@
   <!-- Brand header -->
   <header class="mm-core-sb__header">
     <a routerLink="/admin/overview" class="mm-core-sb__brand" (click)="closeMobileNav()">
-      <img [src]="brandIconSrc" alt="MealMate" class="mm-core-sb__brand-icon" width="36" height="36" />
+      <span class="mm-core-sb__brand-icon-wrap">
+        <img [src]="brandIconSrc" alt="MealMate" class="mm-core-sb__brand-icon" width="36" height="36" />
+      </span>
       @if (!collapsed()) {
         <span class="mm-core-sb__brand-copy">
           <span class="mm-core-sb__brand-name">MealMate</span>
@@ -92,7 +94,7 @@
       </ul>
     } @else {
       @for (section of navSections; track section.id; let first = $first) {
-        <div class="space-y-0.5" [class.border-t]="!first" [class.border-[rgba(55,150,64,0.12)]]="!first" [class.pt-1]="!first" [class.mt-1]="!first">
+        <div class="space-y-0.5" [class.border-t]="!first" [class.border-[rgba(255,255,255,0.18)]]="!first" [class.pt-1]="!first" [class.mt-1]="!first">
         @if (isSingleItemSection(section); as solo) {
           <a
             [routerLink]="solo.route!"
@@ -123,7 +125,7 @@
             } @else if (isNavGroup(group)) {
               <div class="mb-0.5">
                 @if (showGroupLabel(section)) {
-                  <p class="px-2.5 pb-0.5 pt-1.5 text-[0.625rem] font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">{{ label(group) }}</p>
+                  <p class="px-2.5 pb-0.5 pt-1.5 text-[0.625rem] font-extrabold uppercase tracking-wide text-[#c5e8d4]">{{ label(group) }}</p>
                 }
                 <ul class="mm-core-sb__list mm-core-sb__list--nested mt-0" role="list">
                   @for (item of group.children; track item.id; let i = $index) {
@@ -236,8 +238,8 @@
         (mouseenter)="onFlyoutEnter()"
         (mouseleave)="onRailLeave()"
       >
-        <p class="mb-1.5 flex items-center gap-2 px-2 py-1.5 text-xs font-semibold text-[#1f3d27]">
-          <span class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-[#379640] text-white">
+        <p class="mb-1.5 flex items-center gap-2 px-2 py-1.5 text-xs font-semibold text-white">
+          <span class="flex size-7 shrink-0 items-center justify-center rounded-lg border border-[rgba(255,255,255,0.22)] text-white">
             <ng-icon [name]="sectionIcon(section)" class="size-[0.95rem]" />
           </span>
           {{ sectionLabel(section) }}
@@ -263,7 +265,7 @@
             </ul>
           } @else if (isNavGroup(group)) {
             @if (showGroupLabel(section)) {
-              <p class="px-2 pb-0.5 pt-2 text-[0.625rem] font-extrabold uppercase tracking-wide text-[#5f7364]">{{ label(group) }}</p>
+              <p class="px-2 pb-0.5 pt-2 text-[0.625rem] font-extrabold uppercase tracking-wide text-[#c5e8d4]">{{ label(group) }}</p>
             }
             <ul class="mm-core-sb__list" role="list">
               @for (item of group.children; track item.id) {

@@ -178,7 +178,7 @@ export class AdminSidebarComponent {
 
   readonly navSections = ADMIN_NAV_SECTIONS;
   readonly quickAction = ADMIN_QUICK_ACTION;
-  readonly brandIconSrc = BRAND_ASSETS.icon;
+  readonly brandIconSrc = BRAND_ASSETS.white;
   readonly collapsed = signal(false);
   readonly animating = signal(false);
   readonly currentUrl = signal(this.router.url);
@@ -450,7 +450,7 @@ export class AdminSidebarComponent {
 
   flyoutClass(): string {
     return mergeClasses(
-      'absolute top-14 z-50 min-w-[15rem] overflow-hidden rounded-2xl border p-2 bg-gradient-to-b from-[#f9fcfa] via-[#f3f9f5] to-[#edf5f0] text-[#1f3d27] border-[rgba(55,150,64,0.12)] shadow-none mm-core-sb__flyout--in',
+      'absolute top-14 z-50 min-w-[15rem] overflow-hidden rounded-2xl border p-2 bg-[#04994E] text-white border-[rgba(255,255,255,0.18)] shadow-none mm-core-sb__flyout--in',
       this.locale.isRtl() ? 'end-full me-2' : 'start-full ms-2',
     );
   }
