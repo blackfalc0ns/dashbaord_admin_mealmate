@@ -56,6 +56,41 @@ export interface RestaurantsCopy {
   settlementCommissionUpdated: string;
   saveCommission: string;
   commissionSaved: string;
+  ingredientSourcesTitle: string;
+  ingredientSourcesDesc: string;
+  ingredientDetailWindow: string;
+  ingredientGrade: string;
+  ingredientOrigin: string;
+  ingredientSupplier: string;
+  ingredientHalal: string;
+  ingredientLastUpdated: string;
+  ingredientNotes: string;
+  ingredientTraceRef: string;
+  ingredientSourcesEmpty: string;
+  ingredientTotalComponents: string;
+  ingredientImportedCount: string;
+  ingredientLocalCount: string;
+  ingredientHalalVerified: string;
+  ingredientBrand: string;
+  ingredientStorage: string;
+  ingredientPrograms: string;
+  ingredientCertExpiry: string;
+  ingredientHalalCert: string;
+  ingredientOrganic: string;
+  ingredientMenuShare: string;
+  ingredientVarieties: string;
+  ingredientSupplierCountry: string;
+  ingredientFilterAll: string;
+  ingredientAllergens: string;
+  ingredientDeliveryFrequency: string;
+  ingredientInspectionScore: string;
+  ingredientHaccp: string;
+  ingredientGmoFree: string;
+  ingredientGrassFed: string;
+  ingredientCarbonFootprint: string;
+  ingredientCarbonLow: string;
+  ingredientCarbonMedium: string;
+  ingredientCarbonHigh: string;
 }
 
 export const RESTAURANTS_ACCOUNTS_I18N: Record<RestaurantsLocale, RestaurantsCopy> = {
@@ -115,6 +150,41 @@ export const RESTAURANTS_ACCOUNTS_I18N: Record<RestaurantsLocale, RestaurantsCop
     settlementCommissionUpdated: 'آخر تحديث',
     saveCommission: 'حفظ العمولة',
     commissionSaved: 'تم حفظ عمولة التسوية',
+    ingredientSourcesTitle: 'المكونات الرئيسية للوجبات',
+    ingredientSourcesDesc: 'نظام كروت تفصيلي للمكوّنات الرئيسية — اللحوم والدواجن والأسماك والأجبان وبلدان الاستيراد',
+    ingredientDetailWindow: 'مصادر وجودة المكونات',
+    ingredientGrade: 'النوع والدرجة',
+    ingredientOrigin: 'بلد المنشأ / الاستيراد',
+    ingredientSupplier: 'المورّد',
+    ingredientHalal: 'شهادة الحلال',
+    ingredientLastUpdated: 'آخر تحديث',
+    ingredientNotes: 'ملاحظات المطعم',
+    ingredientTraceRef: 'مرجع التتبع',
+    ingredientSourcesEmpty: 'لم يُعلن المطعم بعد عن مكونات الوجبات الرئيسية ومصادر الاستيراد.',
+    ingredientTotalComponents: 'إجمالي المكوّنات',
+    ingredientImportedCount: 'مستورد',
+    ingredientLocalCount: 'محلي',
+    ingredientHalalVerified: 'حلال معتمد',
+    ingredientBrand: 'العلامة التجارية',
+    ingredientStorage: 'التخزين والصلاحية',
+    ingredientPrograms: 'البرامج المستخدمة فيها',
+    ingredientCertExpiry: 'انتهاء الشهادة',
+    ingredientHalalCert: 'جهة اعتماد الحلال',
+    ingredientOrganic: 'عضوي',
+    ingredientMenuShare: 'حصة المنيو',
+    ingredientVarieties: 'الأصناف والمنشأ',
+    ingredientSupplierCountry: 'بلد المورّد',
+    ingredientFilterAll: 'الكل',
+    ingredientAllergens: 'المثيرات للحساسية',
+    ingredientDeliveryFrequency: 'وتيرة التوريد',
+    ingredientInspectionScore: 'تقييم التفتيش الصحي',
+    ingredientHaccp: 'شهادة HACCP',
+    ingredientGmoFree: 'خالي من التعديل الوراثي',
+    ingredientGrassFed: 'تغذية طبيعية / حرة',
+    ingredientCarbonFootprint: 'الأثر الكربوني',
+    ingredientCarbonLow: 'منخفض',
+    ingredientCarbonMedium: 'متوسط',
+    ingredientCarbonHigh: 'مرتفع',
   },
   en: {
     overview: 'Overview',
@@ -172,5 +242,40 @@ export const RESTAURANTS_ACCOUNTS_I18N: Record<RestaurantsLocale, RestaurantsCop
     settlementCommissionUpdated: 'Last updated',
     saveCommission: 'Save commission',
     commissionSaved: 'Settlement commission saved',
+    ingredientSourcesTitle: 'Main Meal Ingredients',
+    ingredientSourcesDesc: 'Detailed card system for main ingredients — meat, poultry, fish, cheese and import origins',
+    ingredientDetailWindow: 'Ingredient Sourcing & Quality',
+    ingredientGrade: 'Type & grade',
+    ingredientOrigin: 'Origin / import country',
+    ingredientSupplier: 'Supplier',
+    ingredientHalal: 'Halal certification',
+    ingredientLastUpdated: 'Last updated',
+    ingredientNotes: 'Restaurant notes',
+    ingredientTraceRef: 'Trace reference',
+    ingredientSourcesEmpty: 'This restaurant has not declared main meal ingredients and import origins yet.',
+    ingredientTotalComponents: 'Total components',
+    ingredientImportedCount: 'Imported',
+    ingredientLocalCount: 'Local',
+    ingredientHalalVerified: 'Halal verified',
+    ingredientBrand: 'Brand',
+    ingredientStorage: 'Storage & shelf life',
+    ingredientPrograms: 'Used in programs',
+    ingredientCertExpiry: 'Certificate expiry',
+    ingredientHalalCert: 'Halal certifier',
+    ingredientOrganic: 'Organic',
+    ingredientMenuShare: 'Menu share',
+    ingredientVarieties: 'Varieties & origin',
+    ingredientSupplierCountry: 'Supplier country',
+    ingredientFilterAll: 'All',
+    ingredientAllergens: 'Allergens',
+    ingredientDeliveryFrequency: 'Delivery frequency',
+    ingredientInspectionScore: 'Health inspection score',
+    ingredientHaccp: 'HACCP certified',
+    ingredientGmoFree: 'Non-GMO',
+    ingredientGrassFed: 'Free-range / Grass-fed',
+    ingredientCarbonFootprint: 'Carbon footprint',
+    ingredientCarbonLow: 'Low',
+    ingredientCarbonMedium: 'Medium',
+    ingredientCarbonHigh: 'High',
   },
 };

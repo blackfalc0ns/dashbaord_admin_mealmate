@@ -19,8 +19,16 @@ import { RestaurantMealsPanelComponent } from '../../components/restaurant/resta
 import { RestaurantOverviewPanelComponent } from '../../components/restaurant/restaurant-overview-panel.component';
 import { RestaurantSettingsPanelComponent } from '../../components/restaurant/restaurant-settings-panel.component';
 import { RestaurantWalletPanelComponent } from '../../components/restaurant/restaurant-wallet-panel.component';
+import { RestaurantIngredientSourcesComponent } from '../../components/restaurant/restaurant-ingredient-sources.component';
 
-type RestaurantDetailTab = 'overview' | 'details' | 'analytics' | 'wallet' | 'meals' | 'settings';
+type RestaurantDetailTab =
+  | 'overview'
+  | 'details'
+  | 'ingredients'
+  | 'analytics'
+  | 'wallet'
+  | 'meals'
+  | 'settings';
 
 @Component({
   selector: 'mm-restaurant-detail-page',
@@ -34,6 +42,7 @@ type RestaurantDetailTab = 'overview' | 'details' | 'analytics' | 'wallet' | 'me
     RestaurantMealsPanelComponent,
     RestaurantSettingsPanelComponent,
     RestaurantWalletPanelComponent,
+    RestaurantIngredientSourcesComponent,
   ],
   templateUrl: './restaurant-detail-page.component.html',
   providers: [provideIcons(ACCOUNTS_DETAIL_ICONS)],
@@ -62,6 +71,11 @@ export class RestaurantDetailPageComponent implements OnInit {
     return [
       { id: 'overview', icon: 'lucideLayoutDashboard', label: rtl ? 'نظرة عامة' : 'Overview' },
       { id: 'details', icon: 'lucideBuilding', label: rtl ? 'البيانات والمستندات' : 'Company Details' },
+      {
+        id: 'ingredients',
+        icon: 'lucideUtensils',
+        label: this.copy().ingredientDetailWindow,
+      },
       { id: 'analytics', icon: 'lucideTrendingUp', label: rtl ? 'التحليلات والأداء' : 'Analytics & Performance' },
       { id: 'wallet', icon: 'lucideWallet', label: rtl ? 'المحفظة والمالية' : 'Wallet & Finance' },
       { id: 'meals', icon: 'lucideUtensils', label: rtl ? 'متابعة الوجبات والملصقات' : 'Meals & Labels' },

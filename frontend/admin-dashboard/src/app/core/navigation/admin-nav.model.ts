@@ -19,5 +19,6 @@ export interface AdminNavSection {
   id: string;
   labelAr: string;
   labelEn: string;
+  icon: string;
   items: AdminNavItem[];
 }

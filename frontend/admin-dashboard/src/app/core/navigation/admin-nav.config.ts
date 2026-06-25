@@ -5,6 +5,7 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     id: 'main',
     labelAr: 'الرئيسية',
     labelEn: 'Main',
+    icon: 'lucideLayoutDashboard',
     items: [
       {
         id: 'overview',
@@ -21,23 +22,32 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     id: 'accounts',
     labelAr: 'الحسابات',
     labelEn: 'Accounts',
+    icon: 'lucideUsers',
     items: [
       {
-        id: 'accounts-group',
-        labelAr: 'إدارة الحسابات',
-        labelEn: 'Account Management',
-        icon: 'lucideUsers',
+        id: 'accounts-review',
+        labelAr: 'المراجعة والاعتماد',
+        labelEn: 'Review & Approval',
+        icon: 'lucideUserCheck',
         children: [
           {
             id: 'pending-accounts',
-            labelAr: 'طلبات قيد المراجعة',
-            labelEn: 'Pending Review',
-            descriptionAr: 'مراجعة واعتماد حسابات المطاعم والسائقين',
-            descriptionEn: 'Review and approve restaurant and driver accounts',
+            labelAr: 'المراجعات والوثائق',
+            labelEn: 'Review & Documents',
+            descriptionAr: 'طلبات الاعتماد ومراجعة وثائق المطاعم والسائقين',
+            descriptionEn: 'Pending approvals and restaurant/driver document review',
             route: '/admin/accounts/pending',
-            icon: 'lucideUserCheck',
+            icon: 'lucideFolderOpen',
             badge: 12,
           },
+        ],
+      },
+      {
+        id: 'accounts-partners',
+        labelAr: 'المطاعم والسائقون',
+        labelEn: 'Partners',
+        icon: 'lucideStore',
+        children: [
           {
             id: 'restaurants',
             labelAr: 'المطاعم',
@@ -57,38 +67,38 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
             icon: 'lucideTruck',
             badge: 4,
           },
+        ],
+      },
+      {
+        id: 'accounts-customers',
+        labelAr: 'العملاء',
+        labelEn: 'Customers',
+        icon: 'lucideContactRound',
+        children: [
           {
             id: 'customers',
-            labelAr: 'العملاء',
-            labelEn: 'Customers',
+            labelAr: 'حسابات العملاء',
+            labelEn: 'Customer Accounts',
             descriptionAr: 'إدارة حسابات العملاء والاشتراكات',
             descriptionEn: 'Manage customer accounts and subscriptions',
             route: '/admin/accounts/customers',
             icon: 'lucideContactRound',
-          },
-          {
-            id: 'documents-hub',
-            labelAr: 'مركز الوثائق',
-            labelEn: 'Documents Hub',
-            descriptionAr: 'مراجعة واعتماد وثائق المطاعم والسائقين',
-            descriptionEn: 'Review and approve restaurant and driver documents',
-            route: '/admin/accounts/documents',
-            icon: 'lucideFolderOpen',
           },
         ],
       },
     ],
   },
   {
-    id: 'operations',
-    labelAr: 'العمليات',
-    labelEn: 'Operations',
+    id: 'orders',
+    labelAr: 'الطلبات والتوصيل',
+    labelEn: 'Orders & Delivery',
+    icon: 'lucidePackage',
     items: [
       {
-        id: 'operations-group',
-        labelAr: 'مركز العمليات',
-        labelEn: 'Operations Hub',
-        icon: 'lucideClock',
+        id: 'orders-daily',
+        labelAr: 'التشغيل اليومي',
+        labelEn: 'Daily Operations',
+        icon: 'lucidePackage',
         children: [
           {
             id: 'orders',
@@ -111,6 +121,31 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
             badge: 4,
           },
           {
+            id: 'capacity',
+            labelAr: 'السعة و Busy',
+            labelEn: 'Capacity & Busy',
+            descriptionAr: 'مراقبة الطاقة الاستيعابية وحالة الانشغال',
+            descriptionEn: 'Monitor restaurant capacity and busy status',
+            route: '/admin/operations/capacity',
+            icon: 'lucideGauge',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'operations',
+    labelAr: 'العمليات',
+    labelEn: 'Operations',
+    icon: 'lucideClock',
+    items: [
+      {
+        id: 'operations-control',
+        labelAr: 'التحكم والاستثناءات',
+        labelEn: 'Control & Exceptions',
+        icon: 'lucideShieldAlert',
+        children: [
+          {
             id: 'audit',
             labelAr: 'سجل الاستثناءات',
             labelEn: 'Exception Audit',
@@ -121,15 +156,6 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
             badge: 1,
           },
           {
-            id: 'capacity',
-            labelAr: 'السعة و Busy',
-            labelEn: 'Capacity & Busy',
-            descriptionAr: 'مراقبة الطاقة الاستيعابية وحالة الانشغال',
-            descriptionEn: 'Monitor restaurant capacity and busy status',
-            route: '/admin/operations/capacity',
-            icon: 'lucideGauge',
-          },
-          {
             id: 'auto-selection',
             labelAr: 'الاختيار التلقائي',
             labelEn: 'Auto Selection',
@@ -138,6 +164,14 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
             route: '/admin/operations/auto-selection',
             icon: 'lucideWandSparkles',
           },
+        ],
+      },
+      {
+        id: 'operations-fulfillment',
+        labelAr: 'التجهيز والفوترة',
+        labelEn: 'Fulfillment & Billing',
+        icon: 'lucideQrCode',
+        children: [
           {
             id: 'invoices',
             labelAr: 'الفواتير والملصقات',
@@ -162,14 +196,15 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
   },
   {
     id: 'subscriptions',
-    labelAr: 'الاشتراكات والتسعير',
-    labelEn: 'Subscriptions & Pricing',
+    labelAr: 'الاشتراكات',
+    labelEn: 'Subscriptions',
+    icon: 'lucideTags',
     items: [
       {
-        id: 'subscriptions-group',
-        labelAr: 'الاشتراكات',
-        labelEn: 'Subscriptions',
-        icon: 'lucideTags',
+        id: 'subscriptions-catalog',
+        labelAr: 'الخطط والتسعير',
+        labelEn: 'Plans & Pricing',
+        icon: 'lucideLayers',
         children: [
           {
             id: 'programs',
@@ -198,6 +233,14 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
             route: '/admin/subscriptions/pricing',
             icon: 'lucidePercent',
           },
+        ],
+      },
+      {
+        id: 'subscriptions-lifecycle',
+        labelAr: 'دورة الاشتراك',
+        labelEn: 'Subscription Lifecycle',
+        icon: 'lucideRefreshCw',
+        children: [
           {
             id: 'family',
             labelAr: 'الاشتراك العائلي',
@@ -240,14 +283,15 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
   },
   {
     id: 'marketing',
-    labelAr: 'التسويق والإحالات',
+    labelAr: 'التسويق',
     labelEn: 'Marketing',
+    icon: 'lucideMegaphone',
     items: [
       {
-        id: 'marketing-group',
-        labelAr: 'مركز التسويق',
-        labelEn: 'Marketing Hub',
-        icon: 'lucideMegaphone',
+        id: 'marketing-campaigns-hub',
+        labelAr: 'الحملات والإعلانات',
+        labelEn: 'Campaigns & Ads',
+        icon: 'lucideTarget',
         children: [
           {
             id: 'marketing-influencers',
@@ -278,15 +322,6 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
             icon: 'lucideTicket',
           },
           {
-            id: 'marketing-referrals',
-            labelAr: 'الإحالات',
-            labelEn: 'Referrals',
-            descriptionAr: 'برنامج الإحالة ومكافآت المُحيل والمُحال',
-            descriptionEn: 'Referral program and referrer/referee rewards',
-            route: '/admin/marketing/referrals',
-            icon: 'lucideShare2',
-          },
-          {
             id: 'marketing-ads',
             labelAr: 'الإعلانات والمزايدات',
             labelEn: 'Ads & Bidding',
@@ -294,6 +329,23 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
             descriptionEn: 'Ad placements and restaurant bidding',
             route: '/admin/marketing/ads',
             icon: 'lucideRadio',
+          },
+        ],
+      },
+      {
+        id: 'marketing-growth',
+        labelAr: 'النمو والإحالات',
+        labelEn: 'Growth & Referrals',
+        icon: 'lucideShare2',
+        children: [
+          {
+            id: 'marketing-referrals',
+            labelAr: 'الإحالات',
+            labelEn: 'Referrals',
+            descriptionAr: 'برنامج الإحالة ومكافآت المُحيل والمُحال',
+            descriptionEn: 'Referral program and referrer/referee rewards',
+            route: '/admin/marketing/referrals',
+            icon: 'lucideShare2',
           },
           {
             id: 'marketing-reports',
@@ -312,23 +364,32 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     id: 'finance',
     labelAr: 'المالية',
     labelEn: 'Finance',
+    icon: 'lucideWallet',
     items: [
       {
-        id: 'finance-group',
-        labelAr: 'المحاسبة',
-        labelEn: 'Accounting',
-        icon: 'lucideWallet',
+        id: 'finance-refunds',
+        labelAr: 'الإلغاء والاسترداد',
+        labelEn: 'Cancellations & Refunds',
+        icon: 'lucideUndo2',
         children: [
           {
             id: 'cancellations',
-            labelAr: 'الإلغاء والاسترداد',
-            labelEn: 'Cancellations & Refunds',
+            labelAr: 'طلبات الإلغاء',
+            labelEn: 'Cancellation Requests',
             descriptionAr: 'مراجعة طلبات الإلغاء وحساب الاسترداد',
             descriptionEn: 'Review cancellations and refund calculations',
             route: '/admin/finance/cancellations',
             icon: 'lucideUndo2',
             badge: 5,
           },
+        ],
+      },
+      {
+        id: 'finance-accounting',
+        labelAr: 'المحاسبة والتقارير',
+        labelEn: 'Accounting & Reports',
+        icon: 'lucideReceipt',
+        children: [
           {
             id: 'settlements',
             labelAr: 'تسويات المطاعم',
@@ -355,12 +416,13 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     id: 'support',
     labelAr: 'الدعم',
     labelEn: 'Support',
+    icon: 'lucideLifeBuoy',
     items: [
       {
-        id: 'support-group',
-        labelAr: 'خدمة العملاء',
-        labelEn: 'Customer Care',
-        icon: 'lucideLifeBuoy',
+        id: 'support-tickets',
+        labelAr: 'الشكاوى والمحفظة',
+        labelEn: 'Tickets & Wallet',
+        icon: 'lucideMessageSquare',
         children: [
           {
             id: 'complaints',
@@ -381,6 +443,14 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
             route: '/admin/support/wallet',
             icon: 'lucideCreditCard',
           },
+        ],
+      },
+      {
+        id: 'support-engagement',
+        labelAr: 'الولاء والتقييم',
+        labelEn: 'Loyalty & Ratings',
+        icon: 'lucideGift',
+        children: [
           {
             id: 'loyalty',
             labelAr: 'الولاء والمكافآت',
@@ -405,8 +475,9 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
   },
   {
     id: 'security',
-    labelAr: 'الأمان والصلاحيات',
+    labelAr: 'الأمان',
     labelEn: 'Security',
+    icon: 'lucideShieldAlert',
     items: [
       {
         id: 'security-workspace',
@@ -424,12 +495,13 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     id: 'settings',
     labelAr: 'الإعدادات',
     labelEn: 'Settings',
+    icon: 'lucideSettings',
     items: [
       {
-        id: 'settings-group',
-        labelAr: 'النظام',
-        labelEn: 'System',
-        icon: 'lucideSettings',
+        id: 'settings-platform',
+        labelAr: 'إعدادات المنصة',
+        labelEn: 'Platform Settings',
+        icon: 'lucideSlidersHorizontal',
         children: [
           {
             id: 'areas',
@@ -450,6 +522,32 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
             icon: 'lucideSlidersHorizontal',
           },
           {
+            id: 'privacy',
+            labelAr: 'الخصوصية',
+            labelEn: 'Privacy',
+            descriptionAr: 'سياسات حماية الخصوصية وقواعد إخفاء البيانات',
+            descriptionEn: 'Privacy policies and data masking rules',
+            route: '/admin/settings/privacy',
+            icon: 'lucideEyeOff',
+          },
+          {
+            id: 'languages',
+            labelAr: 'تعدد اللغات',
+            labelEn: 'Languages',
+            descriptionAr: 'إدارة اللغات والترجمات في المنصة',
+            descriptionEn: 'Manage platform languages and translations',
+            route: '/admin/settings/languages',
+            icon: 'lucideLanguages',
+          },
+        ],
+      },
+      {
+        id: 'settings-advanced',
+        labelAr: 'متقدم وتوسع',
+        labelEn: 'Advanced & Scale',
+        icon: 'lucideGlobe',
+        children: [
+          {
             id: 'exit-policy',
             labelAr: 'إنهاء التعاقد',
             labelEn: 'Exit Policy',
@@ -466,24 +564,6 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
             descriptionEn: 'WhatsApp, notifications, and messaging channels',
             route: '/admin/settings/communication',
             icon: 'lucideMessagesSquare',
-          },
-          {
-            id: 'languages',
-            labelAr: 'تعدد اللغات',
-            labelEn: 'Languages',
-            descriptionAr: 'إدارة اللغات والترجمات في المنصة',
-            descriptionEn: 'Manage platform languages and translations',
-            route: '/admin/settings/languages',
-            icon: 'lucideLanguages',
-          },
-          {
-            id: 'privacy',
-            labelAr: 'الخصوصية',
-            labelEn: 'Privacy',
-            descriptionAr: 'سياسات حماية الخصوصية وقواعد إخفاء البيانات',
-            descriptionEn: 'Privacy policies and data masking rules',
-            route: '/admin/settings/privacy',
-            icon: 'lucideEyeOff',
           },
           {
             id: 'multitenancy',

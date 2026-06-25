@@ -73,6 +73,79 @@ export interface PendingAccount {
   notesEn?: string;
 }
 
+export type RestaurantIngredientCategory =
+  | 'meat'
+  | 'chicken'
+  | 'fish'
+  | 'cheese'
+  | 'seafood'
+  | 'dairy'
+  | 'eggs'
+  | 'vegetables'
+  | 'fruits'
+  | 'grains'
+  | 'nuts'
+  | 'oils'
+  | 'herbs'
+  | 'legumes'
+  | 'sweeteners'
+  | 'other';
+
+export type RestaurantIngredientSourceStatus = 'verified' | 'pending' | 'needs_update';
+
+export interface RestaurantIngredientVariety {
+  nameAr: string;
+  nameEn: string;
+  originCountriesAr?: string[];
+  originCountriesEn?: string[];
+}
+
+export interface RestaurantIngredientSource {
+  id: string;
+  category: RestaurantIngredientCategory;
+  labelAr: string;
+  labelEn: string;
+  typeAr: string;
+  typeEn: string;
+  gradeAr?: string;
+  gradeEn?: string;
+  brandAr?: string;
+  brandEn?: string;
+  supplierAr?: string;
+  supplierEn?: string;
+  supplierCountryAr?: string;
+  supplierCountryEn?: string;
+  originCountriesAr: string[];
+  originCountriesEn: string[];
+  isImported: boolean;
+  halalCertified?: boolean;
+  halalCertAr?: string;
+  halalCertEn?: string;
+  certExpiry?: string;
+  storageAr?: string;
+  storageEn?: string;
+  usedInProgramsAr?: string[];
+  usedInProgramsEn?: string[];
+  varieties?: RestaurantIngredientVariety[];
+  menuUsagePercent?: number;
+  organic?: boolean;
+  frozen?: boolean;
+  haccpCertified?: boolean;
+  inspectionScore?: number;
+  allergensAr?: string[];
+  allergensEn?: string[];
+  deliveryFrequencyAr?: string;
+  deliveryFrequencyEn?: string;
+  carbonFootprint?: 'low' | 'medium' | 'high';
+  gmoFree?: boolean;
+  grassFed?: boolean;
+  notesAr?: string;
+  notesEn?: string;
+  lastUpdatedAr?: string;
+  lastUpdatedEn?: string;
+  status: RestaurantIngredientSourceStatus;
+}
+
 export interface RestaurantAccount {
   id: string;
   nameAr: string;
@@ -128,6 +201,9 @@ export interface RestaurantAccount {
   dailyCapacity: number;
   notesAr?: string;
   notesEn?: string;
+
+  /** Main meal protein/dairy components and import origins declared by the restaurant. */
+  ingredientSources?: RestaurantIngredientSource[];
 }
 
 export interface DriverAccount {

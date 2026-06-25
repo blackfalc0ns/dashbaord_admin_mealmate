@@ -13,6 +13,9 @@
       @case ('details') {
         <mm-restaurant-details-panel [restaurant]="item" />
       }
+      @case ('ingredients') {
+        <mm-restaurant-ingredient-sources [restaurant]="item" />
+      }
       @case ('analytics') {
         <mm-restaurant-analytics-panel [restaurant]="item" />
       }

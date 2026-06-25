@@ -67,7 +67,7 @@ export const ADMIN_STUB_ROUTES: Routes = [
         (m) => m.CustomerDetailPageComponent,
       ),
   },
-  { path: 'accounts/documents', loadComponent: loadPlaceholder },
+  { path: 'accounts/documents', redirectTo: 'accounts/pending', pathMatch: 'full' },
   { path: 'operations/capacity', loadComponent: loadPlaceholder },
   { path: 'operations/auto-selection', loadComponent: loadPlaceholder },
   { path: 'operations/invoices', loadComponent: loadPlaceholder },

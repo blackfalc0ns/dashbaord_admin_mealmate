@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { PendingAccount, RestaurantAccount, DriverAccount, CustomerAccount } from '../models/accounts.model';
+import { DIET_CARE_INGREDIENT_SOURCES } from './accounts-ingredients.mock';
 
 @Injectable({ providedIn: 'root' })
 export class AccountsStateService {
@@ -409,6 +410,7 @@ export class AccountsStateService {
       dailyCapacity: 150,
       notesAr: 'مطعم ممتاز وملتزم بالكامل بمعايير الجودة والتشغيل.',
       notesEn: 'Excellent restaurant fully committed to quality and operational standards.',
+      ingredientSources: DIET_CARE_INGREDIENT_SOURCES,
     },
     {
       id: 'res2',
