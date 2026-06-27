@@ -31,9 +31,6 @@ export interface SubscriptionsCopy {
   colCustom: string;
   colReadiness: string;
   colActions: string;
-  readinessGate: string;
-  readinessGateDesc: string;
-  notSelectable: string;
   keptForExisting: string;
   newSubsOnly: string;
   kpiActivePrograms: string;
@@ -74,10 +71,6 @@ export interface SubscriptionsCopy {
   colTier: string;
   colOutlier: string;
   colExpectedProfit: string;
-  accessRuleTitle: string;
-  accessRuleDesc: string;
-  pricingRuleTitle: string;
-  pricingRuleDesc: string;
   outlierAction: string;
   outlierKeep: string;
   outlierMoveHigher: string;
@@ -194,9 +187,6 @@ export const SUBSCRIPTIONS_I18N: Record<SubscriptionsLocale, SubscriptionsCopy> 
     colCustom: 'مخصصة',
     colReadiness: 'الجاهزية',
     colActions: 'إجراءات',
-    readinessGate: 'بوابة الجاهزية',
-    readinessGateDesc: 'برامج/باقات بلا أسعار مطاعم لـ26 يوم غير قابلة للاختيار',
-    notSelectable: 'غير متاح للاختيار',
     keptForExisting: 'محفوظ للحاليين',
     newSubsOnly: 'للاشتراكات الجديدة فقط',
     kpiActivePrograms: 'برامج نشطة',
@@ -237,10 +227,6 @@ export const SUBSCRIPTIONS_I18N: Record<SubscriptionsLocale, SubscriptionsCopy> 
     colTier: 'التصنيف',
     colOutlier: 'علامة',
     colExpectedProfit: 'ربح متوقع/يوم',
-    accessRuleTitle: 'وصول العميل (هرمي)',
-    accessRuleDesc: 'Basic يرى Basic فقط · Platinum يرى Basic+Platinum · Elite يرى الكل — للتقويم فقط',
-    pricingRuleTitle: 'متوسط التسعير (غير تراكمي)',
-    pricingRuleDesc: 'كل تصنيف يُسعّر من مطاعم نفس التصنيف فقط — Platinum لا يشمل Basic',
     outlierAction: 'إجراء المراجعة',
     outlierKeep: 'الإبقاء على المطعم',
     outlierMoveHigher: 'نقل لتصنيف أعلى',
@@ -355,9 +341,6 @@ export const SUBSCRIPTIONS_I18N: Record<SubscriptionsLocale, SubscriptionsCopy> 
     colCustom: 'Custom',
     colReadiness: 'Readiness',
     colActions: 'Actions',
-    readinessGate: 'Readiness gate',
-    readinessGateDesc: 'Programs/bundles without restaurant 26-day prices are not selectable',
-    notSelectable: 'Not selectable',
     keptForExisting: 'Kept for existing',
     newSubsOnly: 'New subscriptions only',
     kpiActivePrograms: 'Active programs',
@@ -398,10 +381,6 @@ export const SUBSCRIPTIONS_I18N: Record<SubscriptionsLocale, SubscriptionsCopy> 
     colTier: 'Tier',
     colOutlier: 'Flag',
     colExpectedProfit: 'Expected profit/day',
-    accessRuleTitle: 'Customer access (hierarchical)',
-    accessRuleDesc: 'Basic sees Basic only · Platinum sees Basic+Platinum · Elite sees all — calendar only',
-    pricingRuleTitle: 'Pricing average (non-cumulative)',
-    pricingRuleDesc: 'Each tier priced from same-tier restaurants only — Platinum excludes Basic',
     outlierAction: 'Review action',
     outlierKeep: 'Keep restaurant',
     outlierMoveHigher: 'Move to higher tier',

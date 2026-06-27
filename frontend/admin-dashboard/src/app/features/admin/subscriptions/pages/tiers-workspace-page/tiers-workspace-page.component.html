@@ -7,17 +7,6 @@
     <mm-operations-kpi-card [label]="copy().kpiNeedsRecalc" [value]="store.recalculationEvents().length" icon="lucideRefreshCw" />
   </div>
 
-  <div class="grid gap-4 lg:grid-cols-3">
-    <div class="rounded-xl border border-blue-100 bg-blue-50 p-4 lg:col-span-2">
-      <p class="font-extrabold text-blue-900">{{ copy().accessRuleTitle }}</p>
-      <p class="mt-1 text-sm text-blue-800">{{ copy().accessRuleDesc }}</p>
-    </div>
-    <div class="rounded-xl border border-violet-100 bg-violet-50 p-4">
-      <p class="font-extrabold text-violet-900">{{ copy().pricingRuleTitle }}</p>
-      <p class="mt-1 text-sm text-violet-800">{{ copy().pricingRuleDesc }}</p>
-    </div>
-  </div>
-
   <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
     <p class="font-extrabold">{{ copy().singleRestaurantBounds }}</p>
     <p class="text-xs text-slate-500">{{ copy().singleRestaurantBoundsDesc }}</p>
