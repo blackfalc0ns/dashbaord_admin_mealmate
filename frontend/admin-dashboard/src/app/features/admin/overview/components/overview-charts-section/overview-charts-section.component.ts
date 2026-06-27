@@ -318,7 +318,7 @@ export class OverviewChartsSectionComponent {
           dataLabels: analytics
             ? {
                 enabled: true,
-                style: { fontFamily: 'Cairo, sans-serif', fontSize: '11px', fontWeight: 700 },
+                style: { fontFamily: 'IBM Plex Sans Arabic, PingAR, Cairo, sans-serif', fontSize: '11px', fontWeight: 700 },
                 offsetY: -18,
               }
             : undefined,
@@ -351,7 +351,7 @@ export class OverviewChartsSectionComponent {
                   total: {
                     show: true,
                     label: this.locale.isRtl() ? 'الإجمالي' : 'Total',
-                    fontFamily: 'Cairo, sans-serif',
+                    fontFamily: 'IBM Plex Sans Arabic, PingAR, Cairo, sans-serif',
                     fontWeight: 700,
                     fontSize: inlineCompactDonut ? '10px' : '12px',
                   },
@@ -385,7 +385,7 @@ export class OverviewChartsSectionComponent {
           dataLabels: analytics
             ? {
                 enabled: true,
-                style: { fontFamily: 'Cairo, sans-serif', fontSize: '11px', fontWeight: 700 },
+                style: { fontFamily: 'IBM Plex Sans Arabic, PingAR, Cairo, sans-serif', fontSize: '11px', fontWeight: 700 },
               }
             : undefined,
           colors: MM_CHART_PALETTE,

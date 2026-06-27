@@ -18,6 +18,8 @@ export interface SubscriptionsCopy {
   pct: string;
   tabDurations: string;
   tabPrograms: string;
+  tabTiers: string;
+  tabMealBundles: string;
   tabBundles: string;
   colName: string;
   colDays: string;
@@ -25,6 +27,9 @@ export interface SubscriptionsCopy {
   colCommission: string;
   colProgram: string;
   colBundle: string;
+  colTier: string;
+  colRestaurantAccess: string;
+  colPricingScope: string;
   colRestaurantsPriced: string;
   colActiveSubs: string;
   colComponents: string;
@@ -50,6 +55,12 @@ export interface SubscriptionsCopy {
   tierBasic: string;
   tierPlatinum: string;
   tierElite: string;
+  tierAccessBasic: string;
+  tierAccessPlatinum: string;
+  tierAccessElite: string;
+  pricingScopeBasic: string;
+  pricingScopePlatinum: string;
+  pricingScopeElite: string;
   kpiBasicShare: string;
   kpiPlatinumShare: string;
   kpiEliteShare: string;
@@ -68,7 +79,6 @@ export interface SubscriptionsCopy {
   colDailyBox: string;
   colMean: string;
   colStdDev: string;
-  colTier: string;
   colOutlier: string;
   colExpectedProfit: string;
   outlierAction: string;
@@ -174,13 +184,18 @@ export const SUBSCRIPTIONS_I18N: Record<SubscriptionsLocale, SubscriptionsCopy> 
     pct: '%',
     tabDurations: 'المدد',
     tabPrograms: 'البرامج',
-    tabBundles: 'الباقات',
+    tabTiers: 'التصنيفات',
+    tabMealBundles: 'باقات الوجبات',
+    tabBundles: 'باقات الوجبات',
     colName: 'الاسم',
     colDays: 'الأيام',
     colStatus: 'الحالة',
     colCommission: 'عمولة مرتبطة',
     colProgram: 'البرنامج',
     colBundle: 'الباقة',
+    colTier: 'التصنيف',
+    colRestaurantAccess: 'وصول المطاعم',
+    colPricingScope: 'متوسط التسعير',
     colRestaurantsPriced: 'مطاعم مسعّرة',
     colActiveSubs: 'اشتراكات نشطة',
     colComponents: 'المكوّنات',
@@ -203,9 +218,15 @@ export const SUBSCRIPTIONS_I18N: Record<SubscriptionsLocale, SubscriptionsCopy> 
     notReady: 'غير جاهز',
     programDetail: 'تفاصيل البرنامج',
     description: 'الوصف',
-    tierBasic: 'Basic',
-    tierPlatinum: 'Platinum',
-    tierElite: 'Elite',
+    tierBasic: 'أساسي',
+    tierPlatinum: 'بلاتينيوم',
+    tierElite: 'إيليت',
+    tierAccessBasic: 'مطاعم أساسي فقط',
+    tierAccessPlatinum: 'أساسي + بلاتينيوم',
+    tierAccessElite: 'أساسي + بلاتينيوم + إيليت',
+    pricingScopeBasic: 'متوسط مطاعم أساسي',
+    pricingScopePlatinum: 'متوسط مطاعم بلاتينيوم',
+    pricingScopeElite: 'متوسط مطاعم إيليت',
     kpiBasicShare: 'نسبة Basic',
     kpiPlatinumShare: 'نسبة Platinum',
     kpiEliteShare: 'نسبة Elite',
@@ -224,7 +245,6 @@ export const SUBSCRIPTIONS_I18N: Record<SubscriptionsLocale, SubscriptionsCopy> 
     colDailyBox: 'بوكس يومي',
     colMean: 'متوسط السعر اليومي',
     colStdDev: 'مدى تفاوت الأسعار',
-    colTier: 'التصنيف',
     colOutlier: 'علامة',
     colExpectedProfit: 'ربح متوقع/يوم',
     outlierAction: 'إجراء المراجعة',
@@ -328,13 +348,18 @@ export const SUBSCRIPTIONS_I18N: Record<SubscriptionsLocale, SubscriptionsCopy> 
     pct: '%',
     tabDurations: 'Durations',
     tabPrograms: 'Programs',
-    tabBundles: 'Bundles',
+    tabTiers: 'Tiers',
+    tabMealBundles: 'Meal bundles',
+    tabBundles: 'Meal bundles',
     colName: 'Name',
     colDays: 'Days',
     colStatus: 'Status',
     colCommission: 'Linked commission',
     colProgram: 'Program',
     colBundle: 'Bundle',
+    colTier: 'Tier',
+    colRestaurantAccess: 'Restaurant access',
+    colPricingScope: 'Pricing average',
     colRestaurantsPriced: 'Priced restaurants',
     colActiveSubs: 'Active subs',
     colComponents: 'Components',
@@ -360,6 +385,12 @@ export const SUBSCRIPTIONS_I18N: Record<SubscriptionsLocale, SubscriptionsCopy> 
     tierBasic: 'Basic',
     tierPlatinum: 'Platinum',
     tierElite: 'Elite',
+    tierAccessBasic: 'Basic restaurants only',
+    tierAccessPlatinum: 'Basic + Platinum',
+    tierAccessElite: 'Basic + Platinum + Elite',
+    pricingScopeBasic: 'Basic restaurants average',
+    pricingScopePlatinum: 'Platinum restaurants average',
+    pricingScopeElite: 'Elite restaurants average',
     kpiBasicShare: 'Basic share',
     kpiPlatinumShare: 'Platinum share',
     kpiEliteShare: 'Elite share',
@@ -378,7 +409,6 @@ export const SUBSCRIPTIONS_I18N: Record<SubscriptionsLocale, SubscriptionsCopy> 
     colDailyBox: 'Daily box',
     colMean: 'Avg daily price',
     colStdDev: 'Price spread',
-    colTier: 'Tier',
     colOutlier: 'Flag',
     colExpectedProfit: 'Expected profit/day',
     outlierAction: 'Review action',
@@ -467,6 +497,6 @@ export const SUBSCRIPTIONS_I18N: Record<SubscriptionsLocale, SubscriptionsCopy> 
 };
 
 export const TIER_LABELS: Record<SubscriptionsLocale, Record<string, string>> = {
-  ar: { basic: 'Basic', platinum: 'Platinum', elite: 'Elite' },
+  ar: { basic: 'أساسي', platinum: 'بلاتينيوم', elite: 'إيليت' },
   en: { basic: 'Basic', platinum: 'Platinum', elite: 'Elite' },
 };

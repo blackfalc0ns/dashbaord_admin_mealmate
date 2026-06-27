@@ -6,8 +6,38 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Ping Arabic font (from tlwen.com) */
+@font-face {
+  font-family: 'PingAR';
+  src: url('./assets/fonts/PingAR-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PingAR';
+  src: url('./assets/fonts/PingAR-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PingAR';
+  src: url('./assets/fonts/PingAR-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PingAR';
+  src: url('./assets/fonts/PingAR-Black.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
-  --font-sans: 'Cairo', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'IBM Plex Sans Arabic', 'PingAR', 'Cairo', ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -38,13 +68,13 @@
 }
 
 :root {
-  --mm-sidebar-width: 20rem;
-  --mm-sidebar-collapsed: 4.25rem;
+  --mm-sidebar-width: 15rem;
+  --mm-sidebar-collapsed: 3.5rem;
   --mm-sidebar-rail-width: var(--mm-sidebar-collapsed);
-  --mm-sidebar-panel-width: 13.75rem;
+  --mm-sidebar-panel-width: 10.5rem;
   --mm-sidebar-rail: var(--mm-sidebar-collapsed);
   --mm-sidebar-expanded: var(--mm-sidebar-width);
-  --mm-sidebar-mobile: min(20rem, calc(100vw - 1.25rem));
+  --mm-sidebar-mobile: min(15rem, calc(100vw - 1.25rem));
   --mm-shell-pad: 0.5rem;
   --mm-shell-gap: 0.5rem;
   --mm-shell-radius: 1rem;
@@ -163,7 +193,7 @@
 
 @media (min-width: 1536px) {
   :root {
-    --mm-sidebar-width: 21rem;
+    --mm-sidebar-width: 16rem;
     --mm-shell-pad: 1.25rem;
     --mm-shell-gap: 1.125rem;
     --mm-shell-radius: 1.35rem;

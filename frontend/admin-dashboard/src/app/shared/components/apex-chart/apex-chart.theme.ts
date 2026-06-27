@@ -33,7 +33,7 @@ export function mmBaseChart(type: ApexChart['type'], height = 280): ApexChart {
   return {
     type,
     height,
-    fontFamily: 'Cairo, ui-sans-serif, system-ui, sans-serif',
+    fontFamily: 'IBM Plex Sans Arabic, PingAR, Cairo, ui-sans-serif, system-ui, sans-serif',
     toolbar: { show: false },
     zoom: { enabled: false },
     locales: [
@@ -102,7 +102,7 @@ export function mmBaseXAxis(categories: string[]): ApexXAxis {
     labels: {
       style: {
         colors: MM_CHART_COLORS.slate,
-        fontFamily: 'Cairo, sans-serif',
+        fontFamily: 'PingAR, Cairo, sans-serif',
         fontSize: '11px',
       },
     },
@@ -116,7 +116,7 @@ export function mmBaseYAxis(): ApexYAxis {
     labels: {
       style: {
         colors: MM_CHART_COLORS.slate,
-        fontFamily: 'Cairo, sans-serif',
+        fontFamily: 'PingAR, Cairo, sans-serif',
         fontSize: '11px',
       },
     },
@@ -131,7 +131,7 @@ export function mmBaseLegend(): ApexLegend {
   return {
     position: 'top',
     horizontalAlign: 'right',
-    fontFamily: 'Cairo, sans-serif',
+    fontFamily: 'PingAR, Cairo, sans-serif',
     fontSize: '12px',
     labels: { colors: MM_CHART_COLORS.navy },
   };
@@ -140,7 +140,7 @@ export function mmBaseLegend(): ApexLegend {
 export function mmBaseTooltip(): ApexTooltip {
   return {
     theme: 'light',
-    style: { fontFamily: 'Cairo, sans-serif' },
+    style: { fontFamily: 'PingAR, Cairo, sans-serif' },
   };
 }
 
@@ -149,6 +149,6 @@ export function mmSparklineChart(): ApexChart {
     type: 'area',
     height: 48,
     sparkline: { enabled: true },
-    fontFamily: 'Cairo, sans-serif',
+    fontFamily: 'PingAR, Cairo, sans-serif',
   };
 }

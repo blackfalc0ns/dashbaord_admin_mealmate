@@ -12,7 +12,8 @@
     <div class="flex flex-wrap gap-2">
       <button type="button" class="rounded-lg px-3 py-1.5 text-xs font-bold" [ngClass]="activeTab() === 'durations' ? 'bg-emerald-600 text-white' : 'border border-slate-200 bg-white'" (click)="setTab('durations')">{{ copy().tabDurations }}</button>
       <button type="button" class="rounded-lg px-3 py-1.5 text-xs font-bold" [ngClass]="activeTab() === 'programs' ? 'bg-emerald-600 text-white' : 'border border-slate-200 bg-white'" (click)="setTab('programs')">{{ copy().tabPrograms }}</button>
-      <button type="button" class="rounded-lg px-3 py-1.5 text-xs font-bold" [ngClass]="activeTab() === 'bundles' ? 'bg-emerald-600 text-white' : 'border border-slate-200 bg-white'" (click)="setTab('bundles')">{{ copy().tabBundles }}</button>
+      <button type="button" class="rounded-lg px-3 py-1.5 text-xs font-bold" [ngClass]="activeTab() === 'tiers' ? 'bg-emerald-600 text-white' : 'border border-slate-200 bg-white'" (click)="setTab('tiers')">{{ copy().tabTiers }}</button>
+      <button type="button" class="rounded-lg px-3 py-1.5 text-xs font-bold" [ngClass]="activeTab() === 'mealBundles' ? 'bg-emerald-600 text-white' : 'border border-slate-200 bg-white'" (click)="setTab('mealBundles')">{{ copy().tabMealBundles }}</button>
     </div>
     <div class="flex flex-wrap items-center gap-2">
       @if (activeTab() !== 'durations') {
@@ -28,12 +29,14 @@
           </select>
         }
       }
-      <ng-container *mmHasPermission="perms.subscriptionsManage">
-        <button type="button" class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700" (click)="openCreate()">
-          <ng-icon name="lucidePlus" size="14" /> {{ addLabel() }}
-        </button>
-        <button type="button" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white" (click)="savePublish()">{{ copy().savePublish }}</button>
-      </ng-container>
+      @if (showCreateActions()) {
+        <ng-container *mmHasPermission="perms.subscriptionsManage">
+          <button type="button" class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700" (click)="openCreate()">
+            <ng-icon name="lucidePlus" size="14" /> {{ addLabel() }}
+          </button>
+          <button type="button" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white" (click)="savePublish()">{{ copy().savePublish }}</button>
+        </ng-container>
+      }
     </div>
   </div>
 
@@ -131,7 +134,33 @@
         </table>
       </div>
     }
-    @case ('bundles') {
+    @case ('tiers') {
+      <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-xs font-bold uppercase text-slate-500">
+            <tr>
+              <th class="px-4 py-3 text-start">{{ copy().colTier }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colRestaurantAccess }}</th>
+              <th class="px-4 py-3 text-start">{{ copy().colPricingScope }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (row of paginatedTiers(); track row.id) {
+              <tr class="hover:bg-slate-50/50">
+                <td class="px-4 py-3">
+                  <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset" [ngClass]="tierBadgeClass(row.tier)">
+                    {{ tierLabel(row.tier) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-xs text-slate-600">{{ tierAccess(row) }}</td>
+                <td class="px-4 py-3 text-xs text-slate-600">{{ tierPricingScope(row) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    @case ('mealBundles') {
       <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
         <table class="w-full text-sm">
           <thead class="bg-slate-50 text-xs font-bold uppercase text-slate-500">
@@ -145,7 +174,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            @for (b of paginatedBundles(); track b.id) {
+            @for (b of paginatedMealBundles(); track b.id) {
               <tr class="hover:bg-slate-50/50">
                 <td class="px-4 py-3">
                   <p class="font-bold">{{ programName(b) }}</p>
