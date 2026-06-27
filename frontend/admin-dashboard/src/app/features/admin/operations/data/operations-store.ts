@@ -2,6 +2,7 @@ import { Injectable, computed, signal } from '@angular/core';
 import {
   AdminOrderDetail,
   AdminOrderRow,
+  CapacityAuditEvent,
   DeliveryTrackingRow,
   HoldCaseRow,
   OrderExceptionLog,
@@ -10,6 +11,7 @@ import {
   OrderWorkspaceView,
   ReplacementWindowRow,
   ReplacementWindowStatus,
+  RestaurantCapacityRow,
   RestaurantConfirmationStatus,
 } from '../models';
 import { OrderExceptionType } from '../models/order-lifecycle.enums';
@@ -25,6 +27,7 @@ import {
   PREP_BY_ORDER_ID,
   REPLACEMENT_WINDOW_MOCK,
 } from './operations.mock';
+import { CAPACITY_AUDIT_MOCK, CAPACITY_ROWS_MOCK } from './capacity.mock';
 
 /** Signal store for F120 operations monitoring — orders, delivery, hold, audit. */
 @Injectable({ providedIn: 'root' })
@@ -34,11 +37,32 @@ export class OperationsStore {
   readonly exceptionLogs = signal<OrderExceptionLog[]>([...ORDER_EXCEPTION_LOGS_MOCK]);
   readonly trackingRows = signal<DeliveryTrackingRow[]>([...DELIVERY_TRACKING_MOCK]);
   readonly holdCases = signal<HoldCaseRow[]>([...HOLD_CASES_MOCK]);
+  readonly capacityRows = signal<RestaurantCapacityRow[]>([...CAPACITY_ROWS_MOCK]);
+  readonly capacityAudit = signal<CapacityAuditEvent[]>([...CAPACITY_AUDIT_MOCK]);
 
   readonly needsActionCount = computed(() => this.filterByView('needs-action').length);
   readonly activeHoldCount = computed(
     () => this.holdCases().filter((c) => c.status !== 'resolved').length,
   );
+  readonly capacityKpis = computed(() => {
+    const rows = this.capacityRows();
+    const capacity = rows.reduce((sum, r) => sum + r.capacityLimit, 0);
+    const booked = rows.reduce((sum, r) => sum + r.bookedMeals, 0);
+    const blocked = rows.reduce((sum, r) => sum + r.blockedMeals, 0);
+    const busy = rows.filter((r) => r.status === 'busy_auto' || r.status === 'busy_manual').length;
+    const atRisk = rows.filter((r) => r.status === 'at_risk').length;
+    const overrides = rows.filter((r) => r.overrideUntil).length;
+
+    return {
+      capacity,
+      booked,
+      blocked,
+      utilization: capacity ? Math.round((booked / capacity) * 100) : 0,
+      busy,
+      atRisk,
+      overrides,
+    };
+  });
 
   getOrder(orderId: string): AdminOrderDetail | null {
     const row = this.allOrders().find((o) => o.orderId === orderId);
@@ -280,6 +304,71 @@ export class OperationsStore {
           : c,
       ),
     );
+  }
+
+  markRestaurantBusy(restaurantId: string, reason: string): void {
+    const until = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
+    this.capacityRows.update((rows) =>
+      rows.map((r) =>
+        r.restaurantId === restaurantId
+          ? {
+              ...r,
+              status: 'busy_manual',
+              automationReason: reason,
+              overrideUntil: until,
+              blockedMeals: Math.max(r.blockedMeals, r.capacityLimit - r.bookedMeals),
+              updatedAt: new Date().toISOString(),
+            }
+          : r,
+      ),
+    );
+    this.appendCapacityAudit(restaurantId, 'Override', reason);
+  }
+
+  releaseRestaurantBusy(restaurantId: string): void {
+    const row = this.capacityRows().find((r) => r.restaurantId === restaurantId);
+    if (!row) return;
+
+    const utilization = row.capacityLimit ? row.bookedMeals / row.capacityLimit : 0;
+    this.capacityRows.update((rows) =>
+      rows.map((r) =>
+        r.restaurantId === restaurantId
+          ? {
+              ...r,
+              status: utilization >= 1 ? 'busy_auto' : utilization >= 0.9 ? 'at_risk' : 'active',
+              automationReason:
+                utilization >= 1
+                  ? 'Automatic busy remains active because booked meals meet capacity.'
+                  : 'Manual busy released by operations.',
+              overrideUntil: null,
+              updatedAt: new Date().toISOString(),
+            }
+          : r,
+      ),
+    );
+    this.appendCapacityAudit(restaurantId, 'Release', 'Manual busy override released.');
+  }
+
+  private appendCapacityAudit(
+    restaurantId: string,
+    action: CapacityAuditEvent['action'],
+    reason: string,
+  ): void {
+    const row = this.capacityRows().find((r) => r.restaurantId === restaurantId);
+    if (!row) return;
+
+    this.capacityAudit.update((events) => [
+      {
+        id: `CAP-AUD-${Date.now()}`,
+        restaurantId,
+        restaurantName: row.restaurantName,
+        action,
+        actorName: 'Operations - Current User',
+        reason,
+        createdAt: new Date().toISOString(),
+      },
+      ...events,
+    ]);
   }
 }
 

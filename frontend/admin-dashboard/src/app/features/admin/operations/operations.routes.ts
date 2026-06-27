@@ -14,6 +14,13 @@ export const OPERATIONS_LEGACY_REDIRECTS: Routes = [
 export const OPERATIONS_ROUTES: Routes = [
   ...OPERATIONS_LEGACY_REDIRECTS,
   {
+    path: 'capacity',
+    loadComponent: () =>
+      import('./pages/capacity-workspace-page/capacity-workspace-page.component').then(
+        (m) => m.CapacityWorkspacePageComponent,
+      ),
+  },
+  {
     path: 'orders',
     loadComponent: () =>
       import('./pages/orders-workspace-page/orders-workspace-page.component').then(
