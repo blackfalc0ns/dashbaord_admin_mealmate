@@ -44,6 +44,7 @@
       } @else {
         <mm-order-72h-table
           [rows]="rows()"
+          [itemLabel]="orderItemLabel()"
           mode="overdue"
           [onOpenReplacement]="openReplacement"
           [onManualReassign]="manualReassign"

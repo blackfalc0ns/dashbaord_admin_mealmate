@@ -24,8 +24,7 @@ export interface CustomersCopy {
   actions: string;
   viewProfile: string;
   noCustomersFound: string;
-  showingPage: string;
-  of: string;
+  paginationItems: string;
   customerId: string;
   contactDetails: string;
   phone: string;
@@ -95,8 +94,7 @@ export const CUSTOMERS_ACCOUNTS_I18N: Record<CustomersLocale, CustomersCopy> = {
     actions: 'إجراءات',
     viewProfile: 'عرض الملف',
     noCustomersFound: 'لا يوجد عملاء مطابقون',
-    showingPage: 'صفحة',
-    of: 'من',
+    paginationItems: 'عميل',
     customerId: 'معرّف العميل',
     contactDetails: 'بيانات التواصل',
     phone: 'الهاتف',
@@ -164,8 +162,7 @@ export const CUSTOMERS_ACCOUNTS_I18N: Record<CustomersLocale, CustomersCopy> = {
     actions: 'Actions',
     viewProfile: 'View profile',
     noCustomersFound: 'No matching customers',
-    showingPage: 'Page',
-    of: 'of',
+    paginationItems: 'customers',
     customerId: 'Customer ID',
     contactDetails: 'Contact details',
     phone: 'Phone',

@@ -14,6 +14,8 @@ import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { SUBSCRIPTIONS_I18N, TIER_LABELS } from '@/core/i18n/translations/subscriptions.i18n';
 import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
+import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
+import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { SubscriptionsStore } from '../../data/subscriptions-store';
 import { ClassificationRow, OutlierActionType, RestaurantTier } from '../../models';
 import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
@@ -22,7 +24,7 @@ import { MmDetailToastComponent } from '@/shared/components/accounts';
 @Component({
   selector: 'mm-tiers-workspace-page',
   standalone: true,
-  imports: [DecimalPipe, NgClass, RouterLink, NgIcon, MmOperationsKpiCardComponent, MmDetailToastComponent, HasPermissionDirective],
+  imports: [DecimalPipe, NgClass, RouterLink, NgIcon, MmOperationsKpiCardComponent, MmDetailToastComponent, HasPermissionDirective, MmTablePaginationComponent],
   providers: [provideIcons({ lucideAward, lucideShieldAlert, lucideRefreshCw, lucideFilter, lucideX })],
   templateUrl: './tiers-workspace-page.component.html',
   host: { class: 'block' },
@@ -45,6 +47,9 @@ export class TiersWorkspacePageComponent {
   readonly outlierAction = signal<OutlierActionType>('keep');
   readonly outlierReason = signal('');
   readonly toast = signal<string | null>(null);
+  readonly pg = createTablePagination(5);
+  readonly currentPage = this.pg.currentPage;
+  readonly pageSize = this.pg.pageSize;
 
   readonly dist = computed(() => this.store.tierDistribution());
 
@@ -58,6 +63,10 @@ export class TiersWorkspacePageComponent {
     if (this.flaggedOnly()) rows = rows.filter((r) => r.isOutlier);
     return rows;
   });
+
+  readonly paginatedRows = this.pg.paginated(this.filteredRows);
+  readonly totalPages = this.pg.totalPages(this.filteredRows);
+  readonly paginationItems = computed(() => (this.locale.isRtl() ? 'مطعم' : 'restaurants'));
 
   readonly programOptions = computed(() => {
     const map = new Map<string, { id: string; ar: string; en: string }>();
@@ -115,5 +124,9 @@ export class TiersWorkspacePageComponent {
     this.closeOutlier();
     this.toast.set(this.copy().saved);
     setTimeout(() => this.toast.set(null), 3000);
+  }
+
+  onPageChange(page: number): void {
+    this.pg.onPageChange(page, this.totalPages());
   }
 }

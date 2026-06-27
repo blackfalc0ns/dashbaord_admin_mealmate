@@ -5,10 +5,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideSearch,
   lucideFilter,
-  lucideChevronLeft,
   lucideChevronRight,
-  lucideChevronsLeft,
-  lucideChevronsRight,
   lucideX,
   lucideCheck,
   lucideUser,
@@ -25,16 +22,14 @@ import {
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
 import { RESTAURANTS_ACCOUNTS_I18N } from '../../../../../core/i18n/translations/restaurants-accounts.i18n';
+import { MmTablePaginationComponent } from '../../../../../shared/components/layout/table-pagination';
 import { AccountsStateService } from '../../data/accounts-state.service';
 import { RestaurantAccount } from '../../models/accounts.model';
 
 const RESTAURANT_ICONS = {
   lucideSearch,
   lucideFilter,
-  lucideChevronLeft,
   lucideChevronRight,
-  lucideChevronsLeft,
-  lucideChevronsRight,
   lucideX,
   lucideCheck,
   lucideUser,
@@ -52,7 +47,7 @@ const RESTAURANT_ICONS = {
 @Component({
   selector: 'mm-restaurants-accounts-page',
   standalone: true,
-  imports: [NgClass, NgIcon],
+  imports: [NgClass, NgIcon, MmTablePaginationComponent],
   providers: [provideIcons(RESTAURANT_ICONS)],
   templateUrl: './restaurants-accounts-page.component.html',
   host: {

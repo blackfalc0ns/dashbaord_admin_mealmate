@@ -29,7 +29,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
-          @for (c of sortedCommissions(); track c.id) {
+          @for (c of paginatedCommissions(); track c.id) {
             <tr class="hover:bg-slate-50/50">
               <td class="px-4 py-3 font-mono text-xs text-slate-700">{{ c.subscriptionId }}</td>
               <td class="px-4 py-3 text-center font-semibold text-slate-800">{{ c.subscriptionAmount }} KD</td>
@@ -53,6 +53,14 @@
           }
         </tbody>
       </table>
+      <mm-table-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [totalItems]="sortedCommissions().length"
+        [pageSize]="pageSize()"
+        [itemLabel]="paginationItems()"
+        (pageChange)="onPageChange($event)"
+      />
     </div>
   }
 </mm-detail-panel-card>

@@ -79,6 +79,8 @@ export class OrdersWorkspacePageComponent {
     this.activeView() === 'needs-action' ? this.copy().noOrdersNeedsAction : this.copy().noOrders,
   );
 
+  readonly orderItemLabel = computed(() => (this.locale.isRtl() ? 'طلب' : 'orders'));
+
   constructor() {
     this.route.queryParamMap.subscribe((params) => {
       const view = params.get('view') as OrderWorkspaceView | null;
@@ -93,6 +95,7 @@ export class OrdersWorkspacePageComponent {
 
   setView(view: OrderWorkspaceView): void {
     this.activeView.set(view);
+    this.searchQuery.set('');
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { view },
@@ -103,6 +106,10 @@ export class OrdersWorkspacePageComponent {
   onAction(event: { orderId: string; action: OrderActionType }): void {
     this.drawerOrderId.set(event.orderId);
     this.drawerAction.set(event.action);
+  }
+
+  onSearch(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
   }
 
   closeDrawer(): void {

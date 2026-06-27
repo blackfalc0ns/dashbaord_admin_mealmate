@@ -5,10 +5,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideSearch,
   lucideFilter,
-  lucideChevronLeft,
   lucideChevronRight,
-  lucideChevronsLeft,
-  lucideChevronsRight,
   lucideX,
   lucideCheck,
   lucideUser,
@@ -25,16 +22,14 @@ import {
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
 import { DRIVERS_ACCOUNTS_I18N } from '../../../../../core/i18n/translations/drivers-accounts.i18n';
+import { MmTablePaginationComponent } from '../../../../../shared/components/layout/table-pagination';
 import { AccountsStateService } from '../../data/accounts-state.service';
 import { DriverAccount } from '../../models/accounts.model';
 
 const DRIVER_ICONS = {
   lucideSearch,
   lucideFilter,
-  lucideChevronLeft,
   lucideChevronRight,
-  lucideChevronsLeft,
-  lucideChevronsRight,
   lucideX,
   lucideCheck,
   lucideUser,
@@ -52,7 +47,7 @@ const DRIVER_ICONS = {
 @Component({
   selector: 'mm-drivers-accounts-page',
   standalone: true,
-  imports: [NgClass, NgIcon],
+  imports: [NgClass, NgIcon, MmTablePaginationComponent],
   providers: [provideIcons(DRIVER_ICONS)],
   templateUrl: './drivers-accounts-page.component.html',
   host: {

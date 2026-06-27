@@ -5,10 +5,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideSearch,
   lucideFilter,
-  lucideChevronLeft,
   lucideChevronRight,
-  lucideChevronsLeft,
-  lucideChevronsRight,
   lucideX,
   lucideCheck,
   lucideUser,
@@ -26,16 +23,14 @@ import {
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
 import { PENDING_ACCOUNTS_I18N } from '../../../../../core/i18n/translations/pending-accounts.i18n';
+import { MmTablePaginationComponent } from '../../../../../shared/components/layout/table-pagination';
 import { AccountsStateService } from '../../data/accounts-state.service';
 import { PendingAccount } from '../../models/accounts.model';
 
 const PENDING_ICONS = {
   lucideSearch,
   lucideFilter,
-  lucideChevronLeft,
   lucideChevronRight,
-  lucideChevronsLeft,
-  lucideChevronsRight,
   lucideX,
   lucideCheck,
   lucideUser,
@@ -54,7 +49,7 @@ const PENDING_ICONS = {
 @Component({
   selector: 'mm-pending-accounts-page',
   standalone: true,
-  imports: [NgClass, NgIcon],
+  imports: [NgClass, NgIcon, MmTablePaginationComponent],
   providers: [provideIcons(PENDING_ICONS)],
   templateUrl: './pending-accounts-page.component.html',
   host: {

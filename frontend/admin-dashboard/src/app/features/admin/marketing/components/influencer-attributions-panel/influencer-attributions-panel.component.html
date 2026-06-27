@@ -17,7 +17,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
-          @for (a of sortedAttributions(); track a.id) {
+          @for (a of paginatedAttributions(); track a.id) {
             <tr class="hover:bg-slate-50/50">
               <td class="px-4 py-3">
                 <p class="font-bold text-slate-800">{{ customerName(a) }}</p>
@@ -43,6 +43,14 @@
           }
         </tbody>
       </table>
+      <mm-table-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [totalItems]="sortedAttributions().length"
+        [pageSize]="pageSize()"
+        [itemLabel]="paginationItems()"
+        (pageChange)="onPageChange($event)"
+      />
     </div>
   }
 </mm-detail-panel-card>

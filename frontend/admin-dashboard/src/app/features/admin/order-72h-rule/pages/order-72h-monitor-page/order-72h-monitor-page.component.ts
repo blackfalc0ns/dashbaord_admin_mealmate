@@ -74,6 +74,8 @@ export class Order72hMonitorPageComponent {
     return rows;
   });
 
+  readonly orderItemLabel = computed(() => (this.locale.isRtl() ? 'طلب' : 'orders'));
+
   setPhaseFilter(value: string): void {
     this.phaseFilter.set(value);
   }

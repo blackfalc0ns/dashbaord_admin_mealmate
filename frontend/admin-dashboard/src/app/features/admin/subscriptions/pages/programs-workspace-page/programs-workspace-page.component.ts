@@ -19,6 +19,8 @@ import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { SUBSCRIPTIONS_I18N } from '@/core/i18n/translations/subscriptions.i18n';
 import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
+import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
+import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { SubscriptionsStore } from '../../data/subscriptions-store';
 import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
 import { MmDetailToastComponent } from '@/shared/components/accounts';
@@ -41,6 +43,7 @@ type ProgramsTab = 'durations' | 'programs' | 'bundles';
     MmDetailToastComponent,
     CatalogItemDrawerComponent,
     HasPermissionDirective,
+    MmTablePaginationComponent,
   ],
   providers: [
     provideIcons({
@@ -75,6 +78,9 @@ export class ProgramsWorkspacePageComponent {
   readonly drawerEntity = signal<CatalogEntityType>('program');
   readonly drawerMode = signal<CatalogDrawerMode>('view');
   readonly drawerItemId = signal<string | null>(null);
+  readonly pg = createTablePagination(5);
+  readonly currentPage = this.pg.currentPage;
+  readonly pageSize = this.pg.pageSize;
 
   readonly stats = computed(() => this.store.stats());
   readonly readinessGaps = computed(() => this.store.readinessGaps());
@@ -120,6 +126,24 @@ export class ProgramsWorkspacePageComponent {
     return rows;
   });
 
+  readonly activeTableRows = computed(() => {
+    const tab = this.activeTab();
+    if (tab === 'durations') return this.store.durations();
+    if (tab === 'programs') return this.filteredPrograms();
+    return this.filteredBundles();
+  });
+
+  readonly paginatedDurations = this.pg.paginated(computed(() => this.store.durations()));
+  readonly paginatedPrograms = this.pg.paginated(this.filteredPrograms);
+  readonly paginatedBundles = this.pg.paginated(this.filteredBundles);
+  readonly totalPages = this.pg.totalPages(this.activeTableRows);
+  readonly paginationItems = computed(() => {
+    const tab = this.activeTab();
+    if (tab === 'durations') return this.locale.isRtl() ? 'مدة' : 'durations';
+    if (tab === 'programs') return this.locale.isRtl() ? 'برنامج' : 'programs';
+    return this.locale.isRtl() ? 'باقة' : 'bundles';
+  });
+
   readonly addLabel = computed(() => {
     const c = this.copy();
     const tab = this.activeTab();
@@ -130,6 +154,7 @@ export class ProgramsWorkspacePageComponent {
 
   setTab(tab: ProgramsTab): void {
     this.activeTab.set(tab);
+    this.pg.resetPage();
   }
 
   programName(p: { nameAr: string; nameEn: string }): string {
@@ -219,5 +244,9 @@ export class ProgramsWorkspacePageComponent {
   private showToast(message: string): void {
     this.toast.set(message);
     setTimeout(() => this.toast.set(null), 3000);
+  }
+
+  onPageChange(page: number): void {
+    this.pg.onPageChange(page, this.totalPages());
   }
 }

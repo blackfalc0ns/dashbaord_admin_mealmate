@@ -3,10 +3,7 @@ import { NgClass } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideArrowUpDown,
-  lucideChevronLeft,
   lucideChevronRight,
-  lucideChevronsLeft,
-  lucideChevronsRight,
   lucideClock,
   lucideDownload,
   lucideFilter,
@@ -26,6 +23,7 @@ import {
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
+import { MmTablePaginationComponent } from '../../../../../shared/components/layout/table-pagination';
 import {
   SecurityAction,
   SecurityAdminPage,
@@ -52,10 +50,7 @@ import {
 
 const PANEL_ICONS = {
   lucideSearch,
-  lucideChevronLeft,
   lucideChevronRight,
-  lucideChevronsLeft,
-  lucideChevronsRight,
   lucideFilter,
   lucideDownload,
   lucideHistory,
@@ -77,7 +72,7 @@ const PANEL_ICONS = {
 @Component({
   selector: 'mm-security-workspace-panel',
   standalone: true,
-  imports: [NgClass, NgIcon],
+  imports: [NgClass, NgIcon, MmTablePaginationComponent],
   providers: [provideIcons(PANEL_ICONS)],
   templateUrl: './security-workspace-panel.component.html',
   host: {
@@ -92,7 +87,8 @@ export class SecurityWorkspacePanelComponent {
   readonly searchQuery = signal<string>('');
   readonly activeTypeFilter = signal<string>('all');
   readonly currentPage = signal<number>(1);
-  readonly pageSize = signal<number>(3); // 3 items per page for realistic mock pagination
+  readonly pageSize = signal<number>(3);
+  readonly pageSizeOptions = [3, 5, 10];
 
   // Selected Row for Drawer/Modal Details
   readonly selectedRow = signal<SecurityTableRow | null>(null);
@@ -153,24 +149,6 @@ export class SecurityWorkspacePanelComponent {
   readonly paginatedRows = computed(() => {
     const start = (this.currentPage() - 1) * this.pageSize();
     return this.filteredRows().slice(start, start + this.pageSize());
-  });
-
-  readonly showingStart = computed(() => {
-    if (this.totalRows() === 0) return 0;
-    return (this.currentPage() - 1) * this.pageSize() + 1;
-  });
-
-  readonly showingEnd = computed(() =>
-    Math.min(this.currentPage() * this.pageSize(), this.totalRows())
-  );
-
-  // Pagination Page Array (e.g. [1, 2, 3])
-  readonly pagesArray = computed(() => {
-    const arr = [];
-    for (let i = 1; i <= this.totalPages(); i++) {
-      arr.push(i);
-    }
-    return arr;
   });
 
   toggleTypeFilter(filterKey: string): void {
@@ -234,18 +212,6 @@ export class SecurityWorkspacePanelComponent {
   setPage(pageNo: number): void {
     if (pageNo >= 1 && pageNo <= this.totalPages()) {
       this.currentPage.set(pageNo);
-    }
-  }
-
-  nextPage(): void {
-    if (this.currentPage() < this.totalPages()) {
-      this.currentPage.update((p) => p + 1);
-    }
-  }
-
-  prevPage(): void {
-    if (this.currentPage() > 1) {
-      this.currentPage.update((p) => p - 1);
     }
   }
 

@@ -13,13 +13,15 @@ import {
   DELIVERY_I18N,
   DELIVERY_STATUS_LABELS,
 } from '../../../../../core/i18n/translations/delivery.i18n';
+import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
+import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { DeliveryStore } from '../../data/delivery-store';
 import { DeliveryStatus } from '../../models/delivery.model';
 
 @Component({
   selector: 'mm-live-tracking-page',
   standalone: true,
-  imports: [NgClass, NgIcon],
+  imports: [NgClass, NgIcon, MmTablePaginationComponent],
   providers: [
     provideIcons({
       lucideSearch,
@@ -38,6 +40,9 @@ export class LiveTrackingPageComponent {
   readonly copy = computed(() => DELIVERY_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
   readonly statusFilter = signal<string>('all');
+  readonly pg = createTablePagination(5);
+  readonly currentPage = this.pg.currentPage;
+  readonly pageSize = this.pg.pageSize;
 
   readonly kpis = computed(() => {
     const rows = this.store.trackingRows();
@@ -72,6 +77,24 @@ export class LiveTrackingPageComponent {
 
     return rows;
   });
+
+  readonly paginatedRows = this.pg.paginated(this.filteredRows);
+  readonly totalPages = this.pg.totalPages(this.filteredRows);
+  readonly paginationItems = computed(() => (this.locale.isRtl() ? 'توصيل' : 'deliveries'));
+
+  onSearch(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
+    this.pg.resetPage();
+  }
+
+  onStatusFilter(status: string): void {
+    this.statusFilter.set(status);
+    this.pg.resetPage();
+  }
+
+  onPageChange(page: number): void {
+    this.pg.onPageChange(page, this.totalPages());
+  }
 
   statusLabel(status: DeliveryStatus): string {
     return DELIVERY_STATUS_LABELS[this.locale.locale()][status] ?? status;

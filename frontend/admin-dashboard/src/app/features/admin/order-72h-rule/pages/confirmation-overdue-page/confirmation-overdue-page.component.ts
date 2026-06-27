@@ -23,6 +23,8 @@ export class ConfirmationOverduePageComponent {
   readonly searchQuery = signal('');
   readonly toast = signal<string | null>(null);
 
+  readonly orderItemLabel = computed(() => (this.locale.isRtl() ? 'طلب' : 'orders'));
+
   readonly rows = computed(() => {
     let list = this.store.overdueRows();
     const q = this.searchQuery().toLowerCase().trim();

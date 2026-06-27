@@ -7,29 +7,29 @@
         <div class="min-w-0">
           <div class="mb-3 flex flex-wrap items-center gap-2">
             <span class="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[0.7rem] font-extrabold text-emerald-800">
-              {{ page.pageNo }}
+              {{ page().pageNo }}
             </span>
             <span class="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[0.7rem] font-extrabold text-emerald-700">
-              {{ t(page.eyebrowAr, page.eyebrowEn) }}
+              {{ t(page().eyebrowAr, page().eyebrowEn) }}
             </span>
             <span class="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[0.7rem] font-bold text-slate-600">
-              {{ page.route }}
+              {{ page().route }}
             </span>
           </div>
 
           <h1 class="text-xl font-black leading-tight tracking-normal text-slate-900 sm:text-2xl xl:text-3xl">
-            {{ t(page.titleAr, page.titleEn) }}
+            {{ t(page().titleAr, page().titleEn) }}
           </h1>
           <p class="mt-2 max-w-4xl text-sm leading-7 text-slate-600">
-            {{ t(page.goalAr, page.goalEn) }}
+            {{ t(page().goalAr, page().goalEn) }}
           </p>
 
           <div class="mt-3 flex flex-wrap gap-2">
             <span class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700">
-              {{ t(page.roleChipAr, page.roleChipEn) }}
+              {{ t(page().roleChipAr, page().roleChipEn) }}
             </span>
             <span class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700">
-              {{ t(page.scopeChipAr, page.scopeChipEn) }}
+              {{ t(page().scopeChipAr, page().scopeChipEn) }}
             </span>
           </div>
         </div>
@@ -40,10 +40,10 @@
             type="button"
             class="min-h-10 rounded-xl bg-emerald-600 px-4 text-sm font-extrabold text-white shadow-[0_12px_22px_-16px_rgba(5,150,105,0.9)] hover:bg-emerald-500"
           >
-            {{ t(page.primaryActionAr, page.primaryActionEn) }}
+            {{ t(page().primaryActionAr, page().primaryActionEn) }}
           </button>
           <div class="grid grid-cols-3 gap-2">
-            @for (action of page.actions; track action.labelEn) {
+            @for (action of page().actions; track action.labelEn) {
               <button
                 z-button
                 type="button"
@@ -75,7 +75,7 @@
     </nav>
 
     <section class="grid gap-3 md:grid-cols-3">
-      @for (stat of page.stats; track stat.labelEn) {
+      @for (stat of page().stats; track stat.labelEn) {
         <z-card
           class="gap-3 rounded-2xl border-s-4 border-y-slate-200 border-e-slate-200 bg-white py-4 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.35)]"
           [ngClass]="statClass(stat.tone)"
@@ -95,9 +95,9 @@
     <section class="rounded-2xl border border-slate-200 bg-white p-3 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.35)]">
       <div class="flex flex-wrap items-center gap-2">
         <span class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black text-slate-700">
-          {{ t(page.leadPanelTitleAr, page.leadPanelTitleEn) }}
+          {{ t(page().leadPanelTitleAr, page().leadPanelTitleEn) }}
         </span>
-        @for (item of page.leadItems; track item.titleEn) {
+        @for (item of page().leadItems; track item.titleEn) {
           <span class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-extrabold" [ngClass]="statClass(item.tone)">
             <span [class]="dotClass(item.tone)"></span>
             {{ panelTitle(item) }}
@@ -113,7 +113,7 @@
           {{ locale.isRtl() ? 'بحث سريع بالاسم، البريد، الهاتف، النوع أو النطاق' : 'Quick search by name, email, phone, type, or scope' }}
         </div>
         <div class="flex flex-wrap gap-2">
-          @for (item of page.sideItems; track item.titleEn) {
+          @for (item of page().sideItems; track item.titleEn) {
             <span [class]="badgeClass(item.tone)">
               {{ panelTitle(item) }}: {{ panelMeta(item) }}
             </span>
@@ -125,14 +125,14 @@
     <section class="grid gap-3">
       <z-card
         class="overflow-hidden rounded-2xl border-slate-200 bg-white py-4 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.35)]"
-        [zTitle]="t(page.tableTitleAr, page.tableTitleEn)"
-        [zDescription]="t(page.tableDescriptionAr, page.tableDescriptionEn)"
+        [zTitle]="t(page().tableTitleAr, page().tableTitleEn)"
+        [zDescription]="t(page().tableDescriptionAr, page().tableDescriptionEn)"
       >
         <div class="overflow-x-auto rounded-xl border border-slate-200">
           <table class="w-full min-w-[54rem] border-collapse">
             <thead>
               <tr class="bg-slate-50">
-                @for (column of page.columns; track column.key) {
+                @for (column of page().columns; track column.key) {
                   <th class="border-b border-slate-200 px-3 py-2 text-start text-[0.7rem] font-black text-slate-500">
                     {{ columnLabel(column) }}
                   </th>
@@ -140,9 +140,9 @@
               </tr>
             </thead>
             <tbody>
-              @for (row of page.rows; track row.id) {
+              @for (row of paginatedRows(); track row.id) {
                 <tr [ngClass]="rowClass(row.tone)">
-                  @for (column of page.columns; track column.key) {
+                  @for (column of page().columns; track column.key) {
                     <td class="border-b border-slate-100 px-3 py-3 align-middle">
                       <span class="block max-w-52 truncate text-xs font-bold text-slate-700">
                         {{ cell(row, column.key) }}
@@ -154,11 +154,19 @@
             </tbody>
           </table>
         </div>
+        <mm-table-pagination
+          [currentPage]="currentPage()"
+          [totalPages]="totalPages()"
+          [totalItems]="tableRows().length"
+          [pageSize]="pageSize()"
+          [itemLabel]="paginationItems()"
+          (pageChange)="onPageChange($event)"
+        />
       </z-card>
     </section>
 
     <section class="grid gap-2 lg:grid-cols-2">
-      @for (field of page.drawerFields; track field.titleEn) {
+      @for (field of page().drawerFields; track field.titleEn) {
         <article class="rounded-2xl border-s-4 border-y-slate-200 border-e-slate-200 bg-slate-50 p-3" [ngClass]="statClass(field.tone)">
           <div class="flex items-center justify-between gap-2">
             <strong class="text-sm font-black text-slate-900">{{ panelTitle(field) }}</strong>

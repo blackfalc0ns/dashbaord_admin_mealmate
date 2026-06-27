@@ -13,6 +13,8 @@ import {
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
+import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
+import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { OperationsStore } from '../../data/operations-store';
 import { CapacityStatus, RestaurantCapacityRow } from '../../models';
 
@@ -21,7 +23,7 @@ type CapacityFilter = 'all' | CapacityStatus;
 @Component({
   selector: 'mm-capacity-workspace-page',
   standalone: true,
-  imports: [DatePipe, NgClass, NgIcon, MmOperationsKpiCardComponent],
+  imports: [DatePipe, NgClass, NgIcon, MmOperationsKpiCardComponent, MmTablePaginationComponent],
   providers: [
     provideIcons({
       lucideActivity,
@@ -44,6 +46,9 @@ export class CapacityWorkspacePageComponent {
   readonly activeFilter = signal<CapacityFilter>('all');
   readonly selectedRestaurantId = signal<string | null>(null);
   readonly toast = signal<string | null>(null);
+  readonly pg = createTablePagination(5);
+  readonly currentPage = this.pg.currentPage;
+  readonly pageSize = this.pg.pageSize;
 
   readonly isRtl = computed(() => this.locale.isRtl());
   readonly copy = computed(() => (this.isRtl() ? AR_COPY : EN_COPY));
@@ -72,6 +77,10 @@ export class CapacityWorkspacePageComponent {
     });
   });
 
+  readonly paginatedRows = this.pg.paginated(this.rows);
+  readonly totalPages = this.pg.totalPages(this.rows);
+  readonly paginationItems = computed(() => (this.isRtl() ? 'مطعم' : 'restaurants'));
+
   readonly selectedRow = computed(() => {
     const selected = this.selectedRestaurantId();
     return (
@@ -92,6 +101,16 @@ export class CapacityWorkspacePageComponent {
 
   setFilter(filter: CapacityFilter): void {
     this.activeFilter.set(filter);
+    this.pg.resetPage();
+  }
+
+  onSearch(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
+    this.pg.resetPage();
+  }
+
+  onPageChange(page: number): void {
+    this.pg.onPageChange(page, this.totalPages());
   }
 
   select(row: RestaurantCapacityRow): void {

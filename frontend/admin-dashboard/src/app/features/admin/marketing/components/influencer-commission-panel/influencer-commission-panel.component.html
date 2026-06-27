@@ -40,7 +40,7 @@
     </mm-detail-panel-card>
 
     <mm-detail-panel-card [title]="copy().detailReason" icon="lucideHistory" [subtitle]="copy().commissionNote">
-      @if (!item.commissionRateHistory.length) {
+      @if (!commissionRateHistory().length) {
         <p class="text-sm text-slate-500">{{ copy().noData }}</p>
       } @else {
         <div class="overflow-hidden rounded-xl border border-slate-100">
@@ -54,7 +54,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-              @for (h of item.commissionRateHistory; track h.id) {
+              @for (h of paginatedHistory(); track h.id) {
                 <tr class="hover:bg-slate-50/50">
                   <td class="px-4 py-3 text-xs text-slate-600">{{ h.changedAtUtc | date: 'medium' }}</td>
                   <td class="px-4 py-3 text-center font-bold text-slate-800">{{ h.previousRate }}% → {{ h.newRate }}%</td>
@@ -64,6 +64,14 @@
               }
             </tbody>
           </table>
+          <mm-table-pagination
+            [currentPage]="currentPage()"
+            [totalPages]="totalPages()"
+            [totalItems]="commissionRateHistory().length"
+            [pageSize]="pageSize()"
+            [itemLabel]="paginationItems()"
+            (pageChange)="onPageChange($event)"
+          />
         </div>
       }
     </mm-detail-panel-card>

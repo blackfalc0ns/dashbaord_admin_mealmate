@@ -7,7 +7,7 @@
         <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
           <ng-icon name="lucideSearch" size="16" />
         </span>
-        <input type="text" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 ps-9 pe-3 text-sm" [placeholder]="copy().searchPlaceholder" (input)="searchQuery.set($any($event.target).value)" />
+        <input type="text" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 ps-9 pe-3 text-sm" [placeholder]="copy().searchPlaceholder" (input)="onSearch($event)" />
       </div>
     </div>
 
@@ -25,7 +25,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            @for (log of logs(); track log.id) {
+            @for (log of paginatedLogs(); track log.id) {
               <tr class="hover:bg-slate-50/80">
                 <td class="px-4 py-3 font-mono text-xs font-bold">{{ log.orderId }}</td>
                 <td class="px-4 py-3">{{ log.customerDisplayName }}</td>
@@ -38,6 +38,14 @@
           </tbody>
         </table>
       </div>
+      <mm-table-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [totalItems]="logs().length"
+        [pageSize]="pageSize()"
+        [itemLabel]="paginationItems()"
+        (pageChange)="onPageChange($event)"
+      />
     </div>
   </div>
 </section>

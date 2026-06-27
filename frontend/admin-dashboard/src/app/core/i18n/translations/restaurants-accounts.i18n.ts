@@ -29,8 +29,7 @@ export interface RestaurantsCopy {
   mealsDay: string;
   viewProfile: string;
   noRestaurantsFound: string;
-  showingPage: string;
-  of: string;
+  paginationItems: string;
   restaurantPartnerProfile: string;
   restaurantId: string;
   legalCompanyInfo: string;
@@ -123,8 +122,7 @@ export const RESTAURANTS_ACCOUNTS_I18N: Record<RestaurantsLocale, RestaurantsCop
     mealsDay: 'وجبة/يوم',
     viewProfile: 'عرض الملف',
     noRestaurantsFound: 'لا توجد مطاعم مطابقة للبحث',
-    showingPage: 'عرض الصفحة',
-    of: 'من أصل',
+    paginationItems: 'مطعم',
     restaurantPartnerProfile: 'ملف المطعم الشريك',
     restaurantId: 'معرّف المطعم:',
     legalCompanyInfo: 'المعلومات القانونية والشركة',
@@ -215,8 +213,7 @@ export const RESTAURANTS_ACCOUNTS_I18N: Record<RestaurantsLocale, RestaurantsCop
     mealsDay: 'meals/day',
     viewProfile: 'View Profile',
     noRestaurantsFound: 'No restaurants match the search criteria',
-    showingPage: 'Showing page',
-    of: 'of',
+    paginationItems: 'restaurants',
     restaurantPartnerProfile: 'Restaurant Partner Profile',
     restaurantId: 'Restaurant ID:',
     legalCompanyInfo: 'Legal & Company Info',

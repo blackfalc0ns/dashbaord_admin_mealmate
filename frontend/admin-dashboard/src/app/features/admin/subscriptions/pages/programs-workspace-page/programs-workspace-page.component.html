@@ -53,7 +53,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            @for (d of store.durations(); track d.id) {
+            @for (d of paginatedDurations(); track d.id) {
               <tr class="hover:bg-slate-50/50">
                 <td class="px-4 py-3">
                   <p class="font-bold">{{ locale.isRtl() ? d.nameAr : d.nameEn }}</p>
@@ -99,7 +99,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            @for (p of filteredPrograms(); track p.id) {
+            @for (p of paginatedPrograms(); track p.id) {
               <tr class="hover:bg-slate-50/50">
                 <td class="px-4 py-3">
                   <p class="font-bold">{{ programName(p) }}</p>
@@ -145,7 +145,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            @for (b of filteredBundles(); track b.id) {
+            @for (b of paginatedBundles(); track b.id) {
               <tr class="hover:bg-slate-50/50">
                 <td class="px-4 py-3">
                   <p class="font-bold">{{ programName(b) }}</p>
@@ -176,6 +176,15 @@
       </div>
     }
   }
+
+  <mm-table-pagination
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    [totalItems]="activeTableRows().length"
+    [pageSize]="pageSize()"
+    [itemLabel]="paginationItems()"
+    (pageChange)="onPageChange($event)"
+  />
 
   @if (drawerOpen()) {
     <mm-catalog-item-drawer

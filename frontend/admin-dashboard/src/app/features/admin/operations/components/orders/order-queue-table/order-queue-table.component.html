@@ -12,7 +12,7 @@
       </tr>
     </thead>
     <tbody class="divide-y divide-slate-100">
-      @for (row of rows; track row.orderId) {
+      @for (row of paginatedRows(); track row.orderId) {
         <tr
           class="cursor-pointer transition hover:bg-slate-50/80"
           [routerLink]="['/admin/operations/orders', row.orderId]"
@@ -70,3 +70,11 @@
     </tbody>
   </table>
 </div>
+<mm-table-pagination
+  [currentPage]="currentPage()"
+  [totalPages]="totalPages()"
+  [totalItems]="rows().length"
+  [pageSize]="pageSize()"
+  [itemLabel]="itemLabel()"
+  (pageChange)="onPageChange($event)"
+/>

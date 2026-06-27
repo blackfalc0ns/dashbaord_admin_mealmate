@@ -139,21 +139,37 @@
                     </div>
                   </div>
                 </td>
-                <td class="px-4 py-3">
-                  <div class="flex flex-col">
-                    <span class="font-bold text-slate-700" dir="ltr">{{ item.phoneNumber }}</span>
-                    <span class="text-[10px] text-slate-400">{{ item.email }}</span>
+                <td class="px-4 py-3 text-start">
+                  <div class="flex w-fit max-w-full flex-col gap-0.5" dir="ltr">
+                    <span class="whitespace-nowrap font-bold text-slate-700">{{ item.phoneNumber }}</span>
+                    <span class="break-all text-[10px] leading-snug text-slate-400">{{ item.email }}</span>
                   </div>
                 </td>
-                <td class="px-4 py-3 text-slate-600 font-medium max-w-[220px]">
-                  <div class="flex flex-col gap-1">
+                <td class="px-4 py-3 max-w-[240px]">
+                  <div class="flex flex-col gap-1.5">
                     @if (isFamilySubscription(item)) {
                       <span class="inline-flex w-fit items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-700 ring-1 ring-violet-600/20">
                         <ng-icon name="lucideUsers" size="10" />
                         {{ copy().familySubscription }}
                       </span>
                     }
-                    <span class="line-clamp-2">{{ subscriptionLabel(item) }}</span>
+                    @if (hasActiveSubscription(item)) {
+                      <div class="flex flex-wrap items-center gap-1">
+                        <span class="inline-flex items-center rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-bold text-slate-700 ring-1 ring-slate-200">
+                          {{ programLabel(item) }}
+                        </span>
+                        <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-600/20">
+                          {{ bundleLabel(item) }}
+                        </span>
+                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="tierBadgeClass(item)">
+                          {{ tierLabel(item) }}
+                        </span>
+                      </div>
+                    } @else {
+                      <span class="inline-flex w-fit items-center rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-bold text-slate-500 ring-1 ring-slate-200">
+                        {{ copy().noActiveSubscription }}
+                      </span>
+                    }
                   </div>
                 </td>
                 <td class="px-4 py-3 text-slate-600 font-semibold">
@@ -202,32 +218,14 @@
         </table>
       </div>
 
-      @if (totalPages() > 1) {
-        <div class="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 px-4 py-3 text-xs">
-          <span class="font-medium text-slate-500">
-            {{ copy().showingPage }} {{ currentPage() }} {{ copy().of }} {{ totalPages() }}
-          </span>
-          <div class="flex items-center gap-1">
-            <button type="button" class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50"
-              [disabled]="currentPage() === 1" (click)="onPageChange(1)">
-              <ng-icon name="lucideChevronsLeft" size="14" class="rtl:rotate-180" />
-            </button>
-            <button type="button" class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50"
-              [disabled]="currentPage() === 1" (click)="onPageChange(currentPage() - 1)">
-              <ng-icon name="lucideChevronLeft" size="14" class="rtl:rotate-180" />
-            </button>
-            <span class="inline-flex h-7 items-center justify-center rounded-lg bg-emerald-50 px-3 font-bold text-emerald-700 ring-1 ring-emerald-600/10">{{ currentPage() }}</span>
-            <button type="button" class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50"
-              [disabled]="currentPage() === totalPages()" (click)="onPageChange(currentPage() + 1)">
-              <ng-icon name="lucideChevronRight" size="14" class="rtl:rotate-180" />
-            </button>
-            <button type="button" class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50"
-              [disabled]="currentPage() === totalPages()" (click)="onPageChange(totalPages())">
-              <ng-icon name="lucideChevronsRight" size="14" class="rtl:rotate-180" />
-            </button>
-          </div>
-        </div>
-      }
+      <mm-table-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [totalItems]="filteredCustomers().length"
+        [pageSize]="pageSize()"
+        [itemLabel]="copy().paginationItems"
+        (pageChange)="onPageChange($event)"
+      />
     </div>
   </div>
 </section>

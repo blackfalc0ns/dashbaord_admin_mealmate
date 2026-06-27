@@ -68,10 +68,27 @@
   --mm-sidebar-hover: #038743;
   --mm-sidebar-active: #ffffff;
   --mm-sidebar-active-text: #04994E;
-  --mm-sidebar-input-bg: #04994E;
-  --mm-sidebar-input-border: rgba(255, 255, 255, 0.22);
-  --mm-sidebar-promo-bg: #04994E;
-  --mm-sidebar-promo-text: #ffffff;
+  --mm-sidebar-input-bg: rgba(255, 255, 255, 0.96);
+  --mm-sidebar-input-border: rgba(255, 255, 255, 0.55);
+  --mm-sidebar-input-text: #065f30;
+  --mm-sidebar-input-placeholder: #6b9080;
+  --mm-sidebar-input-icon: #04994E;
+  --mm-sidebar-promo-bg: rgba(255, 255, 255, 0.97);
+  --mm-sidebar-promo-border: rgba(255, 255, 255, 0.85);
+  --mm-sidebar-promo-text: #065f30;
+  --mm-sidebar-promo-hint: #6b9080;
+  --mm-sidebar-promo-icon-bg: #04994E;
+  --mm-sidebar-promo-icon-text: #ffffff;
+  --mm-sidebar-promo-arrow: #04994E;
+  --mm-sidebar-account-bg: rgba(255, 255, 255, 0.97);
+  --mm-sidebar-account-border: rgba(255, 255, 255, 0.78);
+  --mm-sidebar-account-name: #065f30;
+  --mm-sidebar-account-role: #6b9080;
+  --mm-sidebar-account-avatar-bg: #04994E;
+  --mm-sidebar-account-avatar-text: #ffffff;
+  --mm-sidebar-account-logout: #e11d48;
+  --mm-sidebar-account-logout-hover-bg: rgba(225, 29, 72, 0.1);
+  --mm-sidebar-account-logout-hover-text: #be123c;
 
   --radius: 0.75rem;
   --background: oklch(0.99 0.002 247);
@@ -420,9 +437,13 @@
     color: var(--mm-sidebar-text);
   }
 
+  .mm-core-sb__rail-icon-btn--logout {
+    color: #e11d48;
+  }
+
   .mm-core-sb__rail-icon-btn--logout:hover {
-    @apply text-rose-200;
-    background: var(--mm-sidebar-hover);
+    @apply text-rose-700;
+    background: rgba(225, 29, 72, 0.12);
   }
 
   .mm-core-sb__rail-avatar {
@@ -491,33 +512,40 @@
 
   .mm-core-sb__search-icon {
     @apply pointer-events-none absolute start-3 top-1/2 -translate-y-1/2;
-    color: var(--mm-sidebar-text-muted);
+    color: var(--mm-sidebar-input-icon);
   }
 
   .mm-core-sb__search-input {
-    @apply h-10 w-full rounded-xl ps-9 pe-3 text-sm shadow-none outline-none transition-[border-color] duration-200;
+    @apply h-10 w-full rounded-xl ps-9 pe-3 text-sm shadow-none outline-none transition-[border-color,background-color] duration-200;
     border: 1px solid var(--mm-sidebar-input-border);
-    background: transparent;
-    color: var(--mm-sidebar-text);
+    background: var(--mm-sidebar-input-bg);
+    color: var(--mm-sidebar-input-text);
   }
 
   .mm-core-sb__search-input:focus {
-    border-color: rgba(255, 255, 255, 0.45);
+    border-color: rgba(255, 255, 255, 0.85);
+    background: #ffffff;
     outline: none;
     box-shadow: none;
   }
 
   .mm-core-sb__search-input::placeholder {
-    color: var(--mm-sidebar-text-muted);
+    color: var(--mm-sidebar-input-placeholder);
   }
 
   .mm-core-sb__search:focus-within .mm-core-sb__search-icon {
-    color: var(--mm-sidebar-text);
+    color: var(--mm-sidebar-brand);
   }
 
   /* Nav scroll area */
   .mm-core-sb__nav {
-    @apply min-h-0 flex-1 overflow-y-auto px-3 pb-2 [scrollbar-width:thin];
+    @apply min-h-0 flex-1 overflow-y-auto px-3 pb-2;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .mm-core-sb__nav::-webkit-scrollbar {
+    display: none;
   }
 
   .mm-core-sb__rail {
@@ -655,19 +683,21 @@
 
   .mm-core-sb__promo {
     @apply flex items-center gap-2.5 rounded-2xl border px-3 py-2.5 shadow-none transition-colors duration-200;
-    background: transparent;
-    border-color: var(--mm-sidebar-border);
+    background: var(--mm-sidebar-promo-bg);
+    border-color: var(--mm-sidebar-promo-border);
     color: var(--mm-sidebar-promo-text);
   }
 
   .mm-core-sb__promo:hover {
-    background: var(--mm-sidebar-hover);
+    background: #ffffff;
+    border-color: rgba(4, 153, 78, 0.25);
   }
 
   .mm-core-sb__promo-icon {
-    @apply flex size-8 shrink-0 items-center justify-center rounded-xl text-white shadow-none;
-    background: transparent;
-    border: 1px solid var(--mm-sidebar-border);
+    @apply flex size-8 shrink-0 items-center justify-center rounded-xl shadow-none;
+    background: var(--mm-sidebar-promo-icon-bg);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: var(--mm-sidebar-promo-icon-text);
   }
 
   .mm-core-sb__promo-copy {
@@ -676,26 +706,31 @@
 
   .mm-core-sb__promo-title {
     @apply block text-xs font-bold;
+    color: var(--mm-sidebar-promo-text);
   }
 
   .mm-core-sb__promo-hint {
-    @apply mt-0.5 block text-[0.62rem] opacity-75;
+    @apply mt-0.5 block text-[0.62rem];
+    color: var(--mm-sidebar-promo-hint);
   }
 
   .mm-core-sb__promo-arrow {
-    @apply shrink-0 opacity-60;
+    @apply shrink-0;
+    color: var(--mm-sidebar-promo-arrow);
+    opacity: 0.75;
   }
 
   .mm-core-sb__account {
     @apply flex items-center gap-2 rounded-xl border px-2 py-1.5 shadow-none;
-    background: transparent;
-    border-color: var(--mm-sidebar-border);
+    background: var(--mm-sidebar-account-bg);
+    border-color: var(--mm-sidebar-account-border);
   }
 
   .mm-core-sb__account-avatar {
-    @apply flex size-8 shrink-0 items-center justify-center rounded-full text-white shadow-none;
-    background: transparent;
-    border: 1px solid var(--mm-sidebar-border);
+    @apply flex size-8 shrink-0 items-center justify-center rounded-full shadow-none;
+    background: var(--mm-sidebar-account-avatar-bg);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    color: var(--mm-sidebar-account-avatar-text);
   }
 
   .mm-core-sb__account-copy {
@@ -704,22 +739,22 @@
 
   .mm-core-sb__account-name {
     @apply block truncate text-xs font-semibold;
-    color: var(--mm-sidebar-text);
+    color: var(--mm-sidebar-account-name);
   }
 
   .mm-core-sb__account-role {
     @apply block truncate text-[0.62rem];
-    color: var(--mm-sidebar-text-muted);
+    color: var(--mm-sidebar-account-role);
   }
 
   .mm-core-sb__logout {
     @apply flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors;
-    color: var(--mm-sidebar-text-muted);
+    color: var(--mm-sidebar-account-logout);
   }
 
   .mm-core-sb__logout:hover {
-    @apply text-rose-200;
-    background: var(--mm-sidebar-hover);
+    color: var(--mm-sidebar-account-logout-hover-text);
+    background: var(--mm-sidebar-account-logout-hover-bg);
   }
 
   .mm-core-sb__flyout--in {

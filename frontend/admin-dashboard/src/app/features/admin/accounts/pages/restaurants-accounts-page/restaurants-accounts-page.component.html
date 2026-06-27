@@ -242,54 +242,14 @@
         </table>
       </div>
 
-      <!-- Pagination Footer -->
-      @if (totalPages() > 1) {
-        <div class="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 px-4 py-3 text-xs">
-          <span class="font-medium text-slate-500">
-            {{ copy().showingPage }} {{ currentPage() }} {{ copy().of }} {{ totalPages() }}
-          </span>
-
-          <div class="flex items-center gap-1">
-            <button
-              type="button"
-              class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 disabled:pointer-events-none disabled:opacity-50"
-              [disabled]="currentPage() === 1"
-              (click)="onPageChange(1)"
-            >
-              <ng-icon name="lucideChevronsLeft" size="14" class="rtl:rotate-180" />
-            </button>
-            <button
-              type="button"
-              class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 disabled:pointer-events-none disabled:opacity-50"
-              [disabled]="currentPage() === 1"
-              (click)="onPageChange(currentPage() - 1)"
-            >
-              <ng-icon name="lucideChevronLeft" size="14" class="rtl:rotate-180" />
-            </button>
-
-            <span class="inline-flex h-7 items-center justify-center rounded-lg bg-emerald-50 px-3 font-bold text-emerald-700 ring-1 ring-emerald-600/10">
-              {{ currentPage() }}
-            </span>
-
-            <button
-              type="button"
-              class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 disabled:pointer-events-none disabled:opacity-50"
-              [disabled]="currentPage() === totalPages()"
-              (click)="onPageChange(currentPage() + 1)"
-            >
-              <ng-icon name="lucideChevronRight" size="14" class="rtl:rotate-180" />
-            </button>
-            <button
-              type="button"
-              class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 disabled:pointer-events-none disabled:opacity-50"
-              [disabled]="currentPage() === totalPages()"
-              (click)="onPageChange(totalPages())"
-            >
-              <ng-icon name="lucideChevronsRight" size="14" class="rtl:rotate-180" />
-            </button>
-          </div>
-        </div>
-      }
+      <mm-table-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [totalItems]="filteredRestaurants().length"
+        [pageSize]="pageSize()"
+        [itemLabel]="copy().paginationItems"
+        (pageChange)="onPageChange($event)"
+      />
     </div>
 
   </div>

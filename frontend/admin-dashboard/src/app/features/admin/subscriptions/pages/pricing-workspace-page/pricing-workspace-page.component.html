@@ -47,7 +47,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-50">
-          @for (row of tierAverages(); track row.programId + row.bundleId + row.tier) {
+          @for (row of paginatedTierAverages(); track row.programId + row.bundleId + row.tier) {
             <tr>
               <td class="py-2 text-xs">{{ programBundleLabel(row) }}</td>
               <td class="py-2 font-bold">{{ tierLabel(row.tier) }}</td>
@@ -67,6 +67,14 @@
           }
         </tbody>
       </table>
+      <mm-table-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [totalItems]="tierAverages().length"
+        [pageSize]="pageSize()"
+        [itemLabel]="paginationItems()"
+        (pageChange)="onPageChange($event)"
+      />
     </div>
   </mm-detail-panel-card>
 

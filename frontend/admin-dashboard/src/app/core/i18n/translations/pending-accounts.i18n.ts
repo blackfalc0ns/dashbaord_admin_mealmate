@@ -33,8 +33,7 @@ export interface PendingCopy {
   reviewDetails: string;
   noPendingRequests: string;
   adjustSearch: string;
-  showingPage: string;
-  of: string;
+  paginationItems: string;
   reviewApprovalRequest: string;
   requestId: string;
   basicInformation: string;
@@ -90,8 +89,7 @@ export const PENDING_ACCOUNTS_I18N: Record<PendingLocale, PendingCopy> = {
     reviewDetails: 'مراجعة التفاصيل',
     noPendingRequests: 'لا توجد طلبات اعتماد مطابقة للفلاتر',
     adjustSearch: 'يرجى تعديل خيارات البحث أو الفلترة والمحاولة مرة أخرى.',
-    showingPage: 'عرض الصفحة',
-    of: 'من أصل',
+    paginationItems: 'طلب',
     reviewApprovalRequest: 'مراجعة طلب الاعتماد',
     requestId: 'معرّف الطلب:',
     basicInformation: 'المعلومات الأساسية',
@@ -145,8 +143,7 @@ export const PENDING_ACCOUNTS_I18N: Record<PendingLocale, PendingCopy> = {
     reviewDetails: 'Review Details',
     noPendingRequests: 'No pending approval requests match the filters',
     adjustSearch: 'Please adjust search or filter options and try again.',
-    showingPage: 'Showing page',
-    of: 'of',
+    paginationItems: 'requests',
     reviewApprovalRequest: 'Review Approval Request',
     requestId: 'Request ID:',
     basicInformation: 'Basic Information',

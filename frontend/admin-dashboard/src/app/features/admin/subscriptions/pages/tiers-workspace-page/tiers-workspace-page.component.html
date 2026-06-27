@@ -67,7 +67,7 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-slate-100">
-        @for (row of filteredRows(); track row.restaurantId + row.programId + row.bundleId) {
+        @for (row of paginatedRows(); track row.restaurantId + row.programId + row.bundleId) {
           <tr [class.opacity-50]="store.isRowExcluded(row)">
             <td class="px-3 py-3">
               <p class="font-bold">{{ row.restaurantName }}</p>
@@ -104,6 +104,14 @@
         }
       </tbody>
     </table>
+    <mm-table-pagination
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      [totalItems]="filteredRows().length"
+      [pageSize]="pageSize()"
+      [itemLabel]="paginationItems()"
+      (pageChange)="onPageChange($event)"
+    />
   </div>
 
   @if (outlierRow(); as row) {

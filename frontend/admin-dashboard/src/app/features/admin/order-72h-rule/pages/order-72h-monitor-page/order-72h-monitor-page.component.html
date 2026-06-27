@@ -90,7 +90,7 @@
       @if (filteredRows().length === 0) {
         <p class="p-8 text-center text-sm text-slate-500">{{ copy().noOrders }}</p>
       } @else {
-        <mm-order-72h-table [rows]="filteredRows()" mode="monitor" />
+        <mm-order-72h-table [rows]="filteredRows()" [itemLabel]="orderItemLabel()" mode="monitor" />
       }
     </div>
   </div>

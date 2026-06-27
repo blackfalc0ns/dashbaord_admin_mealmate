@@ -4,10 +4,7 @@ import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideSearch,
-  lucideChevronLeft,
   lucideChevronRight,
-  lucideChevronsLeft,
-  lucideChevronsRight,
   lucideUser,
   lucideShieldAlert,
   lucideShieldCheck,
@@ -19,15 +16,13 @@ import {
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
 import { CUSTOMERS_ACCOUNTS_I18N } from '../../../../../core/i18n/translations/customers-accounts.i18n';
+import { MmTablePaginationComponent } from '../../../../../shared/components/layout/table-pagination';
 import { AccountsStateService } from '../../data/accounts-state.service';
 import { CustomerAccount } from '../../models/accounts.model';
 
 const CUSTOMER_ICONS = {
   lucideSearch,
-  lucideChevronLeft,
   lucideChevronRight,
-  lucideChevronsLeft,
-  lucideChevronsRight,
   lucideUser,
   lucideShieldAlert,
   lucideShieldCheck,
@@ -40,7 +35,7 @@ const CUSTOMER_ICONS = {
 @Component({
   selector: 'mm-customers-accounts-page',
   standalone: true,
-  imports: [NgClass, NgIcon],
+  imports: [NgClass, NgIcon, MmTablePaginationComponent],
   providers: [provideIcons(CUSTOMER_ICONS)],
   templateUrl: './customers-accounts-page.component.html',
   host: { class: 'block' },
@@ -111,12 +106,34 @@ export class CustomersAccountsPageComponent {
     return this.t(item.nameAr, item.nameEn);
   }
 
-  subscriptionLabel(item: CustomerAccount): string {
-    if (!item.subscriptionId) return this.copy().noActiveSubscription;
-    const program = this.t(item.programAr ?? '', item.programEn ?? '');
-    const bundle = this.t(item.bundleAr ?? '', item.bundleEn ?? '');
-    const tier = this.t(item.tierAr ?? '', item.tierEn ?? '');
-    return `${program} · ${bundle} · ${tier}`;
+  hasActiveSubscription(item: CustomerAccount): boolean {
+    return !!item.subscriptionId;
+  }
+
+  programLabel(item: CustomerAccount): string {
+    return this.t(item.programAr ?? '', item.programEn ?? '');
+  }
+
+  bundleLabel(item: CustomerAccount): string {
+    return this.t(item.bundleAr ?? '', item.bundleEn ?? '');
+  }
+
+  tierLabel(item: CustomerAccount): string {
+    return this.t(item.tierAr ?? '', item.tierEn ?? '');
+  }
+
+  tierBadgeClass(item: CustomerAccount): string {
+    const tier = `${item.tierEn ?? ''} ${item.tierAr ?? ''}`.toLowerCase();
+
+    if (tier.includes('elite') || tier.includes('إيليت') || tier.includes('ايليت')) {
+      return 'bg-amber-50 text-amber-800 ring-amber-600/20';
+    }
+
+    if (tier.includes('platinum') || tier.includes('plat') || tier.includes('بلاتين')) {
+      return 'bg-violet-50 text-violet-700 ring-violet-600/20';
+    }
+
+    return 'bg-slate-100 text-slate-700 ring-slate-600/20';
   }
 
   isFamilySubscription(item: CustomerAccount): boolean {

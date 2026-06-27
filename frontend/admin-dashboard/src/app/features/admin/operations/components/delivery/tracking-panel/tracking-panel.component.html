@@ -8,7 +8,7 @@
         type="text"
         class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 ps-9 pe-3 text-sm"
         [placeholder]="copy().searchPlaceholder"
-        (input)="searchQuery.set($any($event.target).value)"
+        (input)="onSearch($event)"
       />
     </div>
   </div>
@@ -29,7 +29,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            @for (row of filteredRows(); track row.orderId) {
+            @for (row of paginatedRows(); track row.orderId) {
               <tr class="hover:bg-slate-50/80">
                 <td class="px-4 py-3 font-mono text-xs font-bold">{{ row.orderId }}</td>
                 <td class="px-4 py-3">{{ row.customerDisplayName }}</td>
@@ -46,6 +46,14 @@
           </tbody>
         </table>
       </div>
+      <mm-table-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [totalItems]="filteredRows().length"
+        [pageSize]="pageSize()"
+        [itemLabel]="paginationItems()"
+        (pageChange)="onPageChange($event)"
+      />
     }
   </div>
 </div>

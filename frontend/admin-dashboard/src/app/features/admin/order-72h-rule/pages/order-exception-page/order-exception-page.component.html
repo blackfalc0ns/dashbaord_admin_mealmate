@@ -19,7 +19,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            @for (log of logs(); track log.id) {
+            @for (log of paginatedLogs(); track log.id) {
               <tr class="hover:bg-slate-50/80">
                 <td class="px-4 py-3 font-mono text-xs font-bold">{{ log.orderId }}</td>
                 <td class="px-4 py-3">{{ log.customerDisplayName }}</td>
@@ -36,6 +36,14 @@
           </tbody>
         </table>
       </div>
+      <mm-table-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [totalItems]="logs().length"
+        [pageSize]="pageSize()"
+        [itemLabel]="paginationItems()"
+        (pageChange)="onPageChange($event)"
+      />
     </div>
   </div>
 </section>

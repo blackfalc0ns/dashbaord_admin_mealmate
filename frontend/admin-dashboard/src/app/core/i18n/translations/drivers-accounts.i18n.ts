@@ -29,8 +29,7 @@ export interface DriversCopy {
   actions: string;
   viewProfile: string;
   noDriversFound: string;
-  showingPage: string;
-  of: string;
+  paginationItems: string;
   driverPartnerProfile: string;
   driverId: string;
   profileImage: string;
@@ -85,8 +84,7 @@ export const DRIVERS_ACCOUNTS_I18N: Record<DriversLocale, DriversCopy> = {
     actions: 'الإجراءات',
     viewProfile: 'عرض الملف',
     noDriversFound: 'لا توجد سائقون مطابقون للبحث',
-    showingPage: 'عرض الصفحة',
-    of: 'من أصل',
+    paginationItems: 'سائق',
     driverPartnerProfile: 'ملف السائق الشريك',
     driverId: 'معرّف السائق:',
     profileImage: 'الصورة الشخصية:',
@@ -139,8 +137,7 @@ export const DRIVERS_ACCOUNTS_I18N: Record<DriversLocale, DriversCopy> = {
     actions: 'Actions',
     viewProfile: 'View Profile',
     noDriversFound: 'No drivers match the search criteria',
-    showingPage: 'Showing page',
-    of: 'of',
+    paginationItems: 'drivers',
     driverPartnerProfile: 'Driver Partner Profile',
     driverId: 'Driver ID:',
     profileImage: 'Profile Image:',

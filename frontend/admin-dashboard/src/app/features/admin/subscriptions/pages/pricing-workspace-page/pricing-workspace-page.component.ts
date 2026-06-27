@@ -16,6 +16,8 @@ import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { SUBSCRIPTIONS_I18N, TIER_LABELS } from '@/core/i18n/translations/subscriptions.i18n';
 import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
+import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
+import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { SubscriptionsStore } from '../../data/subscriptions-store';
 import { PlatformCommissionBounds, PlatformCommissionMode, RestaurantTier } from '../../models';
 import { commissionPct } from '../../data/subscription-formulas';
@@ -37,6 +39,7 @@ const PREVIEW_DAYS = [1, 6, 12, 26] as const;
     MmDetailPanelCardComponent,
     MmDetailToastComponent,
     HasPermissionDirective,
+    MmTablePaginationComponent,
   ],
   providers: [
     provideIcons({
@@ -67,9 +70,15 @@ export class PricingWorkspacePageComponent {
   readonly toast = signal<string | null>(null);
   readonly dirty = signal(false);
   readonly commissionModalOpen = signal(false);
+  readonly pg = createTablePagination(5);
+  readonly currentPage = this.pg.currentPage;
+  readonly pageSize = this.pg.pageSize;
 
   readonly alerts = computed(() => this.store.profitabilityAlerts());
   readonly tierAverages = computed(() => this.store.tierAverages());
+  readonly paginatedTierAverages = this.pg.paginated(this.tierAverages);
+  readonly totalPages = this.pg.totalPages(this.tierAverages);
+  readonly paginationItems = computed(() => (this.locale.isRtl() ? 'متوسط' : 'averages'));
 
   readonly activeBundles = computed(() =>
     this.store.bundles().filter((b) => b.status === 'active' || b.status === 'hidden_for_new'),
@@ -229,5 +238,9 @@ export class PricingWorkspacePageComponent {
     this.commissionModalOpen.set(false);
     this.toast.set(this.copy().saved);
     setTimeout(() => this.toast.set(null), 3000);
+  }
+
+  onPageChange(page: number): void {
+    this.pg.onPageChange(page, this.totalPages());
   }
 }

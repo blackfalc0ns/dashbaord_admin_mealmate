@@ -12,7 +12,7 @@
     </label>
     <label class="text-xs font-semibold text-slate-700">
       {{ copy().reportAllInfluencers }}
-      <select class="mt-1 block h-9 rounded-lg border border-slate-200 px-3 text-sm" [ngModel]="influencerFilter()" (ngModelChange)="influencerFilter.set($event)">
+      <select class="mt-1 block h-9 rounded-lg border border-slate-200 px-3 text-sm" [ngModel]="influencerFilter()" (ngModelChange)="onInfluencerFilter($event)">
         <option value="all">{{ copy().all }}</option>
         @for (inf of influencers(); track inf.id) {
           <option [value]="inf.id">{{ locale.isRtl() ? inf.displayNameAr : inf.displayNameEn }}</option>
@@ -64,7 +64,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
-          @for (row of commissionRows(); track row.id) {
+          @for (row of paginatedCommissionRows(); track row.id) {
             <tr>
               <td class="px-4 py-3 font-semibold">{{ row.influencerName }}</td>
               <td class="px-4 py-3 font-mono text-xs">{{ row.subscriptionId }}</td>
@@ -75,6 +75,14 @@
           }
         </tbody>
       </table>
+      <mm-table-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [totalItems]="commissionRows().length"
+        [pageSize]="pageSize()"
+        [itemLabel]="paginationItems()"
+        (pageChange)="onPageChange($event)"
+      />
     }
   </div>
 </section>

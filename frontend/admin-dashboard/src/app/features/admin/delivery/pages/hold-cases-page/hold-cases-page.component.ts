@@ -8,13 +8,15 @@ import {
   DELIVERY_I18N,
   HOLD_STATUS_LABELS,
 } from '../../../../../core/i18n/translations/delivery.i18n';
+import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
+import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { DeliveryStore } from '../../data/delivery-store';
 import { HoldCaseStatus } from '../../models/delivery.model';
 
 @Component({
   selector: 'mm-hold-cases-page',
   standalone: true,
-  imports: [NgClass, NgIcon],
+  imports: [NgClass, NgIcon, MmTablePaginationComponent],
   providers: [provideIcons({ lucideSearch, lucidePhone, lucideCircleAlert })],
   templateUrl: './hold-cases-page.component.html',
   host: { class: 'block' },
@@ -27,6 +29,9 @@ export class HoldCasesPageComponent {
   readonly searchQuery = signal('');
   readonly statusFilter = signal<string>('all');
   readonly toast = signal<string | null>(null);
+  readonly pg = createTablePagination(5);
+  readonly currentPage = this.pg.currentPage;
+  readonly pageSize = this.pg.pageSize;
 
   readonly kpis = computed(() => {
     const cases = this.store.holdCases();
@@ -59,6 +64,24 @@ export class HoldCasesPageComponent {
 
     return cases;
   });
+
+  readonly paginatedCases = this.pg.paginated(this.filteredCases);
+  readonly totalPages = this.pg.totalPages(this.filteredCases);
+  readonly paginationItems = computed(() => (this.locale.isRtl() ? 'حالة' : 'cases'));
+
+  onSearch(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
+    this.pg.resetPage();
+  }
+
+  onStatusFilter(status: string): void {
+    this.statusFilter.set(status);
+    this.pg.resetPage();
+  }
+
+  onPageChange(page: number): void {
+    this.pg.onPageChange(page, this.totalPages());
+  }
 
   statusLabel(status: HoldCaseStatus): string {
     return HOLD_STATUS_LABELS[this.locale.locale()][status] ?? status;

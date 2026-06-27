@@ -13,7 +13,9 @@ import {
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
+import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
+import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { PageViewState } from '@/shared/models/page-view-state.model';
 import { MARKETING_I18N, INFLUENCER_STATUS_LABELS } from '../../i18n/marketing.i18n';
 import { MarketingStore } from '../../data/marketing-store';
@@ -31,6 +33,7 @@ import { InfluencerFormWizardComponent } from '../../components/influencer-form-
     PageStateComponent,
     HasPermissionDirective,
     InfluencerFormWizardComponent,
+    MmTablePaginationComponent,
   ],
   providers: [provideIcons({ lucideSearch, lucidePlus, lucideCopy, lucideExternalLink, lucideUserRound })],
   templateUrl: './influencers-list-page.component.html',
@@ -48,6 +51,9 @@ export class InfluencersListPageComponent implements OnInit {
   readonly wizardOpen = signal(false);
   readonly viewState = signal<PageViewState>('loading');
   readonly copiedId = signal<string | null>(null);
+  readonly pg = createTablePagination(5);
+  readonly currentPage = this.pg.currentPage;
+  readonly pageSize = this.pg.pageSize;
 
   readonly filtered = computed(() => {
     const q = this.searchQuery().toLowerCase().trim();
@@ -65,6 +71,10 @@ export class InfluencersListPageComponent implements OnInit {
       );
     });
   });
+
+  readonly paginatedInfluencers = this.pg.paginated(this.filtered);
+  readonly totalPages = this.pg.totalPages(this.filtered);
+  readonly paginationItems = computed(() => (this.locale.isRtl() ? 'مؤثر' : 'influencers'));
 
   readonly kpis = computed(() => {
     const list = this.store.influencers();
@@ -86,12 +96,18 @@ export class InfluencersListPageComponent implements OnInit {
   onSearch(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.searchQuery.set(value);
+    this.pg.resetPage();
     this.viewState.set(this.filtered().length ? 'success' : 'empty');
   }
 
   onStatusFilter(status: string): void {
     this.statusFilter.set(status);
+    this.pg.resetPage();
     this.viewState.set(this.filtered().length ? 'success' : 'empty');
+  }
+
+  onPageChange(page: number): void {
+    this.pg.onPageChange(page, this.totalPages());
   }
 
   statusLabel(status: InfluencerStatus): string {

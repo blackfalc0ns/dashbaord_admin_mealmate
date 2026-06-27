@@ -5,13 +5,15 @@ import { lucideSearch, lucideRadar } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { DELIVERY_STATUS_LABELS, OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
+import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
+import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { OperationsStore } from '../../../data/operations-store';
 import { DeliveryStatus } from '../../../models/delivery.model';
 
 @Component({
   selector: 'mm-tracking-panel',
   standalone: true,
-  imports: [NgClass, NgIcon],
+  imports: [NgClass, NgIcon, MmTablePaginationComponent],
   providers: [provideIcons({ lucideSearch, lucideRadar })],
   templateUrl: './tracking-panel.component.html',
 })
@@ -21,6 +23,9 @@ export class TrackingPanelComponent {
   readonly copy = computed(() => OPERATIONS_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
   readonly statusFilter = signal('all');
+  readonly pg = createTablePagination(5);
+  readonly currentPage = this.pg.currentPage;
+  readonly pageSize = this.pg.pageSize;
 
   readonly filteredRows = computed(() => {
     let rows = this.state.trackingRows();
@@ -37,6 +42,19 @@ export class TrackingPanelComponent {
     if (status !== 'all') rows = rows.filter((r) => r.status === status);
     return rows;
   });
+
+  readonly paginatedRows = this.pg.paginated(this.filteredRows);
+  readonly totalPages = this.pg.totalPages(this.filteredRows);
+  readonly paginationItems = computed(() => (this.locale.isRtl() ? 'توصيل' : 'deliveries'));
+
+  onSearch(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
+    this.pg.resetPage();
+  }
+
+  onPageChange(page: number): void {
+    this.pg.onPageChange(page, this.totalPages());
+  }
 
   statusLabel(status: DeliveryStatus): string {
     return DELIVERY_STATUS_LABELS[this.locale.locale()][status] ?? status;

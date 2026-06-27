@@ -5,13 +5,15 @@ import { lucideSearch, lucideRefreshCw, lucideClock } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '../../../../../core/i18n/app-locale.service';
 import { ORDERS_72H_I18N } from '../../../../../core/i18n/translations/orders-72h.i18n';
+import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
+import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { Order72hStore } from '../../data/order-72h-store';
 import { ReplacementWindowStatus } from '../../models';
 
 @Component({
   selector: 'mm-replacement-window-page',
   standalone: true,
-  imports: [NgClass, NgIcon],
+  imports: [NgClass, NgIcon, MmTablePaginationComponent],
   providers: [provideIcons({ lucideSearch, lucideRefreshCw, lucideClock })],
   templateUrl: './replacement-window-page.component.html',
   host: { class: 'block' },
@@ -23,6 +25,9 @@ export class ReplacementWindowPageComponent {
   readonly copy = computed(() => ORDERS_72H_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
   readonly statusFilter = signal<string>('all');
+  readonly pg = createTablePagination(5);
+  readonly currentPage = this.pg.currentPage;
+  readonly pageSize = this.pg.pageSize;
 
   readonly kpis = computed(() => {
     const rows = this.store.replacementWindows();
@@ -54,6 +59,24 @@ export class ReplacementWindowPageComponent {
 
     return rows;
   });
+
+  readonly paginatedRows = this.pg.paginated(this.filteredRows);
+  readonly totalPages = this.pg.totalPages(this.filteredRows);
+  readonly paginationItems = computed(() => (this.locale.isRtl() ? 'نافذة' : 'windows'));
+
+  onSearch(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
+    this.pg.resetPage();
+  }
+
+  onStatusFilter(status: string): void {
+    this.statusFilter.set(status);
+    this.pg.resetPage();
+  }
+
+  onPageChange(page: number): void {
+    this.pg.onPageChange(page, this.totalPages());
+  }
 
   statusLabel(status: ReplacementWindowStatus): string {
     const c = this.copy();
