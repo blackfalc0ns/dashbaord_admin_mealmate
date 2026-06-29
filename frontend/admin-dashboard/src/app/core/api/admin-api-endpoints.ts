@@ -7,4 +7,7 @@ export const AdminApiEndpoints = {
   manualReassign: (orderId: string) =>
     `/api/v1/admin/orders/${orderId}/manual-reassign`,
   orderException: (orderId: string) => `/api/v1/admin/orders/${orderId}/exception`,
+  documentTemplates: '/api/v1/admin/operations/document-templates',
+  orderInvoice: (orderId: string) => `/api/v1/admin/operations/orders/${orderId}/invoice`,
+  orderLabels: (orderId: string) => `/api/v1/admin/operations/orders/${orderId}/labels`,
 } as const;

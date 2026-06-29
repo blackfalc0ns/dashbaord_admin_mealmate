@@ -8,6 +8,7 @@
 | `OrderDetailPage` | `/admin/operations/orders/:id` | تفاصيل الطلب (6 تبويبات) |
 | `DeliveryWorkspacePage` | `/admin/operations/delivery` | تتبع مباشر + Hold |
 | `OperationsAuditPage` | `/admin/operations/audit` | سجل استثناءات التدقيق |
+| `InvoiceLabelsWorkspacePage` | `/admin/operations/invoices` | قوالب الفواتير والباركود وملصقات الوجبات |
 
 ## Redirects (legacy)
 

@@ -68,7 +68,6 @@ export const ADMIN_STUB_ROUTES: Routes = [
       ),
   },
   { path: 'accounts/documents', redirectTo: 'accounts/pending', pathMatch: 'full' },
-  { path: 'operations/invoices', loadComponent: loadPlaceholder },
   { path: 'operations/menus', loadComponent: loadPlaceholder },
   { path: 'marketing/referrals', loadComponent: loadPlaceholder },
   { path: 'marketing/ads', loadComponent: loadPlaceholder },

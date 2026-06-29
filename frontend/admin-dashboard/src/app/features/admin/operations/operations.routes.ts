@@ -55,5 +55,12 @@ export const OPERATIONS_ROUTES: Routes = [
         (m) => m.AutoSelectionWorkspacePageComponent,
       ),
   },
+  {
+    path: 'invoices',
+    loadComponent: () =>
+      import('./pages/invoice-labels-workspace-page/invoice-labels-workspace-page.component').then(
+        (m) => m.InvoiceLabelsWorkspacePageComponent,
+      ),
+  },
   { path: '', redirectTo: 'orders', pathMatch: 'full' },
 ];
