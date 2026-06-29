@@ -8,12 +8,15 @@ import {
   CapacityAuditEvent,
   DeliveryTrackingRow,
   HoldCaseRow,
+  MenuApprovalAuditEvent,
+  MenuApprovalRequest,
   OrderExceptionLog,
   OrderLifecyclePhase,
   OrderTimelineEvent,
   OrderWorkspaceView,
   ReplacementWindowRow,
   ReplacementWindowStatus,
+  RestaurantMenuReadiness,
   RestaurantCapacityRow,
   RestaurantConfirmationStatus,
 } from '../models';
@@ -38,6 +41,11 @@ import {
   AUTO_SELECTION_ROWS_MOCK,
   AUTO_SELECTION_RULE_CONFIG,
 } from './auto-selection.mock';
+import {
+  MENU_APPROVAL_AUDIT_MOCK,
+  MENU_APPROVAL_REQUESTS_MOCK,
+  RESTAURANT_MENU_READINESS_MOCK,
+} from './menu-approval.mock';
 
 /** Signal store for F120 operations monitoring — orders, delivery, hold, audit. */
 @Injectable({ providedIn: 'root' })
@@ -54,6 +62,11 @@ export class OperationsStore {
   readonly autoSelectionRule = signal<AutoSelectionRuleConfig>({ ...AUTO_SELECTION_RULE_CONFIG });
   readonly autoSelectionDistribution = signal([...AUTO_SELECTION_DISTRIBUTION_MOCK]);
   readonly autoSelectionAlerts = signal([...AUTO_SELECTION_ALERTS_MOCK]);
+  readonly menuApprovalRequests = signal<MenuApprovalRequest[]>([...MENU_APPROVAL_REQUESTS_MOCK]);
+  readonly menuApprovalAudit = signal<MenuApprovalAuditEvent[]>([...MENU_APPROVAL_AUDIT_MOCK]);
+  readonly menuReadinessRows = signal<RestaurantMenuReadiness[]>([
+    ...RESTAURANT_MENU_READINESS_MOCK,
+  ]);
 
   readonly needsActionCount = computed(() => this.filterByView('needs-action').length);
   readonly activeHoldCount = computed(
@@ -97,6 +110,31 @@ export class OperationsStore {
       quotaOverride,
       failed,
       successRate,
+    };
+  });
+
+  readonly menuApprovalKpis = computed(() => {
+    const requests = this.menuApprovalRequests();
+    const pending = requests.filter((r) => r.status === 'pending' || r.status === 'in_review').length;
+    const translationIssues = requests.filter((r) => r.blockerCodes.includes('missing_translation')).length;
+    const nutritionIssues = requests.filter(
+      (r) => r.blockerCodes.includes('missing_nutrition') || r.blockerCodes.includes('missing_allergens'),
+    ).length;
+    const cancellationRequests = requests.filter(
+      (r) => r.requestType === 'cancel_meal' && ['pending', 'in_review'].includes(r.status),
+    ).length;
+    const notReadyRestaurants = this.menuReadinessRows().filter((r) => r.status !== 'ready').length;
+    const labelReadyPercent = requests.length
+      ? Math.round((requests.filter((r) => r.meal.labelReady).length / requests.length) * 100)
+      : 0;
+
+    return {
+      pending,
+      translationIssues,
+      nutritionIssues,
+      cancellationRequests,
+      notReadyRestaurants,
+      labelReadyPercent,
     };
   });
 
@@ -438,6 +476,170 @@ export class OperationsStore {
         actorName: 'Operations - Current User',
         reason,
         createdAt: new Date().toISOString(),
+      },
+      ...events,
+    ]);
+  }
+
+  canApproveMenuRequest(request: MenuApprovalRequest): boolean {
+    return !this.menuRequestHasCriticalBlockers(request);
+  }
+
+  menuRequestHasCriticalBlockers(request: MenuApprovalRequest): boolean {
+    return request.blockerCodes.some((code) =>
+      ['missing_translation', 'missing_nutrition', 'missing_allergens', 'missing_price'].includes(code),
+    );
+  }
+
+  createSampleMenuRequest(): void {
+    const now = new Date().toISOString();
+    const id = `MENU-REQ-${Date.now()}`;
+    const request: MenuApprovalRequest = {
+      id,
+      restaurantId: 'RST-007',
+      restaurantNameAr: 'مطعم جديد',
+      restaurantNameEn: 'New Restaurant',
+      requestType: 'new_meal',
+      status: 'pending',
+      meal: {
+        id: `meal-${Date.now()}`,
+        nameAr: 'وجبة جديدة للمراجعة',
+        nameEn: 'New Review Meal',
+        descriptionAr: 'وجبة كاملة البيانات جاهزة لاعتماد الأدمن.',
+        descriptionEn: 'A complete meal submission ready for admin approval.',
+        ingredientsAr: ['دجاج', 'بطاطا حلوة', 'سلطة خضراء'],
+        ingredientsEn: ['Chicken', 'Sweet potato', 'Green salad'],
+        allergensAr: ['لا يوجد'],
+        allergensEn: ['None'],
+        nutrition: {
+          calories: 540,
+          proteinGrams: 41,
+          carbsGrams: 44,
+          fatGrams: 15,
+          sodiumMg: 390,
+        },
+        priceKd: 4.75,
+        mealType: 'lunch',
+        programsAr: ['رشاقة'],
+        programsEn: ['Fitness'],
+        bundlesAr: ['باقة الغداء'],
+        bundlesEn: ['Lunch bundle'],
+        labelReady: true,
+        imageTone: 'sample meal box',
+      },
+      previousMeal: null,
+      submittedAtUtc: now,
+      updatedAtUtc: now,
+      effectiveAtUtc: null,
+      activeSubscriptionsCount: 0,
+      selectedFutureOrdersCount: 0,
+      reasonAr: null,
+      reasonEn: null,
+      blockerCodes: [],
+      rowVersion: 1,
+    };
+
+    this.menuApprovalRequests.update((requests) => [request, ...requests]);
+    this.appendMenuApprovalAudit(id, 'Create', 'Sample request created by operations admin.');
+  }
+
+  startMenuReview(requestId: string): void {
+    this.updateMenuApprovalRequest(requestId, {
+      status: 'in_review',
+      updatedAtUtc: new Date().toISOString(),
+    });
+    this.appendMenuApprovalAudit(requestId, 'StartReview', 'Review started by operations admin.');
+  }
+
+  approveMenuRequest(requestId: string): boolean {
+    const request = this.menuApprovalRequests().find((r) => r.id === requestId);
+    if (!request) return false;
+
+    if (this.menuRequestHasCriticalBlockers(request)) {
+      this.requestMenuChanges(requestId, 'Critical meal data is missing.');
+      return false;
+    }
+
+    const nextStatus = request.requestType === 'cancel_meal' ? 'cancellation_approved' : 'approved';
+    const now = new Date();
+    const effectiveAtUtc =
+      request.requestType === 'cancel_meal'
+        ? new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        : now.toISOString();
+
+    this.updateMenuApprovalRequest(requestId, {
+      status: nextStatus,
+      updatedAtUtc: now.toISOString(),
+      effectiveAtUtc,
+    });
+    this.appendMenuApprovalAudit(
+      requestId,
+      request.requestType === 'cancel_meal' ? 'ApproveCancellation' : 'Approve',
+      request.requestType === 'cancel_meal'
+        ? 'Cancellation approved; meal remains available for existing selections for 30 days.'
+        : 'Meal request approved and ready for customer-facing catalog.',
+    );
+    return true;
+  }
+
+  rejectMenuRequest(requestId: string, reason = 'Rejected by operations review.'): void {
+    this.updateMenuApprovalRequest(requestId, {
+      status: 'rejected',
+      reasonAr: 'تم رفض الطلب من مراجعة العمليات.',
+      reasonEn: reason,
+      updatedAtUtc: new Date().toISOString(),
+    });
+    this.appendMenuApprovalAudit(requestId, 'Reject', reason);
+  }
+
+  requestMenuChanges(requestId: string, reason = 'Changes requested before approval.'): void {
+    this.updateMenuApprovalRequest(requestId, {
+      status: 'changes_requested',
+      reasonAr: 'مطلوب استكمال البيانات قبل الاعتماد.',
+      reasonEn: reason,
+      updatedAtUtc: new Date().toISOString(),
+    });
+    this.appendMenuApprovalAudit(requestId, 'RequestChanges', reason);
+  }
+
+  archiveMenuRequest(requestId: string): void {
+    this.updateMenuApprovalRequest(requestId, {
+      status: 'archived',
+      updatedAtUtc: new Date().toISOString(),
+    });
+    this.appendMenuApprovalAudit(requestId, 'Archive', 'Request archived from menu approval workspace.');
+  }
+
+  private updateMenuApprovalRequest(
+    requestId: string,
+    patch: Partial<MenuApprovalRequest>,
+  ): void {
+    this.menuApprovalRequests.update((requests) =>
+      requests.map((request) =>
+        request.id === requestId
+          ? {
+              ...request,
+              ...patch,
+              rowVersion: request.rowVersion + 1,
+            }
+          : request,
+      ),
+    );
+  }
+
+  private appendMenuApprovalAudit(
+    requestId: string,
+    action: MenuApprovalAuditEvent['action'],
+    reason: string,
+  ): void {
+    this.menuApprovalAudit.update((events) => [
+      {
+        id: `MENU-AUD-${Date.now()}`,
+        requestId,
+        action,
+        actorName: 'Operations - Current User',
+        reason,
+        createdAtUtc: new Date().toISOString(),
       },
       ...events,
     ]);

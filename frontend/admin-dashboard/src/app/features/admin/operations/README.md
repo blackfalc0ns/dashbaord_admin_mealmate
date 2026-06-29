@@ -1,19 +1,22 @@
-# Admin — Operations Module
+# Admin - Operations Module
 
-## الصفحات
+## Pages
 
-| الصفحة | المسار | الغرض |
-|--------|--------|-------|
-| `OrdersWorkspacePage` | `/admin/operations/orders` | مركز موحّد للطلبات (فلاتر: يحتاج تدخل، تأكيد، بديل، تحضير) |
-| `OrderDetailPage` | `/admin/operations/orders/:id` | تفاصيل الطلب (6 تبويبات) |
-| `DeliveryWorkspacePage` | `/admin/operations/delivery` | تتبع مباشر + Hold |
-| `OperationsAuditPage` | `/admin/operations/audit` | سجل استثناءات التدقيق |
-| `InvoiceLabelsWorkspacePage` | `/admin/operations/invoices` | قوالب الفواتير والباركود وملصقات الوجبات |
+| Page | Path | Purpose |
+|------|------|---------|
+| `OrdersWorkspacePage` | `/admin/operations/orders` | Unified operational order queue |
+| `OrderDetailPage` | `/admin/operations/orders/:id` | Order details and lifecycle panels |
+| `DeliveryWorkspacePage` | `/admin/operations/delivery` | Delivery tracking and hold cases |
+| `OperationsAuditPage` | `/admin/operations/audit` | Operational exception audit |
+| `AutoSelectionWorkspacePage` | `/admin/operations/auto-selection` | Automatic meal assignment monitoring |
+| `MenuApprovalWorkspacePage` | `/admin/operations/menus` | Restaurant menu and meal approval |
+| `InvoiceLabelsWorkspacePage` | `/admin/operations/invoices` | Invoice, barcode, and meal-label templates |
+| `InvoiceTemplateDesignerPage` | `/admin/operations/invoices/:id/design` | Full-page document template designer |
 
-## Redirects (legacy)
+## Redirects
 
-| مسار قديم | يوجّه إلى |
-|-----------|-----------|
+| Legacy path | Redirects to |
+|-------------|--------------|
 | `/admin/operations/72h-rule` | `/admin/operations/orders` |
 | `.../overdue` | `/admin/operations/orders` |
 | `.../replacement` | `/admin/operations/orders` |

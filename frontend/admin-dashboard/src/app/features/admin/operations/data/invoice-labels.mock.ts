@@ -83,12 +83,17 @@ const invoiceElements: TemplateElement[] = [
     borderColor: '#fed7aa',
     color: '#9a3412',
   }),
-  el('inv-09', 'totals', 'totals', 'الإجماليات', 'Totals', 402, 580, 344, 120, '', '', {
+  el('inv-09', 'customer-name', 'customer-name', 'اسم العميل', 'Customer name', 402, 580, 344, 58, '', '', {
     backgroundColor: '#f0fdf4',
     borderColor: '#bbf7d0',
     color: '#166534',
   }),
-  el('inv-10', 'bilingual-text', 'static', 'تعليمات الطباعة', 'Print note', 38, 735, 708, 72, 'تُطبع هذه الفاتورة والملصقات باللغتين، ولا تتضمن بيانات شخصية للعميل.', 'This invoice and labels are bilingual and contain no private customer data.', {
+  el('inv-09b', 'customer-address', 'customer-address', 'عنوان العميل', 'Customer address', 402, 642, 344, 58, '', '', {
+    backgroundColor: '#f8fafc',
+    borderColor: '#e2e8f0',
+    color: '#334155',
+  }),
+  el('inv-10', 'bilingual-text', 'static', 'تعليمات الطباعة', 'Print note', 38, 735, 708, 72, 'تُطبع هذه الفاتورة للعميل باللغتين، وتتضمن اسم العميل وعنوانه فقط دون أي مبالغ مالية.', 'This customer invoice is bilingual and shows only the customer name and address with no monetary amounts.', {
     fontSize: 13,
     fontWeight: 600,
     backgroundColor: '#f8fafc',
@@ -106,7 +111,10 @@ const compactInvoiceElements: TemplateElement[] = [
   el('cinv-04', 'text', 'restaurant', 'المطعم', 'Restaurant', 258, 120, 205, 54),
   el('cinv-05', 'text', 'status', 'الحالة', 'Status', 486, 120, 250, 54),
   el('cinv-06', 'table', 'meal-details', 'الوجبات', 'Meals', 32, 200, 704, 280),
-  el('cinv-07', 'totals', 'totals', 'إجمالي التشغيل', 'Ops totals', 408, 510, 328, 120, '', '', {
+  el('cinv-07', 'customer-name', 'customer-name', 'العميل', 'Customer', 32, 510, 328, 60, '', '', {
+    backgroundColor: '#f8fafc',
+  }),
+  el('cinv-08', 'customer-address', 'customer-address', 'العنوان', 'Address', 408, 510, 328, 60, '', '', {
     backgroundColor: '#f8fafc',
   }),
 ];
@@ -260,6 +268,12 @@ export const INVOICE_ORDER_SAMPLES: InvoiceOrderSnapshot[] = [
     restaurantNameAr: 'مطبخ الصحة',
     restaurantNameEn: 'Health Kitchen',
     restaurantLogoLabel: 'HK',
+    customerNameAr: 'أحمد العبدالله',
+    customerNameEn: 'Ahmad Al-Abdullah',
+    customerAreaAr: 'حي السالمية - قطعة 5',
+    customerAreaEn: 'Salmiya - Block 5',
+    customerAddressAr: 'شارع الخليج، مبنى 12، شقة 3',
+    customerAddressEn: 'Gulf Street, Building 12, Apt 3',
     deliveryDate: '2026-06-30',
     deliveryWindow: '11:00 - 13:00',
     orderStatusAr: 'جاهز للتحضير −24h',
@@ -312,6 +326,12 @@ export const INVOICE_ORDER_SAMPLES: InvoiceOrderSnapshot[] = [
     restaurantNameAr: 'Green Kitchen',
     restaurantNameEn: 'Green Kitchen',
     restaurantLogoLabel: 'GK',
+    customerNameAr: 'سارة المطيري',
+    customerNameEn: 'Sarah Al-Mutairi',
+    customerAreaAr: 'حي الجابرة - قطعة 7',
+    customerAreaEn: 'Jabriya - Block 7',
+    customerAddressAr: 'شارع الجامعة، مبنى 4، الطابق الأول',
+    customerAddressEn: 'University Street, Building 4, 1st Floor',
     deliveryDate: '2026-06-30',
     deliveryWindow: '14:00 - 16:00',
     orderStatusAr: 'تمت إعادة الإصدار',

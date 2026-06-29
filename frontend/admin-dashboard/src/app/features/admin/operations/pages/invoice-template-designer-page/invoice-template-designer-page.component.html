@@ -1,0 +1,648 @@
+<div class="mm-invoice-designer-page flex min-h-[calc(100vh-9rem)] flex-col gap-3">
+  @if (toast()) {
+    <div
+      class="fixed bottom-6 z-[60] rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-lg"
+      [class.left-6]="!isRtl()"
+      [class.right-6]="isRtl()"
+    >
+      {{ toast() }}
+    </div>
+  }
+
+  @if (!template()) {
+    <div class="rounded-xl border border-slate-200 bg-white p-10 text-center shadow-sm">
+      <p class="text-sm text-slate-500">{{ copy().notFound }}</p>
+      <a
+        routerLink="/admin/operations/invoices"
+        class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-emerald-600 hover:text-emerald-700"
+      >
+        <ng-icon name="lucideArrowLeft" size="16" />
+        {{ copy().back }}
+      </a>
+    </div>
+  } @else {
+    @let tpl = template()!;
+
+    <!-- ═══ Top toolbar ═══ -->
+    <div
+      class="sticky top-0 z-30 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur lg:flex-row lg:items-center lg:justify-between"
+    >
+      <div class="flex items-center gap-3">
+        <a
+          routerLink="/admin/operations/invoices"
+          class="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
+          [attr.aria-label]="copy().back"
+        >
+          <ng-icon name="lucideArrowLeft" size="18" />
+        </a>
+        <div class="flex items-center gap-2">
+          <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
+            <ng-icon name="lucideLayoutTemplate" size="20" />
+          </div>
+          <div class="min-w-0">
+            <p class="truncate text-xs font-bold uppercase tracking-wide text-emerald-600">{{ copy().designerTitle }}</p>
+            <h1 class="truncate text-lg font-extrabold leading-tight text-slate-900">{{ templateName(tpl) }}</h1>
+          </div>
+        </div>
+        <div class="hidden items-center gap-2 sm:flex">
+          <span
+            class="inline-flex rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset"
+            [class]="statusClass(tpl.status)"
+          >
+            {{ statusLabel(tpl.status) }}
+          </span>
+          <span class="rounded-md bg-slate-100 px-2 py-1 font-mono text-xs text-slate-500">v{{ tpl.version }}</span>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-1.5">
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+          (click)="saveDraft()"
+        >
+          <ng-icon name="lucideSave" size="14" />
+          <span class="hidden sm:inline">{{ copy().saveDraft }}</span>
+        </button>
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+          (click)="duplicate()"
+        >
+          <ng-icon name="lucideCopy" size="14" />
+          <span class="hidden sm:inline">{{ copy().duplicate }}</span>
+        </button>
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-600 transition hover:bg-rose-50"
+          (click)="archive()"
+        >
+          <ng-icon name="lucideArchive" size="14" />
+          <span class="hidden sm:inline">{{ copy().archive }}</span>
+        </button>
+        <div class="mx-1 hidden h-6 w-px bg-slate-200 sm:block"></div>
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700 transition hover:bg-sky-100"
+          (click)="openPreview()"
+        >
+          <ng-icon name="lucideEye" size="14" />
+          {{ copy().preview }}
+        </button>
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-700"
+          (click)="publish()"
+        >
+          <ng-icon name="lucideSave" size="14" />
+          {{ copy().publish }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ 3-column workspace ═══ -->
+    <div class="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[220px_minmax(0,1fr)_300px]">
+      <!-- Left rail: elements + template meta -->
+      <aside class="flex flex-col gap-3 overflow-hidden">
+        <div class="flex shrink-0 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+          <button
+            type="button"
+            class="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-bold transition"
+            [class]="railTabClass('elements')"
+            (click)="setRailTab('elements')"
+          >
+            <ng-icon name="lucidePalette" size="14" />
+            {{ copy().elementsTab }}
+          </button>
+          <button
+            type="button"
+            class="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-bold transition"
+            [class]="railTabClass('template')"
+            (click)="setRailTab('template')"
+          >
+            <ng-icon name="lucideSettings" size="14" />
+            {{ copy().settingsTab }}
+          </button>
+        </div>
+
+        <div class="min-h-0 flex-1 overflow-auto rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+          @if (railTab() === 'elements') {
+            <div class="mb-2 flex items-center justify-between">
+              <h2 class="text-xs font-extrabold uppercase tracking-wide text-slate-500">{{ copy().elementsTitle }}</h2>
+              <span class="rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-500">{{ palette.length }}</span>
+            </div>
+            <p class="mb-3 text-[11px] leading-relaxed text-slate-500">{{ copy().elementsHint }}</p>
+            <div class="grid grid-cols-2 gap-2">
+              @for (item of palette; track item.kind) {
+                <button
+                  type="button"
+                  class="group flex flex-col items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 p-2.5 text-center text-[11px] font-bold text-slate-600 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700"
+                  (click)="store.addElement(item.kind)"
+                >
+                  <ng-icon [name]="item.icon" size="18" />
+                  <span class="leading-tight">{{ elementKindLabel(item.kind) }}</span>
+                </button>
+              }
+            </div>
+          }
+
+          @if (railTab() === 'template') {
+            <div class="space-y-3">
+              <h2 class="text-xs font-extrabold uppercase tracking-wide text-slate-500">{{ copy().settingsTab }}</h2>
+
+              <div class="space-y-2">
+                <label class="block text-xs font-bold text-slate-600">
+                  {{ copy().nameAr }}
+                  <input
+                    class="mt-1 w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                    [value]="tpl.nameAr"
+                    (input)="updateTemplateText('nameAr', $event)"
+                  />
+                </label>
+                <label class="block text-xs font-bold text-slate-600">
+                  {{ copy().nameEn }}
+                  <input
+                    class="mt-1 w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                    [value]="tpl.nameEn"
+                    (input)="updateTemplateText('nameEn', $event)"
+                  />
+                </label>
+                <label class="block text-xs font-bold text-slate-600">
+                  {{ copy().language }}
+                  <select
+                    class="mt-1 w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                    [value]="tpl.language"
+                    (change)="updateTemplateLanguage($event)"
+                  >
+                    <option value="ar">{{ copy().languages.ar }}</option>
+                    <option value="en">{{ copy().languages.en }}</option>
+                    <option value="both">{{ copy().languages.both }}</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="border-t border-slate-100 pt-3">
+                <p class="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-400">{{ copy().pageSize }}</p>
+                <div class="grid grid-cols-3 gap-2">
+                  <label class="block text-xs font-bold text-slate-600">
+                    {{ copy().width }}
+                    <input
+                      type="number"
+                      class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                      [value]="tpl.widthPx"
+                      (input)="updateTemplateNumber('widthPx', $event)"
+                    />
+                  </label>
+                  <label class="block text-xs font-bold text-slate-600">
+                    {{ copy().height }}
+                    <input
+                      type="number"
+                      class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                      [value]="tpl.heightPx"
+                      (input)="updateTemplateNumber('heightPx', $event)"
+                    />
+                  </label>
+                  <label class="block text-xs font-bold text-slate-600">
+                    {{ copy().margin }}
+                    <input
+                      type="number"
+                      class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                      [value]="tpl.marginPx"
+                      (input)="updateTemplateNumber('marginPx', $event)"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div class="border-t border-slate-100 pt-3">
+                <p class="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-400">{{ copy().colors }}</p>
+                <div class="grid grid-cols-2 gap-2">
+                  <label class="block text-xs font-bold text-slate-600">
+                    {{ copy().background }}
+                    <input
+                      type="color"
+                      class="mt-1 h-9 w-full rounded-lg border border-slate-200"
+                      [value]="tpl.backgroundColor"
+                      (input)="updateTemplateColor('backgroundColor', $event)"
+                    />
+                  </label>
+                  <label class="block text-xs font-bold text-slate-600">
+                    {{ copy().accent }}
+                    <input
+                      type="color"
+                      class="mt-1 h-9 w-full rounded-lg border border-slate-200"
+                      [value]="tpl.accentColor"
+                      (input)="updateTemplateColor('accentColor', $event)"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div class="border-t border-slate-100 pt-3">
+                <p class="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-400">{{ copy().logos }}</p>
+                <div class="space-y-2">
+                  <label class="flex items-center gap-2 rounded-lg border border-slate-200 px-2.5 py-2 text-xs font-bold text-slate-700">
+                    <input
+                      type="checkbox"
+                      class="size-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                      [checked]="tpl.showAppLogo"
+                      (change)="toggleTemplate('showAppLogo', $event)"
+                    />
+                    {{ copy().appLogo }}
+                  </label>
+                  <label class="flex items-center gap-2 rounded-lg border border-slate-200 px-2.5 py-2 text-xs font-bold text-slate-700">
+                    <input
+                      type="checkbox"
+                      class="size-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                      [checked]="tpl.showRestaurantLogo"
+                      (change)="toggleTemplate('showRestaurantLogo', $event)"
+                    />
+                    {{ copy().restaurantLogo }}
+                  </label>
+                </div>
+              </div>
+
+              <div class="border-t border-slate-100 pt-3">
+                <label class="block text-xs font-bold text-slate-600">
+                  {{ copy().descAr }}
+                  <textarea
+                    rows="2"
+                    class="mt-1 w-full resize-none rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                    [value]="tpl.descriptionAr"
+                    (input)="updateTemplateText('descriptionAr', $event)"
+                  ></textarea>
+                </label>
+                <label class="mt-2 block text-xs font-bold text-slate-600">
+                  {{ copy().descEn }}
+                  <textarea
+                    rows="2"
+                    class="mt-1 w-full resize-none rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                    [value]="tpl.descriptionEn"
+                    (input)="updateTemplateText('descriptionEn', $event)"
+                  ></textarea>
+                </label>
+              </div>
+            </div>
+          }
+        </div>
+      </aside>
+
+      <!-- Center: canvas -->
+      <section class="flex min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <header class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/60 px-4 py-2.5">
+          <div class="flex items-center gap-2">
+            <ng-icon name="lucideMove" size="14" class="text-slate-400" />
+            <h2 class="text-xs font-extrabold uppercase tracking-wide text-slate-500">{{ copy().editorTab }}</h2>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <label class="text-xs font-bold text-slate-600">
+              {{ copy().sampleOrder }}
+              <select
+                class="mt-0.5 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                [value]="sampleOrderId()"
+                (change)="selectSample($event)"
+              >
+                @for (order of store.sampleOrders(); track order.orderId) {
+                  <option [value]="order.orderId">
+                    {{ order.orderId }} — {{ isRtl() ? order.restaurantNameAr : order.restaurantNameEn }}
+                  </option>
+                }
+              </select>
+            </label>
+            @if (tpl.kind === 'label') {
+              <label class="text-xs font-bold text-slate-600">
+                {{ copy().sampleMeal }}
+                <select
+                  class="mt-0.5 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                  [value]="mealIndex()"
+                  (change)="selectMeal($event)"
+                >
+                  @for (meal of sampleOrder().meals; track meal.id) {
+                    <option [value]="$index">{{ meal.mealNameAr }} / {{ meal.mealNameEn }}</option>
+                  }
+                </select>
+              </label>
+            }
+          </div>
+        </header>
+
+        <div
+          class="mm-designer-canvas flex min-h-0 flex-1 items-start justify-center overflow-auto bg-slate-100 p-6"
+          [class.bg-slate-200]="!isRtl()"
+        >
+          <div class="sticky top-0 z-10 mb-3 inline-flex w-full max-w-md items-center justify-center gap-2 rounded-lg bg-slate-900/80 px-3 py-1.5 text-[11px] font-semibold text-white shadow-sm backdrop-blur">
+            <ng-icon name="lucideMove" size="12" />
+            {{ copy().dragHint }}
+          </div>
+          <div class="w-full">
+            <mm-document-template-preview
+              class="mx-auto block"
+              [template]="tpl"
+              [sample]="sampleOrder()!"
+              [mealIndex]="mealIndex()"
+              [editable]="true"
+              [isRtl]="isRtl()"
+              [selectedElementId]="selectedElement()?.id ?? null"
+              (selected)="store.selectElement($event)"
+              (moved)="onElementMoved($event)"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- Right rail: inspector -->
+      <aside class="flex min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <header class="flex items-center justify-between border-b border-slate-100 bg-slate-50/60 px-4 py-2.5">
+          <div class="flex items-center gap-2">
+            <ng-icon name="lucideSettings" size="14" class="text-slate-400" />
+            <h2 class="text-xs font-extrabold uppercase tracking-wide text-slate-500">{{ copy().inspector }}</h2>
+          </div>
+          @if (selectedElement()) {
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 rounded-md border border-rose-200 px-2 py-1 text-[10px] font-bold text-rose-600 transition hover:bg-rose-50"
+              (click)="deleteSelectedElement()"
+            >
+              <ng-icon name="lucideTrash2" size="12" />
+              {{ copy().delete }}
+            </button>
+          }
+        </header>
+
+        <div class="min-h-0 flex-1 overflow-auto p-4">
+          @if (selectedElement(); as element) {
+            <div class="space-y-4">
+              <div class="flex items-center gap-2 rounded-lg bg-emerald-50 p-2.5 ring-1 ring-emerald-100">
+                <div class="flex size-8 items-center justify-center rounded-md bg-emerald-600 text-white">
+                  <ng-icon name="lucideMove" size="14" />
+                </div>
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-extrabold text-emerald-900">{{ elementKindLabel(element.kind) }}</p>
+                  <p class="truncate font-mono text-[10px] text-emerald-700">{{ element.id }}</p>
+                </div>
+              </div>
+
+              @if (element.kind === 'text' || element.kind === 'bilingual-text' || element.kind === 'logo' || element.kind === 'allergy-notes' || element.kind === 'meal-details') {
+                <div class="space-y-2">
+                  <p class="text-[10px] font-extrabold uppercase tracking-wide text-slate-400">{{ copy().content }}</p>
+                  <label class="block text-xs font-bold text-slate-600">
+                    {{ copy().textAr }}
+                    <input
+                      class="mt-1 w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                      [value]="element.textAr"
+                      (input)="updateElementText('textAr', $event)"
+                    />
+                  </label>
+                  <label class="block text-xs font-bold text-slate-600">
+                    {{ copy().textEn }}
+                    <input
+                      class="mt-1 w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                      [value]="element.textEn"
+                      (input)="updateElementText('textEn', $event)"
+                    />
+                  </label>
+                </div>
+              }
+
+              <div class="space-y-2">
+                <p class="text-[10px] font-extrabold uppercase tracking-wide text-slate-400">{{ copy().box }}</p>
+                <div class="grid grid-cols-2 gap-2">
+                  <label class="block text-xs font-bold text-slate-600">
+                    {{ copy().width }}
+                    <input
+                      type="number"
+                      class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                      [value]="element.width"
+                      (input)="updateElementNumber('width', $event)"
+                    />
+                  </label>
+                  <label class="block text-xs font-bold text-slate-600">
+                    {{ copy().height }}
+                    <input
+                      type="number"
+                      class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                      [value]="element.height"
+                      (input)="updateElementNumber('height', $event)"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <p class="text-[10px] font-extrabold uppercase tracking-wide text-slate-400">{{ copy().typography }}</p>
+                <label class="block text-xs font-bold text-slate-600">
+                  {{ copy().fontSize }}
+                  <input
+                    type="number"
+                    class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                    [value]="element.style.fontSize"
+                    (input)="updateElementStyleNumber('fontSize', $event)"
+                  />
+                </label>
+                <div class="grid grid-cols-2 gap-2">
+                  <label class="block text-xs font-bold text-slate-600">
+                    {{ copy().fontWeight }}
+                    <select
+                      class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                      [value]="element.style.fontWeight"
+                      (change)="updateElementWeight($event)"
+                    >
+                      <option [value]="400">400</option>
+                      <option [value]="500">500</option>
+                      <option [value]="600">600</option>
+                      <option [value]="700">700</option>
+                      <option [value]="800">800</option>
+                    </select>
+                  </label>
+                  <label class="block text-xs font-bold text-slate-600">
+                    {{ copy().align }}
+                    <select
+                      class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                      [value]="element.style.align"
+                      (change)="updateElementAlign($event)"
+                    >
+                      <option value="start">{{ copy().aligns.start }}</option>
+                      <option value="center">{{ copy().aligns.center }}</option>
+                      <option value="end">{{ copy().aligns.end }}</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <p class="text-[10px] font-extrabold uppercase tracking-wide text-slate-400">{{ copy().colors }}</p>
+                <div class="grid grid-cols-3 gap-2">
+                  <label class="block text-center text-xs font-bold text-slate-600">
+                    {{ copy().foreground }}
+                    <input
+                      type="color"
+                      class="mt-1 h-9 w-full rounded-lg border border-slate-200"
+                      [value]="element.style.color"
+                      (input)="updateElementStyleColor('color', $event)"
+                    />
+                  </label>
+                  <label class="block text-center text-xs font-bold text-slate-600">
+                    {{ copy().elementBg }}
+                    <input
+                      type="color"
+                      class="mt-1 h-9 w-full rounded-lg border border-slate-200"
+                      [value]="element.style.backgroundColor === 'transparent' ? '#ffffff' : element.style.backgroundColor"
+                      (input)="updateElementStyleColor('backgroundColor', $event)"
+                    />
+                  </label>
+                  <label class="block text-center text-xs font-bold text-slate-600">
+                    {{ copy().border }}
+                    <input
+                      type="color"
+                      class="mt-1 h-9 w-full rounded-lg border border-slate-200"
+                      [value]="element.style.borderColor"
+                      (input)="updateElementStyleColor('borderColor', $event)"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div class="space-y-2 border-t border-slate-100 pt-3">
+                <p class="text-[10px] font-extrabold uppercase tracking-wide text-slate-400">{{ copy().state }}</p>
+                <div class="grid grid-cols-2 gap-2">
+                  <label class="flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-2.5 py-2 text-xs font-bold text-slate-700">
+                    <input
+                      type="checkbox"
+                      class="size-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                      [checked]="element.visible"
+                      (change)="toggleElement('visible', $event)"
+                    />
+                    {{ copy().visible }}
+                  </label>
+                  <label class="flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-2.5 py-2 text-xs font-bold text-slate-700">
+                    <input
+                      type="checkbox"
+                      class="size-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                      [checked]="element.locked"
+                      (change)="toggleElement('locked', $event)"
+                    />
+                    <ng-icon name="lucideLock" size="12" />
+                    {{ copy().locked }}
+                  </label>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-xs font-bold text-rose-600 transition hover:bg-rose-100"
+                (click)="deleteSelectedElement()"
+              >
+                <ng-icon name="lucideTrash2" size="14" />
+                {{ copy().delete }}
+              </button>
+            </div>
+          } @else {
+            <div class="flex h-full flex-col items-center justify-center gap-3 py-10 text-center">
+              <div class="flex size-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-300">
+                <ng-icon name="lucideSettings" size="26" />
+              </div>
+              <div>
+                <p class="text-sm font-bold text-slate-700">{{ copy().inspectorEmpty }}</p>
+                <p class="mt-1 text-xs text-slate-500">{{ copy().noElement }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </aside>
+    </div>
+  }
+
+  <!-- ═══ Preview modal ═══ -->
+  @if (previewOpen() && template(); as tpl) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <button
+        type="button"
+        class="absolute inset-0 bg-slate-900/50 backdrop-blur-[2px]"
+        [attr.aria-label]="copy().close"
+        (click)="closePreview()"
+      ></button>
+
+      <div
+        class="relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+      >
+        <header class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <div class="flex items-center gap-2">
+            <div class="flex size-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600 ring-1 ring-sky-100">
+              <ng-icon name="lucideEye" size="18" />
+            </div>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wide text-sky-600">{{ copy().previewTitle }}</p>
+              <h2 class="text-lg font-extrabold text-slate-900">{{ templateName(tpl) }}</h2>
+            </div>
+          </div>
+          <button type="button" class="rounded-lg p-2 text-slate-400 hover:bg-slate-100" (click)="closePreview()">
+            <ng-icon name="lucideX" size="18" />
+          </button>
+        </header>
+
+        <div class="flex flex-wrap gap-3 border-b border-slate-100 bg-slate-50/60 px-5 py-3">
+          <label class="text-xs font-bold text-slate-600">
+            {{ copy().sampleOrder }}
+            <select
+              class="mt-1 block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+              [value]="sampleOrderId()"
+              (change)="selectSample($event)"
+            >
+              @for (order of store.sampleOrders(); track order.orderId) {
+                <option [value]="order.orderId">
+                  {{ order.orderId }} — {{ isRtl() ? order.restaurantNameAr : order.restaurantNameEn }}
+                </option>
+              }
+            </select>
+          </label>
+          @if (tpl.kind === 'label') {
+            <label class="text-xs font-bold text-slate-600">
+              {{ copy().sampleMeal }}
+              <select
+                class="mt-1 block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                [value]="mealIndex()"
+                (change)="selectMeal($event)"
+              >
+                @for (meal of sampleOrder().meals; track meal.id) {
+                  <option [value]="$index">{{ meal.mealNameAr }} / {{ meal.mealNameEn }}</option>
+                }
+              </select>
+            </label>
+          }
+        </div>
+
+        <div #pdfSurface class="min-h-0 flex-1 overflow-auto bg-slate-100 p-5">
+          <mm-document-template-preview
+            [template]="tpl"
+            [sample]="sampleOrder()!"
+            [mealIndex]="mealIndex()"
+            [editable]="false"
+            [isRtl]="isRtl()"
+          />
+        </div>
+
+        <footer class="flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 px-5 py-4">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+            (click)="reissue()"
+          >
+            <ng-icon name="lucideRotateCw" size="14" />
+            {{ copy().reissue }}
+          </button>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-700 disabled:opacity-60"
+            [disabled]="exporting()"
+            (click)="exportPdf()"
+          >
+            <ng-icon name="lucideDownload" size="14" />
+            {{ exporting() ? copy().exporting : copy().exportPdf }}
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
+</div>

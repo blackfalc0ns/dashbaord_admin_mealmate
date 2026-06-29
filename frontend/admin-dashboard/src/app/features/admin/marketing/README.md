@@ -9,6 +9,7 @@
 | Influencer detail | `/admin/marketing/influencers/:id` |
 | Campaigns | `/admin/marketing/campaigns` |
 | Promo codes | `/admin/marketing/promo-codes` |
+| Ads bidding | `/admin/marketing/ads` |
 | Reports | `/admin/marketing/reports` |
 
 ## Permissions

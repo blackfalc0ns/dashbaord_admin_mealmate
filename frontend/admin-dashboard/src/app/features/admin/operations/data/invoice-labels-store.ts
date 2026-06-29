@@ -78,9 +78,9 @@ export class InvoiceLabelsStore {
     this.selectedElementId.set(id);
   }
 
-  createTemplate(kind: DocumentTemplateKind): void {
+  createTemplate(kind: DocumentTemplateKind): string | null {
     const base = kind === 'invoice' ? this.templates().find((t) => t.kind === 'invoice') : this.templates().find((t) => t.kind === 'label');
-    if (!base) return;
+    if (!base) return null;
 
     const created = this.cloneTemplate(base, {
       id: `TPL-${kind.toUpperCase()}-${Date.now()}`,
@@ -94,11 +94,12 @@ export class InvoiceLabelsStore {
     this.selectedTemplateId.set(created.id);
     this.selectedElementId.set(null);
     this.appendAudit(created.id, 'Create', 'Created from default template.');
+    return created.id;
   }
 
-  duplicateSelected(): void {
+  duplicateSelected(): string | null {
     const current = this.selectedTemplate();
-    if (!current) return;
+    if (!current) return null;
 
     const copy = this.cloneTemplate(current, {
       id: `TPL-COPY-${Date.now()}`,
@@ -112,6 +113,7 @@ export class InvoiceLabelsStore {
     this.selectedTemplateId.set(copy.id);
     this.selectedElementId.set(null);
     this.appendAudit(copy.id, 'Duplicate', `Duplicated from ${current.id}.`);
+    return copy.id;
   }
 
   updateSelectedTemplate(patch: TemplatePatch): void {
@@ -199,6 +201,8 @@ export class InvoiceLabelsStore {
       'qr-code': 'barcode',
       totals: 'totals',
       'meal-details': 'meal-details',
+      'customer-name': 'customer-name',
+      'customer-address': 'customer-address',
     };
     const id = `EL-${Date.now()}`;
     const element: TemplateElement = {
@@ -220,7 +224,7 @@ export class InvoiceLabelsStore {
         fontSize: 13,
         fontWeight: 700,
         color: '#0f172a',
-        backgroundColor: kind === 'text' || kind === 'bilingual-text' ? '#f8fafc' : 'transparent',
+        backgroundColor: kind === 'text' || kind === 'bilingual-text' || kind === 'customer-name' || kind === 'customer-address' ? '#f8fafc' : 'transparent',
         borderColor: '#e2e8f0',
         radius: 8,
         padding: 10,
@@ -240,6 +244,27 @@ export class InvoiceLabelsStore {
       ),
     );
     this.selectedElementId.set(id);
+  }
+
+  deleteElement(elementId: string): void {
+    const template = this.selectedTemplate();
+    if (!template) return;
+
+    this.templates.update((templates) =>
+      templates.map((item) =>
+        item.id === template.id
+          ? {
+              ...item,
+              updatedAt: new Date().toISOString(),
+              elements: item.elements.filter((element) => element.id !== elementId),
+            }
+          : item,
+      ),
+    );
+
+    if (this.selectedElementId() === elementId) {
+      this.selectedElementId.set(null);
+    }
   }
 
   saveDraft(): void {
@@ -368,6 +393,8 @@ export class InvoiceLabelsStore {
       'qr-code': { ar: 'QR', en: 'QR' },
       totals: { ar: 'إجماليات', en: 'Totals' },
       'meal-details': { ar: 'تفاصيل وجبة', en: 'Meal details' },
+      'customer-name': { ar: 'اسم العميل', en: 'Customer name' },
+      'customer-address': { ar: 'عنوان العميل', en: 'Customer address' },
     };
     return lang === 'ar' ? labels[kind].ar : labels[kind].en;
   }

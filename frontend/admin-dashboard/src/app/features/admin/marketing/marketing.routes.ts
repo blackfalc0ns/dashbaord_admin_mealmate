@@ -38,6 +38,13 @@ export const MARKETING_ROUTES: Routes = [
       ),
   },
   {
+    path: 'ads',
+    loadComponent: () =>
+      import('./pages/ads-bidding-page/ads-bidding-page.component').then(
+        (m) => m.AdsBiddingPageComponent,
+      ),
+  },
+  {
     path: 'reports',
     loadComponent: () =>
       import('./pages/marketing-reports-page/marketing-reports-page.component').then(

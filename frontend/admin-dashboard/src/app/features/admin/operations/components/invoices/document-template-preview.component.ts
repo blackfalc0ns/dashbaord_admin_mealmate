@@ -135,6 +135,19 @@ import { BarcodeCanvasComponent } from './barcode-canvas.component';
                     <p class="mt-1 line-clamp-2 text-[11px] font-semibold text-slate-500">{{ prepNotes() }}</p>
                   </div>
                 }
+                @case ('customer-name') {
+                  <div class="flex h-full flex-col justify-center">
+                    <p class="text-[11px] font-bold uppercase text-slate-400">{{ isRtl ? 'العميل' : 'Customer' }}</p>
+                    <p class="truncate text-base font-extrabold">{{ customerName() }}</p>
+                  </div>
+                }
+                @case ('customer-address') {
+                  <div class="flex h-full flex-col justify-center">
+                    <p class="text-[11px] font-bold uppercase text-slate-400">{{ isRtl ? 'العنوان' : 'Address' }}</p>
+                    <p class="truncate text-sm font-bold">{{ customerArea() }}</p>
+                    <p class="truncate text-[11px] font-semibold opacity-80">{{ customerAddress() }}</p>
+                  </div>
+                }
                 @default {
                   <div class="flex h-full flex-col justify-center whitespace-pre-line">
                     @if (secondaryText(element)) {
@@ -258,6 +271,24 @@ export class DocumentTemplatePreviewComponent {
     return this.isRtl ? `${meal.prepNotesAr} / ${meal.prepNotesEn}` : `${meal.prepNotesEn} / ${meal.prepNotesAr}`;
   }
 
+  customerName(): string {
+    if (this.template.language === 'ar') return this.sample.customerNameAr;
+    if (this.template.language === 'en') return this.sample.customerNameEn;
+    return this.isRtl ? `${this.sample.customerNameAr} / ${this.sample.customerNameEn}` : `${this.sample.customerNameEn} / ${this.sample.customerNameAr}`;
+  }
+
+  customerArea(): string {
+    if (this.template.language === 'ar') return this.sample.customerAreaAr;
+    if (this.template.language === 'en') return this.sample.customerAreaEn;
+    return this.isRtl ? `${this.sample.customerAreaAr} / ${this.sample.customerAreaEn}` : `${this.sample.customerAreaEn} / ${this.sample.customerAreaAr}`;
+  }
+
+  customerAddress(): string {
+    if (this.template.language === 'ar') return this.sample.customerAddressAr;
+    if (this.template.language === 'en') return this.sample.customerAddressEn;
+    return this.isRtl ? `${this.sample.customerAddressAr} / ${this.sample.customerAddressEn}` : `${this.sample.customerAddressEn} / ${this.sample.customerAddressAr}`;
+  }
+
   nutritionItems(): Array<{ label: string; value: string }> {
     const meal = this.activeMeal();
     return [
@@ -276,7 +307,6 @@ export class DocumentTemplatePreviewComponent {
     const lang = this.template.language === 'en' ? 'en' : this.isRtl ? 'ar' : 'en';
     return this.sourceText(element, lang);
   }
-
   secondaryText(element: TemplateElement): string {
     if (this.template.language !== 'both' && element.kind !== 'bilingual-text') return '';
     const secondaryLang = this.isRtl ? 'en' : 'ar';
@@ -305,6 +335,10 @@ export class DocumentTemplatePreviewComponent {
         return lang === 'ar' ? this.sample.orderStatusAr : this.sample.orderStatusEn;
       case 'print-batch':
         return `${this.sample.printBatch} - ${lang === 'ar' ? this.sample.subscriptionDayAr : this.sample.subscriptionDayEn}`;
+      case 'customer-name':
+        return lang === 'ar' ? this.sample.customerNameAr : this.sample.customerNameEn;
+      case 'customer-address':
+        return lang === 'ar' ? `${this.sample.customerAreaAr} - ${this.sample.customerAddressAr}` : `${this.sample.customerAreaEn} - ${this.sample.customerAddressEn}`;
       case 'barcode':
         return this.sample.barcodeText;
       case 'static':

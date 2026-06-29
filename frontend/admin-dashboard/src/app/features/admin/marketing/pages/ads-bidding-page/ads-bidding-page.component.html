@@ -1,0 +1,616 @@
+<section class="mm-page mm-overview flex min-h-full flex-col gap-4 text-slate-900" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+  <!-- Toolbar -->
+  <mm-shell-card class="mm-admin-toolbar-card mm-as-auto-selection__toolbar">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <nav
+        class="grid w-full grid-cols-2 gap-1 rounded-[0.6875rem] border border-slate-200 bg-[#eef2f6] p-[3px] shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] lg:max-w-md"
+        role="tablist"
+        [attr.aria-label]="copy().sectionsLabel"
+      >
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="activeSection() === 'placements'"
+          [class]="sectionNavClass('placements')"
+          (click)="setSection('placements')"
+        >
+          <ng-icon name="lucideMapPin" size="13" [class]="sectionIconClass('placements')" />
+          <span>{{ copy().sectionPlacements }}</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="activeSection() === 'audit'"
+          [class]="sectionNavClass('audit')"
+          (click)="setSection('audit')"
+        >
+          <ng-icon name="lucideScrollText" size="13" [class]="sectionIconClass('audit')" />
+          <span>{{ copy().sectionAudit }}</span>
+        </button>
+      </nav>
+
+      @if (activeSection() === 'placements') {
+        <button
+          type="button"
+          *mmHasPermission="perms.marketingManage"
+          class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-700 lg:shrink-0"
+          (click)="openCreateSlotModal()"
+        >
+          <ng-icon name="lucidePlus" size="14" />
+          {{ copy().newSlot }}
+        </button>
+      }
+    </div>
+  </mm-shell-card>
+
+  <!-- KPIs -->
+  <section>
+    <p class="mb-2 text-[0.625rem] font-extrabold uppercase tracking-wide text-slate-400">{{ sectionMetricsLabel() }}</p>
+    @if (activeSection() === 'placements') {
+      <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <mm-operations-kpi-card [label]="copy().openAuctions" [value]="formatNumber(store.kpis().openAuctions)" icon="lucideClock" valueClass="text-blue-600" iconWrapClass="bg-blue-50 text-blue-600 ring-blue-100" />
+        <mm-operations-kpi-card [label]="copy().liveSlots" [value]="formatNumber(store.kpis().liveSlots)" icon="lucidePanelTop" valueClass="text-emerald-600" iconWrapClass="bg-emerald-50 text-emerald-600 ring-emerald-100" />
+        <mm-operations-kpi-card [label]="copy().pendingReview" [value]="formatNumber(store.kpis().pendingReview)" icon="lucideListChecks" valueClass="text-amber-600" iconWrapClass="bg-amber-50 text-amber-600 ring-amber-100" />
+        <mm-operations-kpi-card [label]="copy().revenue" [value]="formatKd(store.kpis().totalRevenueKd)" icon="lucideWalletCards" valueClass="text-violet-600" iconWrapClass="bg-violet-50 text-violet-600 ring-violet-100" />
+        <mm-operations-kpi-card [label]="copy().averageCtr" [value]="store.kpis().averageCtr + '%'" icon="lucideMousePointerClick" valueClass="text-cyan-600" iconWrapClass="bg-cyan-50 text-cyan-600 ring-cyan-100" />
+        <mm-operations-kpi-card [label]="copy().policyIssues" [value]="formatNumber(store.kpis().policyIssues)" icon="lucideShieldCheck" valueClass="text-rose-600" iconWrapClass="bg-rose-50 text-rose-600 ring-rose-100" />
+      </div>
+    } @else {
+      <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+        <mm-operations-kpi-card [label]="copy().auditTitle" [value]="formatNumber(store.audit().length)" icon="lucideScrollText" />
+        <mm-operations-kpi-card [label]="copy().liveSlots" [value]="formatNumber(store.kpis().liveSlots)" icon="lucidePanelTop" valueClass="text-emerald-600" iconWrapClass="bg-emerald-50 text-emerald-600 ring-emerald-100" />
+        <mm-operations-kpi-card [label]="copy().policyIssues" [value]="formatNumber(store.kpis().policyIssues)" icon="lucideShieldCheck" valueClass="text-rose-600" iconWrapClass="bg-rose-50 text-rose-600 ring-rose-100" />
+      </div>
+    }
+  </section>
+
+  <div class="mm-overview-tab-panel" role="tabpanel">
+    <!-- ═══ PLACEMENTS TAB ═══ -->
+    @if (activeSection() === 'placements') {
+      <div class="mm-as-auto-selection-tab flex flex-col gap-2.5">
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div class="relative w-full max-w-sm">
+              <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+                <ng-icon name="lucideSearch" size="16" />
+              </span>
+              <input
+                type="text"
+                class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 ps-9 pe-3 text-sm outline-none focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                [placeholder]="copy().searchPlaceholder"
+                (input)="onSearch($event)"
+              />
+            </div>
+            <div class="flex flex-wrap gap-2">
+              @for (filter of slotFilters(); track filter.id) {
+                <button
+                  type="button"
+                  class="rounded-lg border px-2.5 py-1.5 text-xs font-bold transition"
+                  [class]="filterClass(filter.id)"
+                  (click)="setSlotFilter(filter.id)"
+                >
+                  {{ filter.label }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div class="border-b border-slate-100 px-4 py-3">
+            <h2 class="text-sm font-extrabold text-slate-900">{{ copy().slotsTitle }}</h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="mm-as-auto-selection__data-table min-w-full text-sm">
+              <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th class="px-4 py-3 text-start">{{ copy().area }}</th>
+                  <th class="px-4 py-3 text-start">{{ copy().placement }}</th>
+                  <th class="px-4 py-3 text-start">{{ copy().status }}</th>
+                  <th class="px-4 py-3 text-start">{{ copy().period }}</th>
+                  <th class="px-4 py-3 text-start">{{ copy().minimumBid }}</th>
+                  <th class="px-4 py-3 text-start">{{ copy().winners }}</th>
+                  <th class="px-4 py-3 text-start">{{ copy().impressions }}</th>
+                  <th class="px-4 py-3 text-start">{{ copy().actions }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                @for (slot of filteredSlots(); track slot.id) {
+                  <tr class="hover:bg-slate-50/80">
+                    <td class="px-4 py-3">
+                      <div class="font-bold text-slate-900">{{ areaName(slot) }}</div>
+                      @if (slotHasPolicyIssue(slot)) {
+                        <span class="mt-1 inline-flex rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 ring-1 ring-rose-200">
+                          {{ copy().issues }}
+                        </span>
+                      }
+                    </td>
+                    <td class="px-4 py-3 text-xs text-slate-600">{{ placementLabel(slot.placement) }}</td>
+                    <td class="px-4 py-3">
+                      <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset" [ngClass]="statusClass(slot.status)">
+                        {{ statusLabel(slot.status) }}
+                      </span>
+                    </td>
+                    <td class="px-4 py-3 text-xs text-slate-500">
+                      {{ slot.startAtUtc | date: 'MMM d' }} — {{ slot.endAtUtc | date: 'MMM d, y' }}
+                    </td>
+                    <td class="px-4 py-3 text-xs font-bold text-slate-800">{{ formatKd(slot.minBidKd) }}</td>
+                    <td class="px-4 py-3 text-xs font-bold text-slate-800">{{ winnerCount(slot) }}/{{ slot.maxWinners }}</td>
+                    <td class="px-4 py-3 text-xs text-slate-600">{{ formatNumber(slot.impressions) }}</td>
+                    <td class="px-4 py-3">
+                      <button
+                        type="button"
+                        class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-bold text-white hover:bg-emerald-700"
+                        (click)="openSlotDetail(slot)"
+                      >
+                        {{ copy().viewDetails }}
+                      </button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="8" class="px-4 py-12 text-center text-sm text-slate-500">{{ copy().noSlots }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ═══ AUDIT TAB ═══ -->
+    @if (activeSection() === 'audit') {
+      <div class="mm-as-auto-selection-tab flex flex-col gap-2.5">
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div class="border-b border-slate-100 px-4 py-3">
+            <h2 class="text-sm font-extrabold text-slate-900">{{ copy().auditTitle }}</h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="mm-as-auto-selection__data-table min-w-full text-sm">
+              <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th class="px-4 py-3 text-start">{{ copy().colAction }}</th>
+                  <th class="px-4 py-3 text-start">{{ copy().colDetail }}</th>
+                  <th class="px-4 py-3 text-start">{{ copy().colDate }}</th>
+                  <th class="px-4 py-3 text-start">{{ copy().actions }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                @for (event of store.audit(); track event.id) {
+                  <tr class="hover:bg-slate-50/80">
+                    <td class="px-4 py-3">
+                      <span class="rounded-md bg-violet-50 px-2 py-1 text-xs font-bold text-violet-700">
+                        {{ locale.isRtl() ? event.actionAr : event.actionEn }}
+                      </span>
+                    </td>
+                    <td class="max-w-md truncate px-4 py-3 text-xs text-slate-600">
+                      {{ locale.isRtl() ? event.detailAr : event.detailEn }}
+                    </td>
+                    <td class="px-4 py-3 text-xs text-slate-500">{{ event.atUtc | date: 'medium' }}</td>
+                    <td class="px-4 py-3">
+                      <button
+                        type="button"
+                        class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                        (click)="openAuditDetail(event.id)"
+                      >
+                        {{ copy().viewDetails }}
+                      </button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="px-4 py-12 text-center text-sm text-slate-500">{{ copy().noAudit }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ═══ SLOT DETAIL MODAL ═══ -->
+  @if (slotModalOpen() && store.selectedSlot(); as slot) {
+    <div class="fixed inset-0 z-50 flex items-end justify-center p-2 sm:items-center sm:p-4">
+      <button
+        type="button"
+        class="absolute inset-0 bg-slate-900/50 backdrop-blur-[2px]"
+        [attr.aria-label]="copy().close"
+        (click)="closeSlotDetail()"
+      ></button>
+
+      <div
+        class="relative flex max-h-[94vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+      >
+        <header class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wide text-emerald-600">{{ copy().slotDetail }}</p>
+            <h2 class="text-lg font-extrabold text-slate-900">{{ areaName(slot) }}</h2>
+            <p class="text-xs text-slate-500">{{ placementLabel(slot.placement) }}</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              *mmHasPermission="perms.marketingManage"
+              class="inline-flex items-center gap-1 rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-bold text-violet-700 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
+              [disabled]="!canApproveBids(slot)"
+              [attr.title]="!canApproveBids(slot) ? copy().approveAfterAuction : null"
+              (click)="awardSelected(slot)"
+            >
+              <ng-icon name="lucideTrophy" size="14" />
+              {{ copy().awardTopThree }}
+            </button>
+            @if (slot.status === 'Paused') {
+              <button
+                type="button"
+                *mmHasPermission="perms.marketingManage"
+                class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-100"
+                (click)="store.reopenSlot(slot.id)"
+              >
+                <ng-icon name="lucideRotateCcw" size="14" />
+                {{ copy().reopen }}
+              </button>
+            } @else {
+              <button
+                type="button"
+                *mmHasPermission="perms.marketingManage"
+                class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                (click)="store.pauseSlot(slot.id)"
+              >
+                <ng-icon name="lucideBan" size="14" />
+                {{ copy().pause }}
+              </button>
+            }
+            <button
+              type="button"
+              class="rounded-lg p-2 text-slate-400 hover:bg-slate-100"
+              [attr.aria-label]="copy().close"
+              (click)="closeSlotDetail()"
+            >
+              <ng-icon name="lucideX" size="18" />
+            </button>
+          </div>
+        </header>
+
+        <div class="flex flex-wrap gap-2 border-b border-slate-100 px-5 py-2">
+          <button type="button" class="rounded-lg border px-3 py-1.5 text-xs font-bold transition" [class]="slotModalTabClass('bids')" (click)="setSlotModalTab('bids')">
+            {{ copy().tabBids }}
+          </button>
+          <button type="button" class="rounded-lg border px-3 py-1.5 text-xs font-bold transition" [class]="slotModalTabClass('preview')" (click)="setSlotModalTab('preview')">
+            <ng-icon name="lucideEye" size="12" class="inline" />
+            {{ copy().tabPreview }}
+          </button>
+          <button type="button" class="rounded-lg border px-3 py-1.5 text-xs font-bold transition" [class]="slotModalTabClass('policy')" (click)="setSlotModalTab('policy')">
+            <ng-icon name="lucideShieldCheck" size="12" class="inline" />
+            {{ copy().tabPolicy }}
+          </button>
+        </div>
+
+        <div class="min-h-0 flex-1 overflow-auto p-5">
+          @if (slotModalTab() === 'bids') {
+            @if (canApproveBids(slot)) {
+              <p class="mb-3 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800">
+                {{ copy().auctionEnded }} — {{ slot.endAtUtc | date: 'medium' }}
+              </p>
+            } @else {
+              <p class="mb-3 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                <span class="font-extrabold">{{ copy().auctionOpen }}.</span>
+                {{ copy().approveAfterAuction }}
+                <span class="mt-1 block font-bold">{{ copy().auctionEndsAt }}: {{ slot.endAtUtc | date: 'medium' }}</span>
+              </p>
+            }
+
+            <div class="mb-3 flex flex-wrap gap-2">
+              @for (filter of bidFilters(); track filter.id) {
+                <button
+                  type="button"
+                  class="rounded-lg border px-2.5 py-1 text-xs font-bold transition"
+                  [class]="bidFilter() === filter.id ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-white text-slate-500'"
+                  (click)="setBidFilter(filter.id)"
+                >
+                  {{ filter.label }}
+                </button>
+              }
+            </div>
+
+            @if (!visibleBids().length) {
+              <p class="py-12 text-center text-sm text-slate-500">{{ copy().noBids }}</p>
+            } @else {
+              <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <table class="mm-as-auto-selection__data-table min-w-full text-sm">
+                  <thead class="bg-slate-50 text-xs font-bold text-slate-500">
+                    <tr>
+                      <th class="px-4 py-3 text-start">{{ copy().rank }}</th>
+                      <th class="px-4 py-3 text-start">{{ copy().creative }}</th>
+                      <th class="px-4 py-3 text-start">{{ copy().bid }}</th>
+                      <th class="px-4 py-3 text-start">{{ copy().coverage }}</th>
+                      <th class="px-4 py-3 text-start">{{ copy().status }}</th>
+                      <th class="px-4 py-3 text-start">{{ copy().actions }}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 bg-white">
+                    @for (bid of visibleBids(); track bid.id) {
+                      <tr>
+                        <td class="px-4 py-3 align-top">
+                          <span class="inline-flex size-8 items-center justify-center rounded-lg bg-slate-100 text-xs font-extrabold text-slate-700">
+                            {{ bidRank(slot, bid) || '—' }}
+                          </span>
+                        </td>
+                        <td class="min-w-[200px] px-4 py-3 align-top">
+                          <div class="font-extrabold text-slate-900">{{ restaurantName(bid) }}</div>
+                          <div class="mt-1 text-xs font-bold text-slate-600">{{ creativeHeadline(bid) }}</div>
+                        </td>
+                        <td class="px-4 py-3 align-top">
+                          <div class="font-extrabold text-slate-900">{{ formatKd(bid.bidAmountKd) }}</div>
+                          <div class="mt-1 text-xs text-slate-500">{{ copy().budget }}: {{ formatKd(bid.dailyBudgetKd) }}</div>
+                        </td>
+                        <td class="px-4 py-3 align-top">
+                          <span
+                            class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1"
+                            [ngClass]="bidCoversSlot(bid, slot) ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : 'bg-rose-50 text-rose-700 ring-rose-200'"
+                          >
+                            {{ bidCoversSlot(bid, slot) ? copy().coverageOk : copy().coverageBad }}
+                          </span>
+                        </td>
+                        <td class="px-4 py-3 align-top">
+                          <span class="rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="bidStatusClass(bid.status)">
+                            {{ bidStatusLabel(bid.status) }}
+                          </span>
+                        </td>
+                        <td class="px-4 py-3 align-top">
+                          <div class="flex flex-wrap gap-1">
+                            <button
+                              type="button"
+                              *mmHasPermission="perms.marketingManage"
+                              class="rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-bold text-emerald-700 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+                              [disabled]="bid.status === 'Approved' || bid.status === 'Rejected' || !canApproveBids(slot)"
+                              [attr.title]="!canApproveBids(slot) ? copy().approveAfterAuction : null"
+                              (click)="store.approveBid(bid.id)"
+                            >
+                              {{ copy().approve }}
+                            </button>
+                            <button
+                              type="button"
+                              *mmHasPermission="perms.marketingManage"
+                              class="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1 text-xs font-bold text-rose-700 hover:bg-rose-100 disabled:opacity-50"
+                              [disabled]="bid.status === 'Rejected'"
+                              (click)="store.rejectBid(bid.id)"
+                            >
+                              {{ copy().reject }}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
+
+          @if (slotModalTab() === 'preview') {
+            <div class="mx-auto max-w-md">
+              <p class="mb-3 text-xs text-slate-500">{{ copy().customerArea }}: {{ areaName(slot) }}</p>
+              <div class="rounded-2xl border border-slate-200 bg-slate-950 p-3 text-white shadow-inner">
+                <div class="mb-3 flex items-center justify-between text-[10px] text-slate-300">
+                  <span>MealMate</span>
+                  <span>{{ placementLabel(slot.placement) }}</span>
+                </div>
+                @if (previewBid(); as bid) {
+                  <div class="rounded-xl bg-white p-3 text-slate-900">
+                    <div class="mb-2">
+                      <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-extrabold text-emerald-700">
+                        {{ copy().sponsored }}
+                      </span>
+                    </div>
+                    <div class="flex gap-3">
+                      <div class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                        <ng-icon name="lucideMegaphone" size="22" />
+                      </div>
+                      <div class="min-w-0">
+                        <h3 class="truncate text-sm font-extrabold text-slate-900">{{ restaurantName(bid) }}</h3>
+                        <p class="mt-1 text-xs font-bold text-slate-700">{{ creativeHeadline(bid) }}</p>
+                        <p class="mt-1 line-clamp-2 text-[11px] text-slate-500">{{ creativeDescription(bid) }}</p>
+                      </div>
+                    </div>
+                    <div class="mt-3 border-t border-slate-100 pt-3 text-end">
+                      <span class="rounded-lg bg-slate-900 px-2 py-1 text-[10px] font-bold text-white">
+                        {{ creativeCta(bid) }}
+                      </span>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="rounded-xl bg-white p-6 text-center text-xs text-slate-500">{{ copy().noBids }}</div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (slotModalTab() === 'policy') {
+            <div class="mx-auto max-w-2xl space-y-3">
+              <h3 class="text-sm font-extrabold text-slate-900">{{ copy().policyTitle }}</h3>
+              @for (rule of store.policyRules; track rule.id) {
+                <div class="rounded-lg border p-3 text-xs" [ngClass]="policyClass(rule)">
+                  <div class="font-extrabold">{{ policyTitle(rule) }}</div>
+                  <p class="mt-1 leading-5">{{ policyDescription(rule) }}</p>
+                </div>
+              }
+              @if (selectedCoverageIssues().length) {
+                <div class="rounded-lg border border-rose-100 bg-rose-50 p-3 text-xs text-rose-700">
+                  <div class="font-extrabold">{{ copy().policyIssues }}: {{ selectedCoverageIssues().length }}</div>
+                  @for (bid of selectedCoverageIssues(); track bid.id) {
+                    <p class="mt-1">{{ restaurantName(bid) }} — {{ copy().coverageBad }}</p>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ═══ AUDIT DETAIL MODAL ═══ -->
+  @if (auditDetailOpen() && selectedAuditEvent(); as event) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <button type="button" class="absolute inset-0 bg-slate-900/50" (click)="closeAuditDetail()"></button>
+      <div class="relative w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
+        <div class="mb-4 flex items-start justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase text-slate-500">{{ copy().auditTitle }}</p>
+            <h3 class="text-lg font-extrabold text-slate-900">{{ locale.isRtl() ? event.actionAr : event.actionEn }}</h3>
+          </div>
+          <button type="button" class="rounded-lg p-1 text-slate-400 hover:bg-slate-100" (click)="closeAuditDetail()">
+            <ng-icon name="lucideX" size="18" />
+          </button>
+        </div>
+        <dl class="space-y-3 text-sm">
+          <div>
+            <dt class="mb-1 text-slate-500">{{ copy().colDetail }}</dt>
+            <dd class="rounded-lg bg-slate-50 p-3 text-slate-700">{{ locale.isRtl() ? event.detailAr : event.detailEn }}</dd>
+          </div>
+          <div class="flex justify-between gap-4">
+            <dt class="text-slate-500">{{ copy().colDate }}</dt>
+            <dd>{{ event.atUtc | date: 'medium' }}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  }
+
+  <!-- ═══ CREATE AD SLOT MODAL ═══ -->
+  @if (createModalOpen()) {
+    <div class="fixed inset-0 z-[60] flex items-end justify-center p-2 sm:items-center sm:p-4">
+      <button
+        type="button"
+        class="absolute inset-0 bg-slate-900/50 backdrop-blur-[2px]"
+        [attr.aria-label]="copy().close"
+        (click)="closeCreateSlotModal()"
+      ></button>
+
+      <div
+        class="relative w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'"
+      >
+        <header class="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wide text-emerald-600">{{ copy().newSlot }}</p>
+            <h2 class="text-lg font-extrabold text-slate-900">{{ copy().createTitle }}</h2>
+            <p class="mt-1 text-xs text-slate-500">{{ copy().createSubtitle }}</p>
+          </div>
+          <button
+            type="button"
+            class="rounded-lg p-2 text-slate-400 hover:bg-slate-100"
+            [attr.aria-label]="copy().close"
+            (click)="closeCreateSlotModal()"
+          >
+            <ng-icon name="lucideX" size="18" />
+          </button>
+        </header>
+
+        <form class="flex flex-col gap-4 p-5" [formGroup]="createForm" (ngSubmit)="submitCreateSlot()">
+          <label class="flex flex-col gap-1 text-xs font-semibold text-slate-700">
+            {{ copy().area }}
+            <select
+              formControlName="areaId"
+              class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+            >
+              <option value="" disabled>{{ copy().selectArea }}</option>
+              @for (area of store.areas; track area.id) {
+                <option [value]="area.id">{{ areaLabel(area) }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="flex flex-col gap-1 text-xs font-semibold text-slate-700">
+            {{ copy().placement }}
+            <select
+              formControlName="placement"
+              class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+            >
+              @for (option of placementOptions(); track option.id) {
+                <option [value]="option.id">{{ option.label }}</option>
+              }
+            </select>
+          </label>
+
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="flex flex-col gap-1 text-xs font-semibold text-slate-700">
+              {{ copy().startDate }}
+              <input
+                type="date"
+                formControlName="startDate"
+                class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              />
+            </label>
+            <label class="flex flex-col gap-1 text-xs font-semibold text-slate-700">
+              {{ copy().endDate }}
+              <input
+                type="date"
+                formControlName="endDate"
+                class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              />
+            </label>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="flex flex-col gap-1 text-xs font-semibold text-slate-700">
+              {{ copy().minimumBid }} ({{ copy().kwd }})
+              <input
+                type="number"
+                min="1"
+                step="1"
+                formControlName="minBidKd"
+                class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              />
+            </label>
+            <label class="flex flex-col gap-1 text-xs font-semibold text-slate-700">
+              {{ copy().maxWinners }}
+              <input
+                type="number"
+                min="1"
+                max="3"
+                step="1"
+                formControlName="maxWinners"
+                class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              />
+            </label>
+          </div>
+
+          <p class="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-xs leading-5 text-blue-800">
+            {{ copy().createHint }}
+          </p>
+
+          @if (createFormError()) {
+            <p class="rounded-lg border border-rose-100 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700">
+              {{ createFormError() }}
+            </p>
+          }
+
+          <div class="flex justify-end gap-2 border-t border-slate-100 pt-4">
+            <button
+              type="button"
+              class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50"
+              (click)="closeCreateSlotModal()"
+            >
+              {{ copy().cancel }}
+            </button>
+            <button
+              type="submit"
+              class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700"
+            >
+              <ng-icon name="lucidePlus" size="14" />
+              {{ copy().create }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</section>

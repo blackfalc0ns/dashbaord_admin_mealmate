@@ -12,7 +12,9 @@ export type TemplateElementKind =
   | 'barcode'
   | 'qr-code'
   | 'totals'
-  | 'meal-details';
+  | 'meal-details'
+  | 'customer-name'
+  | 'customer-address';
 
 export type TemplateElementSource =
   | 'static'
@@ -26,7 +28,9 @@ export type TemplateElementSource =
   | 'barcode'
   | 'totals'
   | 'status'
-  | 'print-batch';
+  | 'print-batch'
+  | 'customer-name'
+  | 'customer-address';
 
 export interface TemplateElementStyle {
   fontSize: number;
@@ -101,6 +105,12 @@ export interface InvoiceOrderSnapshot {
   restaurantNameAr: string;
   restaurantNameEn: string;
   restaurantLogoLabel: string;
+  customerNameAr: string;
+  customerNameEn: string;
+  customerAreaAr: string;
+  customerAreaEn: string;
+  customerAddressAr: string;
+  customerAddressEn: string;
   deliveryDate: string;
   deliveryWindow: string;
   orderStatusAr: string;

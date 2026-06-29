@@ -10,4 +10,8 @@ export const AdminApiEndpoints = {
   documentTemplates: '/api/v1/admin/operations/document-templates',
   orderInvoice: (orderId: string) => `/api/v1/admin/operations/orders/${orderId}/invoice`,
   orderLabels: (orderId: string) => `/api/v1/admin/operations/orders/${orderId}/labels`,
+  menuApprovals: '/api/v1/admin/operations/menu-approvals',
+  menuApproval: (id: string) => `/api/v1/admin/operations/menu-approvals/${id}`,
+  menuApprovalAction: (id: string, action: string) =>
+    `/api/v1/admin/operations/menu-approvals/${id}/actions/${action}`,
 } as const;

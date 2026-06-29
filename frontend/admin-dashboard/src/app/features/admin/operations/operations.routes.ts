@@ -56,6 +56,20 @@ export const OPERATIONS_ROUTES: Routes = [
       ),
   },
   {
+    path: 'menus',
+    loadComponent: () =>
+      import('./pages/menu-approval-workspace-page/menu-approval-workspace-page.component').then(
+        (m) => m.MenuApprovalWorkspacePageComponent,
+      ),
+  },
+  {
+    path: 'invoices/:id/design',
+    loadComponent: () =>
+      import('./pages/invoice-template-designer-page/invoice-template-designer-page.component').then(
+        (m) => m.InvoiceTemplateDesignerPageComponent,
+      ),
+  },
+  {
     path: 'invoices',
     loadComponent: () =>
       import('./pages/invoice-labels-workspace-page/invoice-labels-workspace-page.component').then(
