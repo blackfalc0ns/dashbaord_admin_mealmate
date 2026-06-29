@@ -1,3 +1,6 @@
+# Backend has its own repository (mealmeta_backend)
+backend/
+
 # Dependencies
 **/node_modules/
 

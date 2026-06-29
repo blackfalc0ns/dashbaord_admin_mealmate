@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "name": "Admin Dashboard",
+      "path": "."
+    },
+    {
+      "name": "Backend (mealmeta_backend)",
+      "path": "backend"
+    }
+  ],
+  "settings": {
+    "git.detectSubmodules": false,
+    "git.autoRepositoryDetection": true
+  }
+}
