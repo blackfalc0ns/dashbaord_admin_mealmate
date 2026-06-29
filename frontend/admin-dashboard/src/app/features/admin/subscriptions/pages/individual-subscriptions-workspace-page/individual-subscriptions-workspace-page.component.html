@@ -1,0 +1,173 @@
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
+  <div class="flex w-full flex-col gap-4">
+    <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+      <mm-operations-kpi-card
+        [label]="copy().kpiIndividualActive"
+        [value]="kpis().active"
+        icon="lucideShieldCheck"
+        [active]="statusFilter() === 'Active'"
+        (clicked)="setFilter('Active')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiIndividualFrozen"
+        [value]="kpis().frozen"
+        icon="lucideSnowflake"
+        valueClass="text-sky-600"
+        iconWrapClass="bg-sky-50 text-sky-600 ring-sky-100"
+        [active]="statusFilter() === 'Frozen'"
+        (clicked)="setFilter('Frozen')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiIndividualExpiring"
+        [value]="kpis().expiring"
+        icon="lucideClock"
+        valueClass="text-amber-600"
+        iconWrapClass="bg-amber-50 text-amber-600 ring-amber-100"
+        [active]="statusFilter() === 'Expiring'"
+        (clicked)="setFilter('Expiring')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiIndividualCancelled"
+        [value]="kpis().cancelled"
+        icon="lucideUserX"
+        valueClass="text-slate-600"
+        iconWrapClass="bg-slate-50 text-slate-600 ring-slate-100"
+        [active]="statusFilter() === 'Cancelled'"
+        (clicked)="setFilter('Cancelled')"
+      />
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="relative w-full sm:max-w-xs">
+          <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+            <ng-icon name="lucideSearch" size="16" />
+          </span>
+          <input
+            type="text"
+            [placeholder]="copy().searchPlaceholder"
+            class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-xs transition-all focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            (input)="onSearch($event)"
+          />
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'all'"
+              [class.text-slate-900]="statusFilter() === 'all'"
+              [class.shadow-sm]="statusFilter() === 'all'"
+              [class.text-slate-500]="statusFilter() !== 'all'"
+              (click)="setFilter('all')">{{ copy().all }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Active'"
+              [class.text-slate-900]="statusFilter() === 'Active'"
+              [class.shadow-sm]="statusFilter() === 'Active'"
+              [class.text-slate-500]="statusFilter() !== 'Active'"
+              (click)="setFilter('Active')">{{ copy().active }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Frozen'"
+              [class.text-slate-900]="statusFilter() === 'Frozen'"
+              [class.shadow-sm]="statusFilter() === 'Frozen'"
+              [class.text-slate-500]="statusFilter() !== 'Frozen'"
+              (click)="setFilter('Frozen')">{{ copy().frozen }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Expiring'"
+              [class.text-slate-900]="statusFilter() === 'Expiring'"
+              [class.shadow-sm]="statusFilter() === 'Expiring'"
+              [class.text-slate-500]="statusFilter() !== 'Expiring'"
+              (click)="setFilter('Expiring')">{{ copy().expiring }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Cancelled'"
+              [class.text-slate-900]="statusFilter() === 'Cancelled'"
+              [class.shadow-sm]="statusFilter() === 'Cancelled'"
+              [class.text-slate-500]="statusFilter() !== 'Cancelled'"
+              (click)="setFilter('Cancelled')">{{ copy().cancelled }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-start text-xs">
+          <thead>
+            <tr class="border-b border-slate-100 bg-slate-50/75 text-slate-500 font-bold">
+              <th class="px-4 py-2.5 text-start">{{ copy().colCustomer }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colSubscription }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colProgramBundle }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colTier }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colArea }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colDays }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colStartDate }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colStatus }}</th>
+              <th class="px-4 py-2.5 text-end">{{ copy().colActions }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (row of paginatedRows(); track row.id) {
+              <tr class="transition-colors hover:bg-slate-50/80">
+                <td class="px-4 py-3">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="font-extrabold text-slate-900 text-sm">{{ customerName(row) }}</span>
+                    <span class="text-[10px] text-slate-400">{{ row.customerId }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 font-mono text-[11px] text-slate-600">{{ row.subscriptionId }}</td>
+                <td class="px-4 py-3 text-slate-700">{{ programBundle(row) }}</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700 ring-1 ring-indigo-100">
+                    {{ tierLabel(row) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 max-w-[180px] text-slate-600">{{ areaLabel(row) }}</td>
+                <td class="px-4 py-3 text-slate-700">
+                  {{ row.usedDays }} {{ copy().daysUsedOf }} {{ row.subscriptionDays }}
+                </td>
+                <td class="px-4 py-3 text-slate-600">{{ startDate(row) }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex flex-col gap-1">
+                    <span class="inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="statusClass(row.status)">
+                      {{ statusLabel(row) }}
+                    </span>
+                    @if (row.expiringInDays !== null) {
+                      <span class="text-[10px] font-semibold text-amber-600">
+                        {{ row.expiringInDays }} {{ copy().expiringInDays }}
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-end">
+                  <a
+                    [routerLink]="['/admin/accounts/customers', row.customerId]"
+                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold text-emerald-700 transition hover:bg-emerald-50"
+                  >
+                    <ng-icon name="lucideExternalLink" size="14" />
+                    {{ copy().openCustomer }}
+                  </a>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="9" class="px-4 py-10 text-center text-sm text-slate-400">{{ copy().noResults }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (filteredRows().length > pageSize()) {
+        <div class="border-t border-slate-100 px-4 py-3">
+          <mm-table-pagination
+            [currentPage]="currentPage()"
+            [totalPages]="totalPages()"
+            [pageSize]="pageSize()"
+            [totalItems]="filteredRows().length"
+            [itemLabel]="copy().paginationIndividualSubs"
+            (pageChange)="onPageChange($event)"
+          />
+        </div>
+      }
+    </div>
+  </div>
+</section>

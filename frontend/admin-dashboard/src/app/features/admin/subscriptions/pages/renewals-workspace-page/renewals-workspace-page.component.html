@@ -1,0 +1,365 @@
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
+  @if (toast()) {
+    <div class="mb-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800">
+      {{ toast() }}
+    </div>
+  }
+
+  <div class="flex w-full flex-col gap-4">
+    <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <mm-operations-kpi-card
+        [label]="copy().kpiExpiringThisWeek"
+        [value]="kpis().expiring"
+        icon="lucideClock"
+        valueClass="text-amber-600"
+        iconWrapClass="bg-amber-50 text-amber-600 ring-amber-100"
+        [active]="statusFilter() === 'ExpiringSoon'"
+        (clicked)="setFilter('ExpiringSoon')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiRemindersSent"
+        [value]="kpis().reminders"
+        icon="lucideBell"
+        valueClass="text-indigo-600"
+        iconWrapClass="bg-indigo-50 text-indigo-600 ring-indigo-100"
+        [active]="statusFilter() === 'ReminderSent'"
+        (clicked)="setFilter('ReminderSent')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiRenewalInProgress"
+        [value]="kpis().inProgress"
+        icon="lucideRefreshCw"
+        valueClass="text-sky-600"
+        iconWrapClass="bg-sky-50 text-sky-600 ring-sky-100"
+        [active]="statusFilter() === 'InProgress'"
+        (clicked)="setFilter('InProgress')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiRenewedThisMonth"
+        [value]="kpis().renewed"
+        icon="lucideTrendingUp"
+        valueClass="text-emerald-600"
+        iconWrapClass="bg-emerald-50 text-emerald-600 ring-emerald-100"
+        [active]="statusFilter() === 'Renewed'"
+        (clicked)="setFilter('Renewed')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiAtRisk"
+        [value]="kpis().atRisk"
+        icon="lucideCircleAlert"
+        valueClass="text-red-600"
+        iconWrapClass="bg-red-50 text-red-600 ring-red-100"
+        [active]="statusFilter() === 'AtRisk'"
+        (clicked)="setFilter('AtRisk')"
+      />
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="mb-3 flex items-center gap-2">
+        <div class="flex size-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100">
+          <ng-icon name="lucideSettings2" size="16" />
+        </div>
+        <h2 class="text-sm font-extrabold text-slate-900">{{ copy().renewalPolicyTitle }}</h2>
+      </div>
+
+      <div class="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div class="grid gap-3 sm:grid-cols-3">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500">{{ copy().renewalPolicyFirst }}</label>
+            <input
+              type="number"
+              min="1"
+              max="30"
+              class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              [ngModel]="policyFirst()"
+              (ngModelChange)="policyFirst.set(+$event || 1)"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500">{{ copy().renewalPolicySecond }}</label>
+            <input
+              type="number"
+              min="1"
+              max="30"
+              class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              [ngModel]="policySecond()"
+              (ngModelChange)="policySecond.set(+$event || 1)"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500">{{ copy().renewalPolicyFinal }}</label>
+            <input
+              type="number"
+              min="1"
+              max="30"
+              class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              [ngModel]="policyFinal()"
+              (ngModelChange)="policyFinal.set(+$event || 1)"
+            />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2 lg:items-end">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-700"
+            (click)="savePolicy()"
+          >
+            <ng-icon name="lucideSave" size="14" />
+            {{ copy().policySave }}
+          </button>
+          <p class="text-[10px] text-slate-400">{{ copy().policyUpdatedBy }}: {{ policyUpdatedBy() }}</p>
+        </div>
+      </div>
+
+      <div class="mt-3 rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+        <p class="text-[10px] font-bold text-slate-400">{{ copy().renewalPolicySnapshot }}</p>
+        <p class="mt-0.5 text-sm font-extrabold text-emerald-700">{{ copy().enabled }}</p>
+        <p class="mt-1 text-[10px] leading-snug text-slate-500">{{ copy().renewalPolicySnapshotDesc }}</p>
+      </div>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="relative w-full sm:max-w-xs">
+          <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+            <ng-icon name="lucideSearch" size="16" />
+          </span>
+          <input
+            type="text"
+            [placeholder]="copy().searchPlaceholder"
+            class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-xs transition-all focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            (input)="onSearch($event)"
+          />
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'all'"
+              [class.text-slate-900]="statusFilter() === 'all'"
+              [class.shadow-sm]="statusFilter() === 'all'"
+              [class.text-slate-500]="statusFilter() !== 'all'"
+              (click)="setFilter('all')">{{ copy().all }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'ExpiringSoon'"
+              [class.text-slate-900]="statusFilter() === 'ExpiringSoon'"
+              [class.shadow-sm]="statusFilter() === 'ExpiringSoon'"
+              [class.text-slate-500]="statusFilter() !== 'ExpiringSoon'"
+              (click)="setFilter('ExpiringSoon')">{{ copy().expiring }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'ReminderSent'"
+              [class.text-slate-900]="statusFilter() === 'ReminderSent'"
+              [class.shadow-sm]="statusFilter() === 'ReminderSent'"
+              [class.text-slate-500]="statusFilter() !== 'ReminderSent'"
+              (click)="setFilter('ReminderSent')">{{ copy().filterReminderSent }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'InProgress'"
+              [class.text-slate-900]="statusFilter() === 'InProgress'"
+              [class.shadow-sm]="statusFilter() === 'InProgress'"
+              [class.text-slate-500]="statusFilter() !== 'InProgress'"
+              (click)="setFilter('InProgress')">{{ copy().filterInProgress }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Renewed'"
+              [class.text-slate-900]="statusFilter() === 'Renewed'"
+              [class.shadow-sm]="statusFilter() === 'Renewed'"
+              [class.text-slate-500]="statusFilter() !== 'Renewed'"
+              (click)="setFilter('Renewed')">{{ copy().filterRenewed }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Lapsed'"
+              [class.text-slate-900]="statusFilter() === 'Lapsed'"
+              [class.shadow-sm]="statusFilter() === 'Lapsed'"
+              [class.text-slate-500]="statusFilter() !== 'Lapsed'"
+              (click)="setFilter('Lapsed')">{{ copy().filterLapsed }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-start text-xs">
+          <thead>
+            <tr class="border-b border-slate-100 bg-slate-50/75 text-slate-500 font-bold">
+              <th class="px-4 py-2.5 text-start">{{ copy().colCustomer }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colSubType }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colProgramBundle }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colEndDate }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colDaysRemaining }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colReminderStage }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colRenewalPrice }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colStatus }}</th>
+              <th class="px-4 py-2.5 text-end">{{ copy().colActions }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (row of paginatedRenewals(); track row.id) {
+              <tr
+                class="cursor-pointer transition-colors hover:bg-slate-50/80"
+                (click)="openDetail(row)"
+              >
+                <td class="px-4 py-3">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="font-extrabold text-slate-900 text-sm">{{ customerName(row) }}</span>
+                    <span class="text-[10px] text-slate-400">{{ row.subscriptionId }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 ring-1 ring-slate-200">
+                    {{ subTypeLabel(row) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-slate-700">{{ programBundle(row) }}</td>
+                <td class="px-4 py-3 text-slate-600">{{ endDate(row) }}</td>
+                <td class="px-4 py-3 font-bold" [ngClass]="daysRemainingClass(row.daysRemaining)">
+                  {{ row.daysRemaining }}
+                </td>
+                <td class="px-4 py-3 text-slate-600">{{ reminderStage(row) }}</td>
+                <td class="px-4 py-3">
+                  <span class="font-bold text-slate-800">{{ row.renewalPriceKd | number:'1.1-1' }} {{ copy().kd }}</span>
+                  @if (row.priceChanged) {
+                    <span class="ms-1 text-[10px] text-amber-600">↑</span>
+                  }
+                </td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="statusClass(row.status)">
+                    {{ statusLabel(row) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-end">
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-slate-50"
+                    (click)="openDetail(row); $event.stopPropagation()"
+                  >
+                    <ng-icon name="lucideEye" size="14" />
+                    {{ copy().viewDetails }}
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="9" class="px-4 py-10 text-center text-sm text-slate-400">{{ copy().noResults }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (filteredRenewals().length > pageSize()) {
+        <div class="border-t border-slate-100 px-4 py-3">
+          <mm-table-pagination
+            [currentPage]="currentPage()"
+            [totalPages]="totalPages()"
+            [pageSize]="pageSize()"
+            [totalItems]="filteredRenewals().length"
+            [itemLabel]="copy().paginationRenewals"
+            (pageChange)="onPageChange($event)"
+          />
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (detailOpen() && selectedRenewal(); as row) {
+    <div class="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-4 sm:items-center" (click)="closeDetail()">
+      <div
+        class="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <div class="flex flex-col gap-1">
+            <h2 class="text-lg font-extrabold text-slate-900">{{ copy().renewalDetailTitle }}</h2>
+            <p class="text-xs text-slate-500">{{ customerName(row) }} · {{ row.subscriptionId }}</p>
+            <span class="mt-1 inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="statusClass(row.status)">
+              {{ statusLabel(row) }}
+            </span>
+          </div>
+          <button type="button" class="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600" (click)="closeDetail()">
+            <ng-icon name="lucideX" size="18" />
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-5 py-4">
+          <dl class="grid gap-3 sm:grid-cols-2">
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colSubType }}</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">{{ subTypeLabel(row) }} · {{ tierLabel(row) }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colProgramBundle }}</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">{{ programBundle(row) }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colEndDate }}</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">{{ endDate(row) }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colDaysRemaining }}</dt>
+              <dd class="mt-0.5 text-sm font-extrabold" [ngClass]="daysRemainingClass(row.daysRemaining)">
+                {{ row.daysRemaining }} {{ copy().days }}
+              </dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colReminderStage }}</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">{{ reminderStage(row) }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colLastReminder }}</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">{{ lastReminder(row) }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colPreviousPrice }}</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">{{ row.previousPriceKd | number:'1.1-1' }} {{ copy().kd }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colRenewalPrice }}</dt>
+              <dd class="mt-0.5 text-sm font-extrabold text-emerald-700">{{ row.renewalPriceKd | number:'1.1-1' }} {{ copy().kd }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colWallet }}</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">{{ row.walletBalanceKd | number:'1.1-1' }} {{ copy().kd }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colPromo }}</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">{{ promoCode(row) ?? '—' }}</dd>
+            </div>
+          </dl>
+
+          <div class="mt-4 rounded-xl border px-4 py-3 text-xs"
+            [ngClass]="row.priceChanged ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-emerald-200 bg-emerald-50 text-emerald-900'">
+            {{ row.priceChanged ? copy().priceChangedNote : copy().priceUnchangedNote }}
+          </div>
+
+          @if (renewedAt(row); as date) {
+            <p class="mt-3 text-xs font-semibold text-emerald-700">{{ copy().renewedAt }}: {{ date }}</p>
+          }
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 px-5 py-3">
+          <a
+            [routerLink]="['/admin/accounts/customers', row.customerId]"
+            class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-800"
+          >
+            {{ copy().openCustomer }}
+          </a>
+          <div class="flex items-center gap-2">
+            @if (row.canSendReminder) {
+              <button
+                type="button"
+                class="inline-flex items-center gap-1 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-xs font-bold text-indigo-700 transition hover:bg-indigo-100"
+                (click)="sendReminder()"
+              >
+                <ng-icon name="lucideBell" size="14" />
+                {{ copy().sendReminder }}
+              </button>
+            }
+            <button type="button" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50" (click)="closeDetail()">
+              {{ copy().close }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</section>

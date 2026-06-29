@@ -2,6 +2,9 @@ import { Injectable, computed, signal } from '@angular/core';
 import {
   AdminOrderDetail,
   AdminOrderRow,
+  AutoSelectionAuditEvent,
+  AutoSelectionRow,
+  AutoSelectionRuleConfig,
   CapacityAuditEvent,
   DeliveryTrackingRow,
   HoldCaseRow,
@@ -28,6 +31,13 @@ import {
   REPLACEMENT_WINDOW_MOCK,
 } from './operations.mock';
 import { CAPACITY_AUDIT_MOCK, CAPACITY_ROWS_MOCK } from './capacity.mock';
+import {
+  AUTO_SELECTION_ALERTS_MOCK,
+  AUTO_SELECTION_AUDIT_MOCK,
+  AUTO_SELECTION_DISTRIBUTION_MOCK,
+  AUTO_SELECTION_ROWS_MOCK,
+  AUTO_SELECTION_RULE_CONFIG,
+} from './auto-selection.mock';
 
 /** Signal store for F120 operations monitoring — orders, delivery, hold, audit. */
 @Injectable({ providedIn: 'root' })
@@ -39,6 +49,11 @@ export class OperationsStore {
   readonly holdCases = signal<HoldCaseRow[]>([...HOLD_CASES_MOCK]);
   readonly capacityRows = signal<RestaurantCapacityRow[]>([...CAPACITY_ROWS_MOCK]);
   readonly capacityAudit = signal<CapacityAuditEvent[]>([...CAPACITY_AUDIT_MOCK]);
+  readonly autoSelectionRows = signal<AutoSelectionRow[]>([...AUTO_SELECTION_ROWS_MOCK]);
+  readonly autoSelectionAudit = signal<AutoSelectionAuditEvent[]>([...AUTO_SELECTION_AUDIT_MOCK]);
+  readonly autoSelectionRule = signal<AutoSelectionRuleConfig>({ ...AUTO_SELECTION_RULE_CONFIG });
+  readonly autoSelectionDistribution = signal([...AUTO_SELECTION_DISTRIBUTION_MOCK]);
+  readonly autoSelectionAlerts = signal([...AUTO_SELECTION_ALERTS_MOCK]);
 
   readonly needsActionCount = computed(() => this.filterByView('needs-action').length);
   readonly activeHoldCount = computed(
@@ -61,6 +76,27 @@ export class OperationsStore {
       busy,
       atRisk,
       overrides,
+    };
+  });
+
+  readonly autoSelectionKpis = computed(() => {
+    const rows = this.autoSelectionRows();
+    const completed = rows.filter((r) => r.status === 'completed').length;
+    const pending = rows.filter((r) => r.status === 'pending').length;
+    const fallback = rows.filter((r) => r.status === 'fallback').length;
+    const quotaOverride = rows.filter((r) => r.status === 'quota_override').length;
+    const failed = rows.filter((r) => r.status === 'failed').length;
+    const resolved = completed + fallback + quotaOverride;
+    const successRate = resolved ? Math.round((completed / resolved) * 100) : 0;
+
+    return {
+      total: rows.length,
+      completed,
+      pending,
+      fallback,
+      quotaOverride,
+      failed,
+      successRate,
     };
   });
 
@@ -363,6 +399,42 @@ export class OperationsStore {
         restaurantId,
         restaurantName: row.restaurantName,
         action,
+        actorName: 'Operations - Current User',
+        reason,
+        createdAt: new Date().toISOString(),
+      },
+      ...events,
+    ]);
+  }
+
+  toggleAutoSelectionEnabled(): void {
+    this.autoSelectionRule.update((rule) => ({
+      ...rule,
+      enabled: !rule.enabled,
+      updatedAt: new Date().toISOString(),
+    }));
+  }
+
+  applyManualOverride(selectionId: string, reason: string): void {
+    this.autoSelectionRows.update((rows) =>
+      rows.map((row) =>
+        row.id === selectionId
+          ? {
+              ...row,
+              status: 'completed' as const,
+              source: 'manual_override' as const,
+              selectionReason: reason,
+              updatedAt: new Date().toISOString(),
+            }
+          : row,
+      ),
+    );
+
+    this.autoSelectionAudit.update((events) => [
+      {
+        id: `ASA-${Date.now()}`,
+        selectionId,
+        action: 'ManualOverride',
         actorName: 'Operations - Current User',
         reason,
         createdAt: new Date().toISOString(),

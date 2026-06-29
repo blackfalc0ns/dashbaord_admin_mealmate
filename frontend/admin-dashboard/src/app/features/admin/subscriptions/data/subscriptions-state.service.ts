@@ -42,6 +42,18 @@ import {
   RESTAURANT_PRICES_MOCK,
   SUBSCRIPTION_STATS_MOCK,
 } from './subscriptions.mock';
+import {
+  FAMILY_GROUPS_MOCK,
+  INDIVIDUAL_SUBSCRIPTIONS_MOCK,
+  LIFECYCLE_STATS_MOCK,
+} from './lifecycle.mock';
+import { FREEZE_POLICY_MOCK, FREEZE_REQUESTS_MOCK, FREEZE_STATS_MOCK } from './freeze.mock';
+import { RENEWAL_POLICY_MOCK, RENEWALS_MOCK, RENEWAL_STATS_MOCK } from './renewal.mock';
+import { FamilyGroupRow, IndividualSubscriptionRow, LifecycleStats } from '../models/lifecycle.model';
+import { FreezePolicy, FreezeRequestRow, FreezeStats } from '../models/freeze.model';
+import { RenewalPolicy, RenewalRow, RenewalStats } from '../models/renewal.model';
+import { UPGRADE_POLICY_MOCK, UPGRADE_REQUESTS_MOCK, UPGRADE_STATS_MOCK } from './upgrade.mock';
+import { UpgradePolicy, UpgradeRequestRow, UpgradeStats } from '../models/upgrade.model';
 
 @Injectable({ providedIn: 'root' })
 export class SubscriptionsStateService {
@@ -61,6 +73,24 @@ export class SubscriptionsStateService {
   readonly outlierAudits = signal<OutlierAuditLog[]>([...OUTLIER_AUDIT_MOCK]);
   readonly recalculationEvents = signal<RecalculationEvent[]>([...RECALCULATION_EVENTS_MOCK]);
   readonly stats = signal({ ...SUBSCRIPTION_STATS_MOCK });
+
+  readonly familyGroups = signal<FamilyGroupRow[]>([...FAMILY_GROUPS_MOCK]);
+  readonly individualSubscriptions = signal<IndividualSubscriptionRow[]>([
+    ...INDIVIDUAL_SUBSCRIPTIONS_MOCK,
+  ]);
+  readonly lifecycleStats = signal<LifecycleStats>({ ...LIFECYCLE_STATS_MOCK });
+
+  readonly freezePolicy = signal<FreezePolicy>({ ...FREEZE_POLICY_MOCK });
+  readonly freezeRequests = signal<FreezeRequestRow[]>([...FREEZE_REQUESTS_MOCK]);
+  readonly freezeStats = signal<FreezeStats>({ ...FREEZE_STATS_MOCK });
+
+  readonly renewalPolicy = signal<RenewalPolicy>({ ...RENEWAL_POLICY_MOCK });
+  readonly renewals = signal<RenewalRow[]>([...RENEWALS_MOCK]);
+  readonly renewalStats = signal<RenewalStats>({ ...RENEWAL_STATS_MOCK });
+
+  readonly upgradePolicy = signal<UpgradePolicy>({ ...UPGRADE_POLICY_MOCK });
+  readonly upgradeRequests = signal<UpgradeRequestRow[]>([...UPGRADE_REQUESTS_MOCK]);
+  readonly upgradeStats = signal<UpgradeStats>({ ...UPGRADE_STATS_MOCK });
 
   readonly adminOverrides = signal<Record<string, RestaurantTier | 'excluded'>>({});
 
@@ -606,5 +636,181 @@ export class SubscriptionsStateService {
       },
       ...events.slice(0, 9),
     ]);
+  }
+
+  updateFreezePolicy(durationDays: number): void {
+    this.freezePolicy.update((policy) => ({
+      ...policy,
+      defaultDurationDays: durationDays,
+      updatedAt: new Date().toISOString(),
+      updatedByAr: 'أنت — الأدمن',
+      updatedByEn: 'You — Admin',
+    }));
+  }
+
+  endFreezeEarly(requestId: string): boolean {
+    const row = this.freezeRequests().find((r) => r.id === requestId);
+    if (!row || !row.canEndEarly) return false;
+
+    this.freezeRequests.update((list) =>
+      list.map((r) =>
+        r.id === requestId
+          ? {
+              ...r,
+              status: 'Completed',
+              statusAr: 'انتهى يدوياً — عاد للاختيار',
+              statusEn: 'Ended manually — resumed selection',
+              canEndEarly: false,
+            }
+          : r,
+      ),
+    );
+
+    this.freezeStats.update((s) => ({
+      ...s,
+      currentlyFrozen: Math.max(0, s.currentlyFrozen - (row.status === 'Active' ? 1 : 0)),
+      endingSoon: Math.max(0, s.endingSoon - (row.status === 'EndingSoon' ? 1 : 0)),
+    }));
+
+    return true;
+  }
+
+  updateRenewalPolicy(patch: Partial<Pick<RenewalPolicy, 'firstReminderDays' | 'secondReminderDays' | 'finalReminderDays'>>): void {
+    this.renewalPolicy.update((policy) => ({
+      ...policy,
+      ...patch,
+      updatedAt: new Date().toISOString(),
+      updatedByAr: 'أنت — الأدمن',
+      updatedByEn: 'You — Admin',
+    }));
+  }
+
+  sendRenewalReminder(renewalId: string): boolean {
+    const row = this.renewals().find((r) => r.id === renewalId);
+    if (!row || !row.canSendReminder) return false;
+
+    const nowAr = '28 يونيو 2026';
+    const nowEn = '28 June 2026';
+    const nextStage =
+      row.reminderStage === 'None'
+        ? 'First'
+        : row.reminderStage === 'First'
+          ? 'Second'
+          : 'Final';
+
+    this.renewals.update((list) =>
+      list.map((r) =>
+        r.id === renewalId
+          ? {
+              ...r,
+              status: 'ReminderSent',
+              statusAr: 'تم إرسال تذكير',
+              statusEn: 'Reminder sent',
+              reminderStage: nextStage,
+              reminderStageAr:
+                nextStage === 'First'
+                  ? 'تذكير أول'
+                  : nextStage === 'Second'
+                    ? 'تذكير ثانٍ'
+                    : 'تذكير نهائي',
+              reminderStageEn:
+                nextStage === 'First'
+                  ? 'First reminder'
+                  : nextStage === 'Second'
+                    ? 'Second reminder'
+                    : 'Final reminder',
+              lastReminderAtAr: nowAr,
+              lastReminderAtEn: nowEn,
+              canSendReminder: nextStage !== 'Final',
+            }
+          : r,
+      ),
+    );
+
+    this.renewalStats.update((s) => ({
+      ...s,
+      remindersSent: s.remindersSent + 1,
+    }));
+
+    return true;
+  }
+
+  updateUpgradePolicy(patch: Partial<Pick<UpgradePolicy, 'prorateRemainingDays' | 'requireReviewForElite' | 'savePricingSnapshot'>>): void {
+    this.upgradePolicy.update((policy) => ({
+      ...policy,
+      ...patch,
+      updatedAt: new Date().toISOString(),
+      updatedByAr: 'أنت — الأدمن',
+      updatedByEn: 'You — Admin',
+    }));
+  }
+
+  approveUpgrade(requestId: string): boolean {
+    const row = this.upgradeRequests().find((r) => r.id === requestId);
+    if (!row || !row.canApprove) return false;
+
+    this.upgradeRequests.update((list) =>
+      list.map((r) =>
+        r.id === requestId
+          ? {
+              ...r,
+              status: 'Completed',
+              statusAr: 'تمت الترقية',
+              statusEn: 'Completed',
+              currentTier: r.targetTier,
+              currentTierAr: r.targetTierAr,
+              currentTierEn: r.targetTierEn,
+              currentPriceKd: r.targetTierPriceKd,
+              canApprove: false,
+              canReject: false,
+              hasSnapshot: true,
+              completedAtAr: '28 يونيو 2026',
+              completedAtEn: '28 June 2026',
+            }
+          : r,
+      ),
+    );
+
+    this.upgradeStats.update((s) => ({
+      ...s,
+      pendingRequests: Math.max(0, s.pendingRequests - (row.status === 'Pending' ? 1 : 0)),
+      inProgress: Math.max(0, s.inProgress - (row.status === 'InProgress' ? 1 : 0)),
+      needsReview: Math.max(0, s.needsReview - (row.status === 'NeedsReview' ? 1 : 0)),
+      completedThisMonth: s.completedThisMonth + 1,
+      upgradeRevenueKd: Number((s.upgradeRevenueKd + row.proratedDifferenceKd).toFixed(1)),
+    }));
+
+    return true;
+  }
+
+  rejectUpgrade(requestId: string, reasonAr: string, reasonEn: string): boolean {
+    const row = this.upgradeRequests().find((r) => r.id === requestId);
+    if (!row || !row.canReject) return false;
+
+    this.upgradeRequests.update((list) =>
+      list.map((r) =>
+        r.id === requestId
+          ? {
+              ...r,
+              status: 'Rejected',
+              statusAr: 'مرفوض',
+              statusEn: 'Rejected',
+              canApprove: false,
+              canReject: false,
+              rejectReasonAr: reasonAr,
+              rejectReasonEn: reasonEn,
+            }
+          : r,
+      ),
+    );
+
+    this.upgradeStats.update((s) => ({
+      ...s,
+      pendingRequests: Math.max(0, s.pendingRequests - (row.status === 'Pending' ? 1 : 0)),
+      inProgress: Math.max(0, s.inProgress - (row.status === 'InProgress' ? 1 : 0)),
+      needsReview: Math.max(0, s.needsReview - (row.status === 'NeedsReview' ? 1 : 0)),
+    }));
+
+    return true;
   }
 }

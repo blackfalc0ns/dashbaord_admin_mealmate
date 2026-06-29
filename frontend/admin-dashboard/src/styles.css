@@ -3341,6 +3341,125 @@
     line-height: 1.55;
     color: #64748b;
   }
+
+  /* Auto-selection — overview-style workspace windows */
+  .mm-as-auto-selection-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .mm-as-auto-selection__workspace,
+  .mm-as-auto-selection__rules {
+    align-items: stretch;
+  }
+
+  .mm-as-auto-selection__workspace--solo {
+    border-radius: 0.875rem;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(15 29 50 / 4%);
+    overflow: hidden;
+  }
+
+  .mm-as-auto-selection__workspace--solo .mm-as-auto-selection__queue {
+    height: auto;
+    gap: 0.25rem !important;
+    padding-block: 0.5rem !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .mm-as-auto-selection__workspace--solo .mm-as-auto-selection__queue [data-slot='card-header'] {
+    min-height: 3rem;
+    padding-bottom: 0.375rem !important;
+  }
+
+  .mm-as-auto-selection__workspace--solo .mm-as-auto-selection__queue [data-slot='card-content'] {
+    padding-top: 0 !important;
+    padding-bottom: 0.375rem !important;
+    padding-inline: 0.875rem !important;
+  }
+
+  .mm-as-auto-selection__workspace .mm-overview-operations__metrics,
+  .mm-as-auto-selection__rules .mm-overview-finance__metrics {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .mm-as-auto-selection__workspace .mm-overview-operations__metrics > .mm-overview-domain,
+  .mm-as-auto-selection__rules .mm-overview-finance__metrics > .mm-overview-domain {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .mm-as-auto-selection__queue-table {
+    overflow: auto;
+    border: 1px solid #eef2f6;
+    border-radius: 0.625rem;
+    background: #fff;
+    max-height: min(28rem, 58vh);
+  }
+
+  .mm-as-auto-selection__rules-body {
+    max-height: min(70vh, 36rem);
+  }
+
+  .mm-as-auto-selection__detail-body {
+    max-height: min(26rem, 52vh);
+    overflow-y: auto;
+  }
+
+  .mm-as-auto-selection__data-table tbody tr {
+    transition: background-color 150ms ease;
+  }
+
+  .mm-overview-operations__workspace .mm-as-auto-selection__queue [data-slot='card-content'],
+  .mm-overview-operations__workspace .mm-as-auto-selection__detail [data-slot='card-content'],
+  .mm-overview-finance__workspace .mm-as-auto-selection__rules-panel [data-slot='card-content'],
+  .mm-overview-finance__workspace .mm-as-auto-selection__distribution-panel [data-slot='card-content'] {
+    padding-inline: 0.875rem !important;
+  }
+
+  .mm-overview-operations__workspace .mm-as-auto-selection__queue,
+  .mm-overview-operations__workspace .mm-as-auto-selection__detail,
+  .mm-overview-finance__workspace .mm-as-auto-selection__rules-panel,
+  .mm-overview-finance__workspace .mm-as-auto-selection__distribution-panel {
+    height: auto;
+    gap: 0.25rem !important;
+    padding-block: 0.5rem !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  @media (min-width: 1024px) {
+    .mm-overview-operations__workspace .mm-as-auto-selection__queue {
+      border-inline-end: 1px solid #e2e8f0;
+    }
+
+    .mm-overview-finance__workspace .mm-as-auto-selection__rules-panel {
+      border-inline-end: 1px solid #e2e8f0;
+    }
+  }
+
+  .mm-overview-operations__workspace .mm-as-auto-selection__queue [data-slot='card-header'],
+  .mm-overview-operations__workspace .mm-as-auto-selection__detail [data-slot='card-header'],
+  .mm-overview-finance__workspace .mm-as-auto-selection__rules-panel [data-slot='card-header'],
+  .mm-overview-finance__workspace .mm-as-auto-selection__distribution-panel [data-slot='card-header'] {
+    min-height: 3rem;
+    padding-bottom: 0.375rem !important;
+  }
+
+  .mm-overview-operations__workspace .mm-as-auto-selection__queue [data-slot='card-content'],
+  .mm-overview-operations__workspace .mm-as-auto-selection__detail [data-slot='card-content'],
+  .mm-overview-finance__workspace .mm-as-auto-selection__rules-panel [data-slot='card-content'],
+  .mm-overview-finance__workspace .mm-as-auto-selection__distribution-panel [data-slot='card-content'] {
+    padding-top: 0 !important;
+    padding-bottom: 0.375rem !important;
+  }
 }
 
 @keyframes mm-fade-in {

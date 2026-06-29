@@ -1,0 +1,338 @@
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
+  @if (toast()) {
+    <div class="mb-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800">
+      {{ toast() }}
+    </div>
+  }
+
+  <div class="flex w-full flex-col gap-4">
+    <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <mm-operations-kpi-card
+        [label]="copy().kpiUpgradePending"
+        [value]="kpis().pending"
+        icon="lucideClock"
+        valueClass="text-amber-600"
+        iconWrapClass="bg-amber-50 text-amber-600 ring-amber-100"
+        [active]="statusFilter() === 'Pending'"
+        (clicked)="setFilter('Pending')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiUpgradeInProgress"
+        [value]="kpis().inProgress"
+        icon="lucideArrowUpRight"
+        valueClass="text-sky-600"
+        iconWrapClass="bg-sky-50 text-sky-600 ring-sky-100"
+        [active]="statusFilter() === 'InProgress'"
+        (clicked)="setFilter('InProgress')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiUpgradeNeedsReview"
+        [value]="kpis().needsReview"
+        icon="lucideCircleAlert"
+        valueClass="text-orange-600"
+        iconWrapClass="bg-orange-50 text-orange-600 ring-orange-100"
+        [active]="statusFilter() === 'NeedsReview'"
+        (clicked)="setFilter('NeedsReview')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiUpgradeCompleted"
+        [value]="kpis().completed"
+        icon="lucideCheck"
+        valueClass="text-emerald-600"
+        iconWrapClass="bg-emerald-50 text-emerald-600 ring-emerald-100"
+        [active]="statusFilter() === 'Completed'"
+        (clicked)="setFilter('Completed')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiUpgradeRevenue"
+        [value]="(kpis().revenue | number:'1.1-1') + ' ' + copy().kd"
+        icon="lucideTrendingUp"
+        valueClass="text-indigo-600"
+        iconWrapClass="bg-indigo-50 text-indigo-600 ring-indigo-100"
+        [active]="statusFilter() === 'all'"
+        (clicked)="setFilter('all')"
+      />
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="mb-3 flex items-center gap-2">
+        <div class="flex size-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100">
+          <ng-icon name="lucideSettings2" size="16" />
+        </div>
+        <div>
+          <h2 class="text-sm font-extrabold text-slate-900">{{ copy().upgradePolicyTitle }}</h2>
+          <p class="text-[10px] text-slate-500">{{ copy().upgradeAllowedPaths }}</p>
+        </div>
+      </div>
+
+      <div class="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div class="grid gap-3 sm:grid-cols-3">
+          <label class="flex cursor-pointer items-start gap-2 rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+            <input type="checkbox" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+              [ngModel]="policyProrate()" (ngModelChange)="policyProrate.set($event)" />
+            <span class="flex flex-col gap-0.5">
+              <span class="text-xs font-bold text-slate-800">{{ copy().upgradePolicyProrate }}</span>
+              <span class="text-[10px] text-slate-500">{{ copy().upgradePolicyProrateDesc }}</span>
+            </span>
+          </label>
+          <label class="flex cursor-pointer items-start gap-2 rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+            <input type="checkbox" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+              [ngModel]="policyEliteReview()" (ngModelChange)="policyEliteReview.set($event)" />
+            <span class="flex flex-col gap-0.5">
+              <span class="text-xs font-bold text-slate-800">{{ copy().upgradePolicyEliteReview }}</span>
+              <span class="text-[10px] text-slate-500">{{ copy().upgradePolicyEliteReviewDesc }}</span>
+            </span>
+          </label>
+          <label class="flex cursor-pointer items-start gap-2 rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+            <input type="checkbox" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+              [ngModel]="policySnapshot()" (ngModelChange)="policySnapshot.set($event)" />
+            <span class="flex flex-col gap-0.5">
+              <span class="text-xs font-bold text-slate-800">{{ copy().renewalPolicySnapshot }}</span>
+              <span class="text-[10px] text-slate-500">{{ copy().upgradePolicySnapshotDesc2 }}</span>
+            </span>
+          </label>
+        </div>
+
+        <div class="flex flex-col gap-2 lg:items-end">
+          <button type="button"
+            class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-700"
+            (click)="savePolicy()">
+            <ng-icon name="lucideSave" size="14" />
+            {{ copy().policySave }}
+          </button>
+          <p class="text-[10px] text-slate-400">{{ copy().policyUpdatedBy }}: {{ policyUpdatedBy() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="relative w-full sm:max-w-xs">
+          <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+            <ng-icon name="lucideSearch" size="16" />
+          </span>
+          <input type="text" [placeholder]="copy().searchPlaceholder"
+            class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-xs transition-all focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            (input)="onSearch($event)" />
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'all'" [class.text-slate-900]="statusFilter() === 'all'"
+              [class.shadow-sm]="statusFilter() === 'all'" [class.text-slate-500]="statusFilter() !== 'all'"
+              (click)="setFilter('all')">{{ copy().all }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Pending'" [class.text-slate-900]="statusFilter() === 'Pending'"
+              [class.shadow-sm]="statusFilter() === 'Pending'" [class.text-slate-500]="statusFilter() !== 'Pending'"
+              (click)="setFilter('Pending')">{{ copy().kpiUpgradePending }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'InProgress'" [class.text-slate-900]="statusFilter() === 'InProgress'"
+              [class.shadow-sm]="statusFilter() === 'InProgress'" [class.text-slate-500]="statusFilter() !== 'InProgress'"
+              (click)="setFilter('InProgress')">{{ copy().filterInProgress }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'NeedsReview'" [class.text-slate-900]="statusFilter() === 'NeedsReview'"
+              [class.shadow-sm]="statusFilter() === 'NeedsReview'" [class.text-slate-500]="statusFilter() !== 'NeedsReview'"
+              (click)="setFilter('NeedsReview')">{{ copy().filterNeedsReview }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Completed'" [class.text-slate-900]="statusFilter() === 'Completed'"
+              [class.shadow-sm]="statusFilter() === 'Completed'" [class.text-slate-500]="statusFilter() !== 'Completed'"
+              (click)="setFilter('Completed')">{{ copy().filterRenewed }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Rejected'" [class.text-slate-900]="statusFilter() === 'Rejected'"
+              [class.shadow-sm]="statusFilter() === 'Rejected'" [class.text-slate-500]="statusFilter() !== 'Rejected'"
+              (click)="setFilter('Rejected')">{{ copy().filterRejected }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-start text-xs">
+          <thead>
+            <tr class="border-b border-slate-100 bg-slate-50/75 text-slate-500 font-bold">
+              <th class="px-4 py-2.5 text-start">{{ copy().colCustomer }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colProgramBundle }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colTierChange }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colRemainingDays }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colProratedDiff }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colSource }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colStatus }}</th>
+              <th class="px-4 py-2.5 text-end">{{ copy().colActions }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (row of paginatedRequests(); track row.id) {
+              <tr class="cursor-pointer transition-colors hover:bg-slate-50/80" (click)="openDetail(row)">
+                <td class="px-4 py-3">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="font-extrabold text-slate-900 text-sm">{{ customerName(row) }}</span>
+                    <span class="text-[10px] text-slate-400">{{ row.subscriptionId }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-slate-700">{{ programBundle(row) }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-1.5">
+                    <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="tierClass(row.currentTier)">
+                      {{ tierLabel(row.currentTierAr, row.currentTierEn) }}
+                    </span>
+                    <ng-icon name="lucideArrowUpRight" size="12" class="text-emerald-600" />
+                    <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="tierClass(row.targetTier)">
+                      {{ tierLabel(row.targetTierAr, row.targetTierEn) }}
+                    </span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 font-bold text-slate-700">{{ row.remainingDays }}</td>
+                <td class="px-4 py-3 font-extrabold text-emerald-700">
+                  +{{ row.proratedDifferenceKd | number:'1.1-1' }} {{ copy().kd }}
+                </td>
+                <td class="px-4 py-3 text-slate-600">{{ sourceLabel(row) }}</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="statusClass(row.status)">
+                    {{ statusLabel(row) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-end">
+                  <button type="button"
+                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-slate-50"
+                    (click)="openDetail(row); $event.stopPropagation()">
+                    <ng-icon name="lucideEye" size="14" />
+                    {{ copy().viewDetails }}
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="8" class="px-4 py-10 text-center text-sm text-slate-400">{{ copy().noResults }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (filteredRequests().length > pageSize()) {
+        <div class="border-t border-slate-100 px-4 py-3">
+          <mm-table-pagination
+            [currentPage]="currentPage()"
+            [totalPages]="totalPages()"
+            [pageSize]="pageSize()"
+            [totalItems]="filteredRequests().length"
+            [itemLabel]="copy().paginationUpgrades"
+            (pageChange)="onPageChange($event)"
+          />
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (detailOpen() && selectedRequest(); as row) {
+    <div class="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-4 sm:items-center" (click)="closeDetail()">
+      <div class="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        (click)="$event.stopPropagation()">
+        <div class="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <div class="flex flex-col gap-1">
+            <h2 class="text-lg font-extrabold text-slate-900">{{ copy().upgradeDetailTitle }}</h2>
+            <p class="text-xs text-slate-500">{{ customerName(row) }} · {{ row.subscriptionId }}</p>
+            <div class="mt-1 flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="statusClass(row.status)">
+                {{ statusLabel(row) }}
+              </span>
+              @if (row.hasSnapshot) {
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-200">
+                  <ng-icon name="lucideAward" size="12" />
+                  {{ copy().snapshotSaved }}
+                </span>
+              } @else {
+                <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 ring-1 ring-amber-200">
+                  <ng-icon name="lucideCircleAlert" size="12" />
+                  {{ copy().snapshotMissing }}
+                </span>
+              }
+            </div>
+          </div>
+          <button type="button" class="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600" (click)="closeDetail()">
+            <ng-icon name="lucideX" size="18" />
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-5 py-4">
+          <div class="mb-4 flex items-center justify-center gap-3 rounded-xl border border-slate-100 bg-slate-50/80 px-4 py-4">
+            <div class="flex flex-col items-center gap-1">
+              <span class="text-[10px] font-bold text-slate-400">{{ copy().colCurrentTier }}</span>
+              <span class="inline-flex rounded-full px-3 py-1 text-sm font-extrabold ring-1" [ngClass]="tierClass(row.currentTier)">
+                {{ tierLabel(row.currentTierAr, row.currentTierEn) }}
+              </span>
+              <span class="text-xs text-slate-500">{{ row.currentPriceKd | number:'1.1-1' }} {{ copy().kd }}</span>
+            </div>
+            <ng-icon name="lucideArrowUpRight" size="24" class="text-emerald-600" />
+            <div class="flex flex-col items-center gap-1">
+              <span class="text-[10px] font-bold text-slate-400">{{ copy().colTargetTier }}</span>
+              <span class="inline-flex rounded-full px-3 py-1 text-sm font-extrabold ring-1" [ngClass]="tierClass(row.targetTier)">
+                {{ tierLabel(row.targetTierAr, row.targetTierEn) }}
+              </span>
+              <span class="text-xs font-bold text-emerald-700">{{ row.targetTierPriceKd | number:'1.1-1' }} {{ copy().kd }}</span>
+            </div>
+          </div>
+
+          <dl class="grid gap-3 sm:grid-cols-2">
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colProgramBundle }}</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">{{ programBundle(row) }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colSource }}</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">{{ sourceLabel(row) }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colRemainingDays }}</dt>
+              <dd class="mt-0.5 text-sm font-extrabold text-slate-800">{{ row.remainingDays }} {{ copy().days }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colProratedDiff }}</dt>
+              <dd class="mt-0.5 text-sm font-extrabold text-emerald-700">+{{ row.proratedDifferenceKd | number:'1.1-1' }} {{ copy().kd }}</dd>
+            </div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5 sm:col-span-2">
+              <dt class="text-[10px] font-bold text-slate-400">{{ copy().colAccessGain }}</dt>
+              <dd class="mt-0.5 text-sm font-bold text-slate-800">{{ accessGain(row) }}</dd>
+            </div>
+          </dl>
+
+          @if (rejectReason(row); as reason) {
+            <div class="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-800">
+              <p class="mb-1 font-bold">{{ copy().rejectReason }}</p>
+              <p>{{ reason }}</p>
+            </div>
+          }
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 px-5 py-3">
+          <a [routerLink]="['/admin/accounts/customers', row.customerId]"
+            class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-800">
+            {{ copy().openCustomer }}
+          </a>
+          <div class="flex items-center gap-2">
+            @if (row.canApprove) {
+              <button type="button"
+                class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-700"
+                (click)="approveUpgrade()">
+                <ng-icon name="lucideCheck" size="14" />
+                {{ copy().approveUpgrade }}
+              </button>
+            }
+            @if (row.canReject) {
+              <button type="button"
+                class="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100"
+                (click)="rejectUpgrade()">
+                {{ copy().rejectUpgrade }}
+              </button>
+            }
+            <button type="button" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50" (click)="closeDetail()">
+              {{ copy().close }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</section>

@@ -48,5 +48,12 @@ export const OPERATIONS_ROUTES: Routes = [
         (m) => m.OperationsAuditPageComponent,
       ),
   },
+  {
+    path: 'auto-selection',
+    loadComponent: () =>
+      import('./pages/auto-selection-workspace-page/auto-selection-workspace-page.component').then(
+        (m) => m.AutoSelectionWorkspacePageComponent,
+      ),
+  },
   { path: '', redirectTo: 'orders', pathMatch: 'full' },
 ];

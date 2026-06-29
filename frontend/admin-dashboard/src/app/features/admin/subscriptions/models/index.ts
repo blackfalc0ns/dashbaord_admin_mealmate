@@ -3,3 +3,7 @@ export * from './program.model';
 export * from './bundle.model';
 export * from './classification.model';
 export * from './pricing.model';
+export * from './lifecycle.model';
+export * from './freeze.model';
+export * from './renewal.model';
+export * from './upgrade.model';

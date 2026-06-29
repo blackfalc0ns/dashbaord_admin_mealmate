@@ -1,0 +1,267 @@
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
+  <div class="flex w-full flex-col gap-4">
+    <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+      <mm-operations-kpi-card
+        [label]="copy().kpiFamilyGroups"
+        [value]="kpis().groups"
+        icon="lucideUsersRound"
+        [active]="statusFilter() === 'all'"
+        (clicked)="setFilter('all')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiFamilyMembers"
+        [value]="kpis().members"
+        icon="lucideUser"
+        valueClass="text-indigo-600"
+        iconWrapClass="bg-indigo-50 text-indigo-600 ring-indigo-100"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiFamilyDisputes"
+        [value]="kpis().disputes"
+        icon="lucideCircleAlert"
+        valueClass="text-red-600"
+        iconWrapClass="bg-red-50 text-red-600 ring-red-100"
+        [active]="statusFilter() === 'Dispute'"
+        (clicked)="setFilter('Dispute')"
+      />
+      <mm-operations-kpi-card
+        [label]="copy().kpiPendingDetach"
+        [value]="kpis().pendingDetach"
+        icon="lucideSnowflake"
+        valueClass="text-amber-600"
+        iconWrapClass="bg-amber-50 text-amber-600 ring-amber-100"
+        [active]="statusFilter() === 'PendingDetach'"
+        (clicked)="setFilter('PendingDetach')"
+      />
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="relative w-full sm:max-w-xs">
+          <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+            <ng-icon name="lucideSearch" size="16" />
+          </span>
+          <input
+            type="text"
+            [placeholder]="copy().searchPlaceholder"
+            class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-xs transition-all focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            (input)="onSearch($event)"
+          />
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'all'"
+              [class.text-slate-900]="statusFilter() === 'all'"
+              [class.shadow-sm]="statusFilter() === 'all'"
+              [class.text-slate-500]="statusFilter() !== 'all'"
+              (click)="setFilter('all')">{{ copy().all }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Active'"
+              [class.text-slate-900]="statusFilter() === 'Active'"
+              [class.shadow-sm]="statusFilter() === 'Active'"
+              [class.text-slate-500]="statusFilter() !== 'Active'"
+              (click)="setFilter('Active')">{{ copy().active }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Frozen'"
+              [class.text-slate-900]="statusFilter() === 'Frozen'"
+              [class.shadow-sm]="statusFilter() === 'Frozen'"
+              [class.text-slate-500]="statusFilter() !== 'Frozen'"
+              (click)="setFilter('Frozen')">{{ copy().frozen }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'Dispute'"
+              [class.text-slate-900]="statusFilter() === 'Dispute'"
+              [class.shadow-sm]="statusFilter() === 'Dispute'"
+              [class.text-slate-500]="statusFilter() !== 'Dispute'"
+              (click)="setFilter('Dispute')">{{ copy().dispute }}</button>
+            <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all"
+              [class.bg-white]="statusFilter() === 'PendingDetach'"
+              [class.text-slate-900]="statusFilter() === 'PendingDetach'"
+              [class.shadow-sm]="statusFilter() === 'PendingDetach'"
+              [class.text-slate-500]="statusFilter() !== 'PendingDetach'"
+              (click)="setFilter('PendingDetach')">{{ copy().pendingDetach }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-start text-xs">
+          <thead>
+            <tr class="border-b border-slate-100 bg-slate-50/75 text-slate-500 font-bold">
+              <th class="px-4 py-2.5 text-start">{{ copy().colFamily }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colManager }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colProgramBundle }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colTier }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colMembers }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colDays }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colActiveOrders }}</th>
+              <th class="px-4 py-2.5 text-start">{{ copy().colStatus }}</th>
+              <th class="px-4 py-2.5 text-end">{{ copy().colActions }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (row of paginatedGroups(); track row.id) {
+              <tr
+                class="cursor-pointer transition-colors hover:bg-slate-50/80"
+                (click)="openDetail(row)"
+              >
+                <td class="px-4 py-3">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="font-extrabold text-slate-900 text-sm">{{ groupName(row) }}</span>
+                    <span class="text-[10px] text-slate-400">{{ row.subscriptionId }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="font-semibold text-slate-700">{{ managerName(row) }}</span>
+                </td>
+                <td class="px-4 py-3 text-slate-700">{{ programBundle(row) }}</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700 ring-1 ring-indigo-100">
+                    {{ tierLabel(row) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 font-bold text-slate-700">{{ row.memberCount }}</td>
+                <td class="px-4 py-3 text-slate-700">
+                  {{ row.usedDays }} {{ copy().daysUsedOf }} {{ row.subscriptionDays }}
+                </td>
+                <td class="px-4 py-3 font-bold" [class.text-amber-600]="row.activeOrders > 0">
+                  {{ row.activeOrders }}
+                </td>
+                <td class="px-4 py-3">
+                  <span
+                    class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ring-1"
+                    [ngClass]="statusClass(row.status)"
+                  >
+                    {{ statusLabel(row) }}
+                  </span>
+                  @if (row.hasEscalation) {
+                    <span class="ms-1 inline-flex size-1.5 rounded-full bg-red-500" title="Escalation"></span>
+                  }
+                </td>
+                <td class="px-4 py-3 text-end">
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-slate-50"
+                    (click)="openDetail(row); $event.stopPropagation()"
+                  >
+                    <ng-icon name="lucideEye" size="14" />
+                    {{ copy().viewDetails }}
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="9" class="px-4 py-10 text-center text-sm text-slate-400">{{ copy().noResults }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (filteredGroups().length > pageSize()) {
+        <div class="border-t border-slate-100 px-4 py-3">
+          <mm-table-pagination
+            [currentPage]="currentPage()"
+            [totalPages]="totalPages()"
+            [pageSize]="pageSize()"
+            [totalItems]="filteredGroups().length"
+            [itemLabel]="copy().paginationFamilyGroups"
+            (pageChange)="onPageChange($event)"
+          />
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (detailOpen() && selectedGroup(); as group) {
+    <div class="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-4 sm:items-center" (click)="closeDetail()">
+      <div
+        class="flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <div class="flex flex-col gap-1">
+            <h2 class="text-lg font-extrabold text-slate-900">{{ groupName(group) }}</h2>
+            <p class="text-xs text-slate-500">{{ group.subscriptionId }} · {{ programBundle(group) }} · {{ tierLabel(group) }}</p>
+            <div class="mt-1 flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="statusClass(group.status)">
+                {{ statusLabel(group) }}
+              </span>
+              <span class="text-[11px] text-slate-500">{{ copy().colManager }}: {{ managerName(group) }}</span>
+            </div>
+          </div>
+          <button type="button" class="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600" (click)="closeDetail()">
+            <ng-icon name="lucideX" size="18" />
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-5 py-4">
+          @if (group.hasEscalation && (group.escalationNoteAr || group.escalationNoteEn)) {
+            <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-800">
+              <p class="mb-1 font-bold">{{ copy().escalationNote }}</p>
+              <p>{{ locale.isRtl() ? group.escalationNoteAr : group.escalationNoteEn }}</p>
+            </div>
+          }
+
+          <div class="mb-3 flex items-center justify-between">
+            <h3 class="text-sm font-extrabold text-slate-900">{{ copy().familyMembersTitle }}</h3>
+            <a
+              [routerLink]="['/admin/accounts/customers', group.managerCustomerId]"
+              class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-800"
+            >
+              <ng-icon name="lucideUser" size="14" />
+              {{ copy().openManager }}
+            </a>
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-slate-200">
+            <table class="w-full border-collapse text-start text-xs">
+              <thead>
+                <tr class="border-b border-slate-100 bg-slate-50/75 text-slate-500 font-bold">
+                  <th class="px-4 py-2.5 text-start">{{ copy().colCustomer }}</th>
+                  <th class="px-4 py-2.5 text-start">{{ copy().memberRole }}</th>
+                  <th class="px-4 py-2.5 text-start">{{ copy().memberQuota }}</th>
+                  <th class="px-4 py-2.5 text-start">{{ copy().memberUsed }}</th>
+                  <th class="px-4 py-2.5 text-start">{{ copy().memberOrders }}</th>
+                  <th class="px-4 py-2.5 text-start">{{ copy().colStatus }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                @for (member of group.members; track member.customerId) {
+                  <tr class="hover:bg-slate-50/50">
+                    <td class="px-4 py-3">
+                      <a
+                        [routerLink]="['/admin/accounts/customers', member.customerId]"
+                        class="font-semibold text-emerald-700 hover:underline"
+                      >
+                        {{ memberName(member) }}
+                      </a>
+                    </td>
+                    <td class="px-4 py-3 text-slate-600">{{ memberRole(member) }}</td>
+                    <td class="px-4 py-3 font-bold text-slate-700">{{ member.quotaDays }}</td>
+                    <td class="px-4 py-3 text-slate-700">{{ member.usedDays }}</td>
+                    <td class="px-4 py-3 font-bold" [class.text-amber-600]="member.activeOrders > 0">{{ member.activeOrders }}</td>
+                    <td class="px-4 py-3">
+                      <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="memberStatusClass(member.status)">
+                        {{ memberStatus(member) }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-100 px-5 py-3 text-end">
+          <button type="button" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50" (click)="closeDetail()">
+            {{ copy().close }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</section>

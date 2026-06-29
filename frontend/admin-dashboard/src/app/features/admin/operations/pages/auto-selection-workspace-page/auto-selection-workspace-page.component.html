@@ -1,0 +1,770 @@
+<section [attr.dir]="isRtl() ? 'rtl' : 'ltr'" class="mm-page mm-overview min-h-full text-slate-900">
+  @if (toast()) {
+    <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800">{{ toast() }}</div>
+  }
+
+  <mm-shell-card class="mm-admin-toolbar-card mm-as-auto-selection__toolbar">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <nav
+        class="grid w-full grid-cols-2 gap-1 rounded-[0.6875rem] border border-slate-200 bg-[#eef2f6] p-[3px] shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] lg:max-w-md"
+        role="tablist"
+        [attr.aria-label]="copy().sectionsLabel"
+      >
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="activeSection() === 'workspace'"
+          [class]="sectionNavClass('workspace')"
+          (click)="setSection('workspace')"
+        >
+          <ng-icon name="lucideLayoutGrid" size="13" [class]="sectionIconClass('workspace')" />
+          <span>{{ copy().sectionWorkspace }}</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="activeSection() === 'insights'"
+          [class]="sectionNavClass('insights')"
+          (click)="setSection('insights')"
+        >
+          <ng-icon name="lucideScale" size="13" [class]="sectionIconClass('insights')" />
+          <span>{{ copy().sectionInsights }}</span>
+          @if (operationalAlerts().length) {
+            <span class="inline-flex min-w-4 h-4 items-center justify-center rounded-full border border-red-200 bg-red-50 px-1 text-[0.5625rem] font-extrabold text-red-600">
+              {{ operationalAlerts().length }}
+            </span>
+          }
+        </button>
+      </nav>
+
+      <div class="flex flex-wrap items-center gap-2 lg:shrink-0">
+        <span
+          class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold ring-1"
+          [ngClass]="rule().enabled ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : 'bg-slate-100 text-slate-600 ring-slate-200'"
+        >
+          <span class="size-1.5 rounded-full" [ngClass]="rule().enabled ? 'bg-emerald-500' : 'bg-slate-400'"></span>
+          {{ rule().enabled ? copy().ruleEnabled : copy().ruleDisabled }}
+        </span>
+        <button
+          type="button"
+          class="rounded-lg px-3 py-2 text-xs font-bold shadow-sm transition"
+          [ngClass]="rule().enabled ? 'border border-red-200 bg-white text-red-700 hover:bg-red-50' : 'bg-emerald-600 text-white hover:bg-emerald-700'"
+          (click)="toggleRule()"
+        >
+          {{ copy().toggleRule }}
+        </button>
+      </div>
+    </div>
+  </mm-shell-card>
+
+  <section>
+    <p class="mb-2 text-[0.625rem] font-extrabold uppercase tracking-wide text-slate-400">{{ primaryMetricsLabel() }}</p>
+    @switch (activeSection()) {
+      @case ('workspace') {
+        <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <mm-operations-kpi-card [label]="copy().totalRuns" [description]="copy().totalDesc" [value]="kpis().total" icon="lucideActivity" [active]="activeFilter() === 'all'" (clicked)="setFilter('all')" />
+          <mm-operations-kpi-card [label]="copy().completed" [description]="copy().completedDesc" [value]="kpis().completed" icon="lucideSparkles" valueClass="text-emerald-600" iconWrapClass="bg-emerald-50 text-emerald-600 ring-emerald-100" [active]="activeFilter() === 'completed'" (clicked)="setFilter('completed')" />
+          <mm-operations-kpi-card [label]="copy().pending72h" [description]="copy().pendingDesc" [value]="kpis().pending" icon="lucideClock" valueClass="text-amber-600" iconWrapClass="bg-amber-50 text-amber-600 ring-amber-100" [active]="activeFilter() === 'pending'" (clicked)="setFilter('pending')" />
+          <mm-operations-kpi-card [label]="copy().failedRuns" [description]="copy().failedDesc" [value]="kpis().failed" icon="lucideCircleAlert" valueClass="text-red-600" iconWrapClass="bg-red-50 text-red-600 ring-red-100" [active]="activeFilter() === 'failed'" (clicked)="setFilter('failed')" />
+          <mm-operations-kpi-card [label]="copy().fallbackRuns" [description]="copy().fallbackDesc" [value]="kpis().fallback" icon="lucideRefreshCw" valueClass="text-sky-600" iconWrapClass="bg-sky-50 text-sky-600 ring-sky-100" [active]="activeFilter() === 'fallback'" (clicked)="setFilter('fallback')" />
+          <mm-operations-kpi-card [label]="copy().successRate" [description]="copy().successDesc" [value]="kpis().successRate + '%'" icon="lucideGauge" valueClass="text-emerald-600" iconWrapClass="bg-emerald-50 text-emerald-600 ring-emerald-100" />
+        </div>
+      }
+      @case ('insights') {
+        <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <mm-operations-kpi-card [label]="copy().totalThisWeek" [description]="copy().totalWeekDesc" [value]="distributionSummary().total" icon="lucideActivity" />
+          <mm-operations-kpi-card [label]="copy().autoShare" [description]="copy().autoWeekDesc" [value]="distributionSummary().autoTotal" icon="lucideSparkles" valueClass="text-emerald-600" iconWrapClass="bg-emerald-50 text-emerald-600 ring-emerald-100" />
+          <mm-operations-kpi-card [label]="copy().manualShare" [description]="copy().manualWeekDesc" [value]="distributionSummary().manualTotal" icon="lucideLayoutGrid" valueClass="text-indigo-600" iconWrapClass="bg-indigo-50 text-indigo-600 ring-indigo-100" />
+          <mm-operations-kpi-card [label]="copy().autoShareOfWeek" [description]="copy().autoShareWeekDesc" [value]="distributionSummary().autoShareOfWeek + '%'" icon="lucideGauge" valueClass="text-emerald-600" iconWrapClass="bg-emerald-50 text-emerald-600 ring-emerald-100" />
+          <mm-operations-kpi-card [label]="copy().restaurantsTracked" [description]="copy().restaurantsDesc" [value]="distributionSummary().restaurantCount" icon="lucideScale" />
+        </div>
+      }
+    }
+  </section>
+
+  <div class="mm-overview-tab-panel" role="tabpanel">
+    @switch (activeSection()) {
+      @case ('workspace') {
+        <div class="mm-as-auto-selection-tab mm-overview-operations-tab flex flex-col gap-2.5">
+          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex flex-col gap-3">
+              <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div class="relative w-full max-w-sm">
+                  <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+                    <ng-icon name="lucideSearch" size="16" />
+                  </span>
+                  <input
+                    type="text"
+                    class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 ps-9 pe-3 text-sm outline-none focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                    [placeholder]="copy().search"
+                    (input)="onSearch($event)"
+                  />
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                  @for (filter of statusFilters; track filter.id) {
+                    <button
+                      type="button"
+                      class="rounded-lg border px-3 py-2 text-xs font-bold transition"
+                      [ngClass]="activeFilter() === filter.id ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'"
+                      (click)="setFilter(filter.id)"
+                    >
+                      {{ statusLabel(filter.id) }}
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <div>
+                <p class="mb-1.5 text-[10px] font-bold uppercase text-slate-400">{{ copy().filterTier }}</p>
+                <div class="flex flex-wrap gap-2">
+                  @for (tier of tierFilters; track tier) {
+                    <button
+                      type="button"
+                      class="rounded-lg border px-3 py-2 text-xs font-bold transition"
+                      [ngClass]="activeTierFilter() === tier ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'"
+                      (click)="setTierFilter(tier)"
+                    >
+                      {{ copy().tiers[tier] }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-100 px-4 py-3">
+              <h2 class="text-sm font-extrabold text-slate-900">{{ copy().workspace }}</h2>
+              <p class="mt-0.5 text-xs text-slate-500">{{ copy().selections }}</p>
+            </div>
+
+            @if (rows().length === 0) {
+              <div class="flex flex-col items-center gap-2 px-6 py-14 text-center">
+                <ng-icon name="lucideSearch" size="26" class="text-slate-300" />
+                <p class="text-sm text-slate-500">{{ copy().noRows }}</p>
+              </div>
+            } @else {
+              <div class="overflow-x-auto">
+                <table class="mm-as-auto-selection__data-table min-w-full text-sm">
+                  <thead class="bg-slate-50 text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                    <tr class="border-b border-slate-100">
+                      <th class="px-4 py-2.5 text-start">{{ copy().customer }}</th>
+                      <th class="px-4 py-2.5 text-start">{{ copy().deliveryDate }}</th>
+                      <th class="hidden px-4 py-2.5 text-start md:table-cell">{{ copy().result }}</th>
+                      <th class="px-4 py-2.5 text-start">{{ copy().status }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of paginatedRows(); track row.id) {
+                      <tr
+                        class="cursor-pointer border-b border-slate-50 transition-colors last:border-0"
+                        [ngClass]="selectedSelectionId() === row.id ? 'bg-emerald-50/90' : 'hover:bg-slate-50/80'"
+                        (click)="select(row)"
+                      >
+                        <td class="px-4 py-3">
+                          <p class="font-bold text-slate-900">{{ row.customerDisplayName }}</p>
+                          <p class="mt-0.5 text-[11px] text-slate-500">{{ row.programName }} · {{ row.areaName }}</p>
+                        </td>
+                        <td class="px-4 py-3">
+                          <p class="font-semibold text-slate-800">{{ row.deliveryDate }}</p>
+                          <p class="text-[11px] text-slate-400">{{ copy().day }} {{ row.dayNumber }}/{{ row.subscriptionDays }}</p>
+                          @if (row.hoursUntilLock !== null) {
+                            <p class="mt-1 text-[10px] font-bold text-amber-600">{{ copy().hoursUntilLock }}: {{ row.hoursUntilLock }}h</p>
+                          }
+                        </td>
+                        <td class="hidden px-4 py-3 md:table-cell">
+                          @if (row.selectedRestaurantName) {
+                            <p class="font-semibold text-slate-900">{{ row.selectedRestaurantName }}</p>
+                            <p class="truncate text-[11px] text-slate-500">{{ row.selectedMealName }}</p>
+                          } @else {
+                            <span class="text-xs text-slate-400">—</span>
+                          }
+                        </td>
+                        <td class="px-4 py-3">
+                          <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="statusClass(row.status)">
+                            {{ statusLabel(row.status) }}
+                          </span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              <mm-table-pagination
+                [currentPage]="currentPage()"
+                [totalPages]="totalPages()"
+                [totalItems]="rows().length"
+                [pageSize]="pageSize()"
+                [itemLabel]="paginationItems()"
+                (pageChange)="onPageChange($event)"
+              />
+            }
+          </div>
+        </div>
+      }
+
+      @case ('insights') {
+        <div class="mm-as-auto-selection-tab flex flex-col gap-2.5">
+          <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-100 px-4 py-3">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h2 class="text-sm font-extrabold text-slate-900">{{ copy().distribution }}</h2>
+                  <p class="mt-0.5 text-xs text-slate-500">{{ copy().distributionDesc }}</p>
+                  <div class="mt-2 flex flex-wrap gap-3 text-[10px] font-bold text-slate-500">
+                    <span class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-emerald-500"></span>{{ copy().autoShare }}</span>
+                    <span class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-indigo-400"></span>{{ copy().manualShare }}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center gap-1.5 self-start rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 sm:self-auto"
+                  (click)="openRulesModal()"
+                >
+                  <ng-icon name="lucideScale" size="14" />
+                  {{ copy().viewRules }}
+                  @if (operationalAlerts().length) {
+                    <span class="inline-flex min-w-4 h-4 items-center justify-center rounded-full border border-red-200 bg-red-50 px-1 text-[9px] font-extrabold text-red-600">
+                      {{ operationalAlerts().length }}
+                    </span>
+                  }
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="mm-as-auto-selection__data-table min-w-full text-sm">
+                <thead class="bg-slate-50 text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                  <tr class="border-b border-slate-100">
+                    <th class="w-10 px-4 py-2.5 text-start">#</th>
+                    <th class="px-4 py-2.5 text-start">{{ copy().distRestaurant }}</th>
+                    <th class="hidden px-4 py-2.5 text-start sm:table-cell">{{ copy().tier }}</th>
+                    <th class="px-4 py-2.5 text-start">{{ copy().autoShare }}</th>
+                    <th class="hidden px-4 py-2.5 text-start md:table-cell">{{ copy().manualShare }}</th>
+                    <th class="px-4 py-2.5 text-start">{{ copy().distShare }}</th>
+                    <th class="min-w-[8rem] px-4 py-2.5 text-start">{{ copy().distMix }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of distribution(); track row.restaurantId; let i = $index) {
+                    <tr
+                      class="border-b border-slate-50 transition-colors last:border-0"
+                      [ngClass]="isTopDistributionShare(row) ? 'bg-emerald-50/90' : 'hover:bg-slate-50/80'"
+                    >
+                      <td class="px-4 py-3 text-xs font-extrabold text-slate-500">{{ i + 1 }}</td>
+                      <td class="px-4 py-3">
+                        <p class="font-bold text-slate-900">{{ row.restaurantName }}</p>
+                        <div class="mt-0.5 flex flex-wrap items-center gap-1">
+                          @if (isTopDistributionShare(row)) {
+                            <span class="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-100">{{ copy().leaderShare }}</span>
+                          }
+                          <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 sm:hidden" [ngClass]="tierClass(row.tier)">{{ tierLabel(row.tier) }}</span>
+                        </div>
+                      </td>
+                      <td class="hidden px-4 py-3 sm:table-cell">
+                        <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="tierClass(row.tier)">{{ tierLabel(row.tier) }}</span>
+                      </td>
+                      <td class="px-4 py-3">
+                        <p class="font-semibold text-emerald-700">{{ row.autoSelectedCount }}</p>
+                      </td>
+                      <td class="hidden px-4 py-3 md:table-cell">
+                        <p class="font-semibold text-indigo-700">{{ row.manualCount }}</p>
+                      </td>
+                      <td class="px-4 py-3">
+                        <p class="font-semibold text-slate-900">{{ row.sharePercent }}%</p>
+                      </td>
+                      <td class="px-4 py-3">
+                        <div class="flex h-1.5 min-w-[5rem] overflow-hidden rounded-full bg-slate-100">
+                          <div class="bg-emerald-500 transition-all duration-500" [style.width.%]="distributionMix(row).auto"></div>
+                          <div class="bg-indigo-400 transition-all duration-500" [style.width.%]="distributionMix(row).manual"></div>
+                        </div>
+                        <p class="mt-1 text-[11px] text-slate-400 md:hidden">
+                          {{ copy().manualShare }} {{ row.manualCount }}
+                        </p>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+                <tfoot class="border-t border-slate-100 bg-slate-50 text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <td class="px-4 py-3" colspan="2">{{ copy().totalThisWeek }}</td>
+                    <td class="hidden px-4 py-3 sm:table-cell"></td>
+                    <td class="px-4 py-3 font-semibold normal-case text-emerald-700">{{ distributionSummary().autoTotal }}</td>
+                    <td class="hidden px-4 py-3 font-semibold normal-case text-indigo-700 md:table-cell">{{ distributionSummary().manualTotal }}</td>
+                    <td class="px-4 py-3 font-semibold normal-case text-slate-900">{{ distributionSummary().autoShareOfWeek }}%</td>
+                    <td class="px-4 py-3 font-semibold normal-case text-slate-600">{{ distributionSummary().total }}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  @if (rulesModalOpen()) {
+    <div
+      class="fixed inset-0 z-[55] flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm transition-opacity duration-200 sm:items-center sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="as-rules-modal-title"
+      (click)="closeRulesModal()"
+    >
+      <div
+        class="relative flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xl transition-all duration-300"
+        [attr.dir]="isRtl() ? 'rtl' : 'ltr'"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50/50 px-5 py-3.5">
+          <div class="min-w-0">
+            <h2 id="as-rules-modal-title" class="text-sm font-black text-slate-900">{{ copy().rulePanel }}</h2>
+            <p class="mt-0.5 text-xs text-slate-500">{{ copy().rulesModalSubtitle }}</p>
+          </div>
+          <button
+            type="button"
+            class="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+            (click)="closeRulesModal()"
+          >
+            <ng-icon name="lucideX" size="16" />
+          </button>
+        </div>
+
+        <div class="mm-as-auto-selection__rules-body space-y-2.5 overflow-y-auto p-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-gradient-to-r from-slate-50 via-white to-emerald-50/40 p-2.5">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex size-7 items-center justify-center rounded-lg bg-white text-emerald-600 shadow-sm ring-1 ring-emerald-100">
+                <ng-icon name="lucideSparkles" size="14" />
+              </span>
+              <div>
+                <p class="text-[9px] font-bold uppercase tracking-wide text-slate-400">{{ copy().ruleVersion }}</p>
+                <p class="text-xs font-black text-slate-900">{{ rule().ruleVersion }}</p>
+              </div>
+            </div>
+            <span
+              class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-extrabold ring-1"
+              [ngClass]="rule().enabled ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : 'bg-slate-100 text-slate-600 ring-slate-200'"
+            >
+              <span class="size-1.5 rounded-full" [ngClass]="rule().enabled ? 'bg-emerald-500' : 'bg-slate-400'"></span>
+              {{ rule().enabled ? copy().ruleEnabled : copy().ruleDisabled }}
+            </span>
+          </div>
+
+          @if (operationalAlerts().length) {
+            <div class="space-y-1.5">
+              <p class="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider text-slate-400">
+                <span class="size-1 rounded-full bg-amber-500"></span>
+                {{ copy().alerts }}
+              </p>
+              @for (alert of operationalAlerts(); track alert.id) {
+                <div class="flex gap-2 rounded-lg border px-2.5 py-2" [ngClass]="alertClass(alert.severity)">
+                  <span class="inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-white/80">
+                    <ng-icon name="lucideCircleAlert" size="12" [class]="alertIconClass(alert.severity)" />
+                  </span>
+                  <div class="min-w-0">
+                    <p class="text-xs font-bold text-slate-900">{{ alertTitle(alert) }}</p>
+                    <p class="mt-0.5 text-[11px] leading-snug text-slate-600">{{ alertDetail(alert) }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <div class="grid gap-2 sm:grid-cols-2">
+            <div class="rounded-lg border border-slate-200 bg-white p-2.5">
+              <div class="flex items-start gap-2">
+                <span class="inline-flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 ring-1 ring-amber-100">
+                  <ng-icon name="lucideClock" size="13" />
+                </span>
+                <div class="min-w-0">
+                  <p class="text-[9px] font-bold uppercase tracking-wide text-slate-400">{{ copy().trigger }}</p>
+                  <p class="mt-0.5 text-[11px] font-semibold leading-snug text-slate-800">{{ copy().triggerValue }}</p>
+                  <p class="mt-1 inline-flex rounded-full bg-amber-50 px-1.5 py-px text-[9px] font-extrabold text-amber-800 ring-1 ring-amber-100">
+                    {{ rule().triggerHoursBeforeDelivery }}h
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-lg border border-emerald-200/70 bg-gradient-to-br from-emerald-50/80 to-white p-2.5">
+              <div class="flex items-start gap-2">
+                <span class="inline-flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200/70">
+                  <ng-icon name="lucideScale" size="13" />
+                </span>
+                <div class="min-w-0">
+                  <p class="text-[9px] font-bold uppercase tracking-wide text-emerald-700">{{ copy().limitFormula }}</p>
+                  <p class="mt-0.5 text-[11px] leading-snug text-emerald-950">{{ copy().limitRuleSummary }}</p>
+                  @if (formulaExample()) {
+                    <p class="mt-1.5 rounded-md border border-emerald-100 bg-white/80 px-2 py-1 text-[10px] font-medium leading-snug text-emerald-900">
+                      {{ formulaExample() }}
+                    </p>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-lg border border-slate-200 bg-white p-2.5">
+            <div class="mb-2">
+              <h4 class="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider text-slate-400">
+                <ng-icon name="lucideListOrdered" size="11" class="text-emerald-500" />
+                {{ copy().priorityOrder }}
+              </h4>
+              <p class="mt-0.5 text-[10px] text-slate-500">{{ copy().priorityOrderDesc }}</p>
+            </div>
+            <div class="flex flex-wrap gap-1">
+              @for (label of priorityLabels(); track label; let i = $index) {
+                <span class="inline-flex items-center gap-1 rounded-md border border-slate-100 bg-slate-50/80 px-1.5 py-1 text-[10px] font-bold text-slate-700">
+                  <span class="inline-flex size-4 items-center justify-center rounded-full bg-emerald-100 text-[9px] font-extrabold text-emerald-700">{{ i + 1 }}</span>
+                  {{ label }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="grid gap-1.5 sm:grid-cols-2">
+            <div
+              class="flex items-center gap-2 rounded-lg border px-2.5 py-2"
+              [ngClass]="rule().fallbackEnabled ? 'border-sky-200 bg-sky-50/60' : 'border-slate-200 bg-slate-50/80'"
+            >
+              <span
+                class="inline-flex size-7 shrink-0 items-center justify-center rounded-lg ring-1"
+                [ngClass]="rule().fallbackEnabled ? 'bg-white text-sky-600 ring-sky-100' : 'bg-white text-slate-400 ring-slate-200'"
+              >
+                <ng-icon name="lucideRefreshCw" size="13" />
+              </span>
+              <div class="min-w-0 flex-1">
+                <p class="text-[11px] font-bold text-slate-900">{{ copy().fallback }}</p>
+                <p class="text-[10px] font-semibold" [ngClass]="rule().fallbackEnabled ? 'text-sky-700' : 'text-slate-500'">
+                  {{ rule().fallbackEnabled ? copy().enabled : copy().disabled }}
+                </p>
+              </div>
+              <span
+                class="inline-flex size-5 items-center justify-center rounded-full"
+                [ngClass]="rule().fallbackEnabled ? 'bg-sky-100 text-sky-700' : 'bg-slate-200 text-slate-500'"
+              >
+                <ng-icon [name]="rule().fallbackEnabled ? 'lucideCheck' : 'lucideX'" size="10" />
+              </span>
+            </div>
+
+            <div
+              class="flex items-center gap-2 rounded-lg border px-2.5 py-2"
+              [ngClass]="rule().busyQuotaOverrideEnabled ? 'border-violet-200 bg-violet-50/60' : 'border-slate-200 bg-slate-50/80'"
+            >
+              <span
+                class="inline-flex size-7 shrink-0 items-center justify-center rounded-lg ring-1"
+                [ngClass]="rule().busyQuotaOverrideEnabled ? 'bg-white text-violet-600 ring-violet-100' : 'bg-white text-slate-400 ring-slate-200'"
+              >
+                <ng-icon name="lucideWandSparkles" size="13" />
+              </span>
+              <div class="min-w-0 flex-1">
+                <p class="text-[11px] font-bold text-slate-900">{{ copy().busyOverride }}</p>
+                <p class="text-[10px] font-semibold" [ngClass]="rule().busyQuotaOverrideEnabled ? 'text-violet-700' : 'text-slate-500'">
+                  {{ rule().busyQuotaOverrideEnabled ? copy().enabled : copy().disabled }}
+                </p>
+              </div>
+              <span
+                class="inline-flex size-5 items-center justify-center rounded-full"
+                [ngClass]="rule().busyQuotaOverrideEnabled ? 'bg-violet-100 text-violet-700' : 'bg-slate-200 text-slate-500'"
+              >
+                <ng-icon [name]="rule().busyQuotaOverrideEnabled ? 'lucideCheck' : 'lucideX'" size="10" />
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 border-t border-slate-100 bg-slate-50/50 px-5 py-3">
+          <button
+            type="button"
+            class="rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50"
+            (click)="closeRulesModal()"
+          >
+            {{ copy().close }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (selectedRow(); as selected) {
+    <div
+      class="fixed inset-0 z-[60] flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm transition-opacity duration-200 sm:items-center sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="as-detail-modal-title"
+      (click)="closeDetailModal()"
+    >
+      <div
+        class="relative flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xl transition-all duration-300"
+        [attr.dir]="isRtl() ? 'rtl' : 'ltr'"
+        (click)="$event.stopPropagation()"
+      >
+        <!-- Modal header -->
+        <div class="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50/50 px-6 py-4">
+          <div class="min-w-0">
+            <h2 id="as-detail-modal-title" class="text-base font-black text-slate-900">{{ copy().detailModalTitle }}</h2>
+            <p class="mt-1 truncate text-xs text-slate-500">{{ selected.customerDisplayName }} · {{ copy().detailModalSubtitle }}</p>
+          </div>
+          <button
+            type="button"
+            class="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+            (click)="closeDetailModal()"
+          >
+            <ng-icon name="lucideX" size="16" />
+          </button>
+        </div>
+
+        <!-- Customer hero -->
+        <div class="border-b border-slate-100 px-6 py-5">
+          <div class="flex flex-col gap-4 rounded-2xl border border-emerald-100/60 bg-emerald-50/30 p-5 sm:flex-row sm:items-center">
+            <div class="inline-flex size-14 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-4 ring-emerald-50/50">
+              <ng-icon name="lucideUser" size="24" />
+            </div>
+            <div class="min-w-0 flex-1 text-start">
+              <h3 class="truncate text-base font-black text-slate-950">{{ selected.customerDisplayName }}</h3>
+              <p class="mt-1 text-xs text-slate-500">{{ selected.programName }} · {{ selected.bundleName }}</p>
+              <div class="mt-2.5 flex flex-wrap gap-1.5">
+                <span class="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-0.5 text-[10px] font-bold text-slate-600 ring-1 ring-slate-200">
+                  <ng-icon name="lucideMapPin" size="11" />
+                  {{ selected.areaName }}
+                </span>
+              </div>
+            </div>
+            <div class="flex shrink-0 flex-wrap gap-1.5 sm:flex-col sm:items-end">
+              <span class="inline-flex rounded-full px-3 py-1 text-[10px] font-extrabold shadow-sm ring-1" [ngClass]="statusClass(selected.status)">{{ statusLabel(selected.status) }}</span>
+              <span class="inline-flex rounded-full px-3 py-1 text-[10px] font-extrabold shadow-sm ring-1" [ngClass]="tierClass(selected.tier)">{{ tierLabel(selected.tier) }}</span>
+            </div>
+          </div>
+
+          @if (selected.hoursUntilLock !== null) {
+            <div class="mt-4 rounded-xl border border-amber-200/80 bg-gradient-to-r from-amber-50 to-orange-50/50 p-4">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-[10px] font-bold uppercase tracking-wide text-amber-700">{{ copy().hoursUntilLock }}</p>
+                  <p class="mt-1 text-lg font-black text-amber-900">{{ selected.hoursUntilLock }}h</p>
+                  @if (selected.lockAt) {
+                    <p class="mt-0.5 text-[11px] text-amber-700">{{ copy().lockAt }} {{ selected.lockAt | date: 'medium' }}</p>
+                  }
+                </div>
+                <div class="flex size-10 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                  <ng-icon name="lucideClock" size="18" />
+                </div>
+              </div>
+              <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-amber-100">
+                <div class="h-full rounded-full bg-amber-500 transition-all" [style.width.%]="lockProgress(selected.hoursUntilLock)"></div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Tabs -->
+        <div class="border-b border-slate-100 px-6 py-3">
+          <nav class="inline-flex rounded-[0.6875rem] border border-slate-200 bg-[#eef2f6] p-[3px] shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]">
+            @for (tab of detailTabs; track tab) {
+              <button
+                type="button"
+                class="rounded-lg px-4 py-2 text-[11px] font-bold transition"
+                [ngClass]="detailTab() === tab ? 'bg-white text-emerald-700 shadow-sm ring-1 ring-emerald-200/70' : 'text-slate-500 hover:text-slate-700'"
+                (click)="setDetailTab(tab)"
+              >
+                {{ detailTabLabel(tab) }}
+                @if (tab === 'audit' && selectedAudit().length) {
+                  <span class="ms-1.5 inline-flex min-w-4 h-4 items-center justify-center rounded-full bg-slate-200 px-1 text-[9px] font-extrabold text-slate-600">{{ selectedAudit().length }}</span>
+                }
+              </button>
+            }
+          </nav>
+        </div>
+
+        <!-- Body -->
+        <div class="min-h-0 flex-1 overflow-y-auto bg-slate-50/30 p-6">
+          @if (detailTab() === 'overview') {
+            <div class="grid gap-5 lg:grid-cols-2">
+              <!-- Key data -->
+              <div class="space-y-3">
+                <h4 class="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                  <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                  {{ copy().keyData }}
+                </h4>
+                <div class="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                  <div class="flex items-center justify-between gap-3 px-4 py-3.5 text-xs">
+                    <span class="flex items-center gap-2 font-bold text-slate-500">
+                      <ng-icon name="lucideCalendar" size="13" class="text-slate-400" />
+                      {{ copy().deliveryInfo }}
+                    </span>
+                    <strong class="font-extrabold text-slate-800">{{ selected.deliveryDate }}</strong>
+                  </div>
+                  <div class="flex items-center justify-between gap-3 px-4 py-3.5 text-xs">
+                    <span class="flex items-center gap-2 font-bold text-slate-500">
+                      <ng-icon name="lucideActivity" size="13" class="text-slate-400" />
+                      {{ copy().subscriptionDays }}
+                    </span>
+                    <strong class="font-extrabold text-slate-800">{{ copy().day }} {{ selected.dayNumber }} / {{ selected.subscriptionDays }}</strong>
+                  </div>
+                  <div class="px-4 py-3.5">
+                    <div class="mb-2 flex items-center justify-between text-xs">
+                      <span class="font-bold text-slate-500">{{ copy().progress }}</span>
+                      <span class="font-extrabold text-emerald-700">{{ subscriptionProgress(selected) }}%</span>
+                    </div>
+                    <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
+                      <div class="h-full rounded-full bg-emerald-500 transition-all" [style.width.%]="subscriptionProgress(selected)"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <h4 class="flex items-center gap-1.5 pt-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                  <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                  {{ copy().constraints }}
+                </h4>
+                <div class="grid grid-cols-2 gap-2">
+                  @for (check of [
+                    { label: copy().allergies, ok: selected.allergiesRespected },
+                    { label: copy().dislikes, ok: selected.dislikesRespected },
+                    { label: copy().capacity, ok: selected.capacityAvailable },
+                    { label: copy().notification, ok: selected.notificationSent }
+                  ]; track check.label) {
+                    <div class="flex items-center gap-2 rounded-xl border px-3 py-2.5 text-[11px] font-bold shadow-sm" [ngClass]="check.ok ? 'border-emerald-100 bg-emerald-50/80 text-emerald-800' : 'border-red-100 bg-red-50/80 text-red-800'">
+                      <span class="inline-flex size-5 items-center justify-center rounded-full" [ngClass]="check.ok ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'">
+                        <ng-icon [name]="check.ok ? 'lucideCheck' : 'lucideX'" size="11" />
+                      </span>
+                      {{ check.label }}
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Meal & reason -->
+              <div class="space-y-4">
+                @if (selected.selectedRestaurantName) {
+                  <div class="overflow-hidden rounded-xl border border-emerald-200/70 bg-white shadow-sm">
+                    <div class="border-b border-emerald-100 bg-gradient-to-r from-emerald-50 to-teal-50/40 px-4 py-3">
+                      <p class="text-[10px] font-bold uppercase tracking-wide text-emerald-700">{{ copy().selectedMeal }}</p>
+                    </div>
+                    <div class="flex gap-3 p-4">
+                      <div class="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                        <ng-icon name="lucideUtensils" size="18" />
+                      </div>
+                      <div class="min-w-0">
+                        <p class="font-black text-slate-900">{{ selected.selectedRestaurantName }}</p>
+                        <p class="mt-0.5 text-sm text-slate-600">{{ selected.selectedMealName }}</p>
+                        <p class="mt-2 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">{{ sourceLabel(selected.source) }}</p>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                @if (selected.allergies.length || selected.dislikes.length) {
+                  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <p class="mb-2 text-[10px] font-bold uppercase tracking-wide text-slate-400">{{ copy().customerPrefs }}</p>
+                    <div class="flex flex-wrap gap-1.5">
+                      @for (a of selected.allergies; track a) {
+                        <span class="rounded-lg bg-red-50 px-2 py-1 text-[10px] font-bold text-red-700 ring-1 ring-red-100">{{ a }}</span>
+                      }
+                      @for (d of selected.dislikes; track d) {
+                        <span class="rounded-lg bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-700 ring-1 ring-amber-100">{{ d }}</span>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">{{ copy().selectionReason }}</p>
+                  <p class="mt-2 text-sm leading-relaxed text-slate-700">{{ selected.selectionReason }}</p>
+                  @if (selected.fallbackReason) {
+                    <div class="mt-3 rounded-lg border border-violet-100 bg-violet-50/60 p-3">
+                      <p class="text-[10px] font-bold uppercase text-violet-700">{{ copy().fallbackReason }}</p>
+                      <p class="mt-1 text-xs leading-relaxed text-violet-900">{{ selected.fallbackReason }}</p>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            @if (selected.rejectedCandidates.length) {
+              <div class="mt-5 space-y-3">
+                <h4 class="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                  <span class="size-1.5 rounded-full bg-red-400"></span>
+                  {{ copy().rejectedCandidates }}
+                </h4>
+                <div class="grid gap-2 sm:grid-cols-2">
+                  @for (c of selected.rejectedCandidates; track c.restaurantId) {
+                    <div class="rounded-xl border border-red-100 bg-white px-3.5 py-3 shadow-sm">
+                      <p class="text-sm font-bold text-slate-900">{{ c.restaurantName }}</p>
+                      <p class="mt-1 text-xs text-red-700">{{ c.reason }}</p>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            @if (canOverride(selected)) {
+              <div class="mt-5 rounded-xl border border-violet-200 bg-white p-4 shadow-sm">
+                <div class="flex items-center gap-2">
+                  <span class="inline-flex size-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+                    <ng-icon name="lucideWandSparkles" size="16" />
+                  </span>
+                  <p class="text-sm font-black text-slate-900">{{ copy().manualOverride }}</p>
+                </div>
+                <textarea
+                  rows="3"
+                  class="mt-3 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-violet-400 focus:bg-white focus:ring-2 focus:ring-violet-100"
+                  [placeholder]="copy().overridePlaceholder"
+                  [ngModel]="overrideReason()"
+                  (ngModelChange)="overrideReason.set($event)"
+                ></textarea>
+                <button
+                  type="button"
+                  class="mt-3 w-full rounded-xl bg-violet-600 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  [disabled]="!overrideReason().trim()"
+                  (click)="applyOverride()"
+                >
+                  {{ copy().applyOverride }}
+                </button>
+              </div>
+            }
+          } @else {
+            <div class="space-y-0">
+              @for (event of selectedAudit(); track event.id; let last = $last) {
+                <div class="relative flex gap-4 pb-5" [class.pb-0]="last">
+                  @if (!last) {
+                    <span class="absolute start-[15px] top-8 bottom-0 w-px bg-slate-200" aria-hidden="true"></span>
+                  }
+                  <span class="relative z-[1] inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm">
+                    <ng-icon name="lucideScrollText" size="14" />
+                  </span>
+                  <div class="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div class="flex flex-wrap items-start justify-between gap-2">
+                      <p class="text-sm font-black text-slate-900">{{ auditActionLabel(event.action) }}</p>
+                      <time class="text-[10px] font-bold text-slate-400">{{ event.createdAt | date: 'short' }}</time>
+                    </div>
+                    <p class="mt-1.5 text-sm leading-relaxed text-slate-600">{{ event.reason }}</p>
+                    <p class="mt-2 text-[11px] font-semibold text-slate-400">{{ event.actorName }}</p>
+                  </div>
+                </div>
+              } @empty {
+                <div class="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white py-12 text-center">
+                  <div class="flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                    <ng-icon name="lucideScrollText" size="20" />
+                  </div>
+                  <p class="text-sm font-semibold text-slate-500">{{ copy().noAuditEvents }}</p>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Footer -->
+        <div class="flex items-center justify-end gap-2 border-t border-slate-100 bg-slate-50/50 px-6 py-4">
+          <button
+            type="button"
+            class="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+            (click)="closeDetailModal()"
+          >
+            {{ copy().close }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</section>
