@@ -426,7 +426,7 @@
                 [value]="mealIndex()"
                 (change)="selectMeal($event)"
               >
-                @for (meal of sampleOrder()?.meals ?? []; track meal.id) {
+                @for (meal of sampleOrder().meals; track meal.id) {
                   <option [value]="$index">{{ meal.mealNameAr }} / {{ meal.mealNameEn }}</option>
                 }
               </select>

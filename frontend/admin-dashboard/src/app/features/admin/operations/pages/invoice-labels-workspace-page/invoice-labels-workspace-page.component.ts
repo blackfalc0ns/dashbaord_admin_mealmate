@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -41,7 +41,6 @@ type InvoiceSection = 'templates' | 'generated' | 'audit';
   standalone: true,
   imports: [
     DatePipe,
-    NgClass,
     NgIcon,
     MmShellCardComponent,
     MmOperationsKpiCardComponent,
