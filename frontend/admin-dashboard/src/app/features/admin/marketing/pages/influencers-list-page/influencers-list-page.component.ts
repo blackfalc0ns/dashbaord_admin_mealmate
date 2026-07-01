@@ -3,10 +3,12 @@ import { DatePipe, NgClass } from '@angular/common';
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
-  lucideSearch,
-  lucidePlus,
+  lucideChevronRight,
+  lucideCircleAlert,
   lucideCopy,
-  lucideExternalLink,
+  lucidePlus,
+  lucideSearch,
+  lucideSlidersHorizontal,
   lucideUserRound,
 } from '@ng-icons/lucide';
 
@@ -20,8 +22,10 @@ import { PageViewState } from '@/shared/models/page-view-state.model';
 import { MARKETING_I18N, INFLUENCER_STATUS_LABELS } from '../../i18n/marketing.i18n';
 import { MarketingStore } from '../../data/marketing-store';
 import { InfluencerProfile, InfluencerStatus } from '../../models';
-import { influencerStatusClasses } from '../../utils/marketing-status.util';
 import { InfluencerFormWizardComponent } from '../../components/influencer-form-wizard/influencer-form-wizard.component';
+
+type InfluencerFilter = 'all' | InfluencerStatus;
+type StatusTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 
 @Component({
   selector: 'mm-influencers-list-page',
@@ -35,7 +39,17 @@ import { InfluencerFormWizardComponent } from '../../components/influencer-form-
     InfluencerFormWizardComponent,
     MmTablePaginationComponent,
   ],
-  providers: [provideIcons({ lucideSearch, lucidePlus, lucideCopy, lucideExternalLink, lucideUserRound })],
+  providers: [
+    provideIcons({
+      lucideChevronRight,
+      lucideCircleAlert,
+      lucideCopy,
+      lucidePlus,
+      lucideSearch,
+      lucideSlidersHorizontal,
+      lucideUserRound,
+    }),
+  ],
   templateUrl: './influencers-list-page.component.html',
   host: { class: 'block' },
 })
@@ -47,7 +61,7 @@ export class InfluencersListPageComponent implements OnInit {
 
   readonly copy = computed(() => MARKETING_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
-  readonly statusFilter = signal<string>('all');
+  readonly statusFilter = signal<InfluencerFilter>('all');
   readonly wizardOpen = signal(false);
   readonly viewState = signal<PageViewState>('loading');
   readonly copiedId = signal<string | null>(null);
@@ -74,7 +88,6 @@ export class InfluencersListPageComponent implements OnInit {
 
   readonly paginatedInfluencers = this.pg.paginated(this.filtered);
   readonly totalPages = this.pg.totalPages(this.filtered);
-  readonly paginationItems = computed(() => (this.locale.isRtl() ? 'مؤثر' : 'influencers'));
 
   readonly kpis = computed(() => {
     const list = this.store.influencers();
@@ -82,6 +95,7 @@ export class InfluencersListPageComponent implements OnInit {
       active: list.filter((i) => i.status === 'Active').length,
       paused: list.filter((i) => i.status === 'Paused').length,
       draft: list.filter((i) => i.status === 'Draft').length,
+      fraud: list.filter((i) => i.status === 'BlockedForFraud').length,
       total: list.length,
     };
   });
@@ -94,13 +108,12 @@ export class InfluencersListPageComponent implements OnInit {
   }
 
   onSearch(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.searchQuery.set(value);
+    this.searchQuery.set((event.target as HTMLInputElement).value);
     this.pg.resetPage();
     this.viewState.set(this.filtered().length ? 'success' : 'empty');
   }
 
-  onStatusFilter(status: string): void {
+  onStatusFilter(status: InfluencerFilter): void {
     this.statusFilter.set(status);
     this.pg.resetPage();
     this.viewState.set(this.filtered().length ? 'success' : 'empty');
@@ -110,13 +123,53 @@ export class InfluencersListPageComponent implements OnInit {
     this.pg.onPageChange(page, this.totalPages());
   }
 
+  statusTone(status: InfluencerStatus): StatusTone {
+    switch (status) {
+      case 'Active':
+        return 'success';
+      case 'Paused':
+        return 'warning';
+      case 'BlockedForFraud':
+      case 'Suspended':
+        return 'danger';
+      default:
+        return 'neutral';
+    }
+  }
+
+  statusBadgeClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-50 text-emerald-700 ring-emerald-600/15';
+      case 'warning':
+        return 'bg-amber-50 text-amber-700 ring-amber-600/15';
+      case 'danger':
+        return 'bg-rose-50 text-rose-700 ring-rose-600/15';
+      case 'info':
+        return 'bg-sky-50 text-sky-700 ring-sky-600/15';
+      default:
+        return 'bg-slate-50 text-slate-700 ring-slate-600/15';
+    }
+  }
+
+  statusDotClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-500';
+      case 'warning':
+        return 'bg-amber-500';
+      case 'danger':
+        return 'bg-rose-500';
+      case 'info':
+        return 'bg-sky-500';
+      default:
+        return 'bg-slate-400';
+    }
+  }
+
   statusLabel(status: InfluencerStatus): string {
     const labels = INFLUENCER_STATUS_LABELS[status];
     return this.locale.isRtl() ? labels.ar : labels.en;
-  }
-
-  statusClass(status: InfluencerStatus): string {
-    return influencerStatusClasses(status);
   }
 
   displayName(item: InfluencerProfile): string {
@@ -133,14 +186,15 @@ export class InfluencersListPageComponent implements OnInit {
 
   onCreated(id: string): void {
     this.wizardOpen.set(false);
-    this.router.navigate(['/admin/marketing/influencers', id]);
+    void this.router.navigate(['/admin/marketing/influencers', id]);
   }
 
   openProfile(item: InfluencerProfile): void {
-    this.router.navigate(['/admin/marketing/influencers', item.id]);
+    void this.router.navigate(['/admin/marketing/influencers', item.id]);
   }
 
-  copyText(text: string, id: string): void {
+  copyText(text: string, id: string, event?: Event): void {
+    event?.stopPropagation();
     void navigator.clipboard?.writeText(text);
     this.copiedId.set(id);
     setTimeout(() => this.copiedId.set(null), 1500);

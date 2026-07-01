@@ -5,50 +5,49 @@ import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideBell,
+  lucideChevronDown,
+  lucideChevronRight,
   lucideCircleAlert,
   lucideClock,
-  lucideEye,
   lucideRefreshCw,
   lucideSave,
   lucideSearch,
   lucideSettings2,
+  lucideSlidersHorizontal,
   lucideTrendingUp,
+  lucideUser,
   lucideX,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { LIFECYCLE_I18N } from '@/core/i18n/translations/lifecycle.i18n';
-import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
+import { MmDetailToastComponent } from '@/shared/components/accounts';
 import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
 import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { SubscriptionsStore } from '../../data/subscriptions-store';
 import { RenewalRow, RenewalStatus } from '../../models/renewal.model';
 
 type RenewalFilter = 'all' | RenewalStatus;
+type StatusTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 
 @Component({
   selector: 'mm-renewals-workspace-page',
   standalone: true,
-  imports: [
-    DecimalPipe,
-    FormsModule,
-    NgClass,
-    NgIcon,
-    RouterLink,
-    MmOperationsKpiCardComponent,
-    MmTablePaginationComponent,
-  ],
+  imports: [DecimalPipe, FormsModule, NgClass, NgIcon, RouterLink, MmDetailToastComponent, MmTablePaginationComponent],
   providers: [
     provideIcons({
       lucideBell,
+      lucideChevronDown,
+      lucideChevronRight,
       lucideCircleAlert,
       lucideClock,
-      lucideEye,
       lucideRefreshCw,
       lucideSave,
       lucideSearch,
       lucideSettings2,
+      lucideSlidersHorizontal,
       lucideTrendingUp,
+      lucideUser,
       lucideX,
     }),
   ],
@@ -63,12 +62,13 @@ export class RenewalsWorkspacePageComponent {
   readonly searchQuery = signal('');
   readonly statusFilter = signal<RenewalFilter>('all');
   readonly detailOpen = signal(false);
+  readonly policyExpanded = signal(false);
   readonly selectedRenewal = signal<RenewalRow | null>(null);
   readonly toast = signal<string | null>(null);
   readonly policyFirst = signal(this.store.renewalPolicy().firstReminderDays);
   readonly policySecond = signal(this.store.renewalPolicy().secondReminderDays);
   readonly policyFinal = signal(this.store.renewalPolicy().finalReminderDays);
-  readonly pg = createTablePagination(8);
+  readonly pg = createTablePagination(5);
   readonly currentPage = this.pg.currentPage;
   readonly pageSize = this.pg.pageSize;
 
@@ -87,10 +87,7 @@ export class RenewalsWorkspacePageComponent {
     let rows = this.store.renewals();
     const q = this.searchQuery().toLowerCase().trim();
     const st = this.statusFilter();
-
-    if (st !== 'all') {
-      rows = rows.filter((r) => r.status === st);
-    }
+    if (st !== 'all') rows = rows.filter((r) => r.status === st);
     if (q) {
       rows = rows.filter(
         (r) =>
@@ -103,15 +100,8 @@ export class RenewalsWorkspacePageComponent {
     return rows;
   });
 
-  readonly paginatedRenewals = computed(() => {
-    const rows = this.filteredRenewals();
-    const start = (this.currentPage() - 1) * this.pageSize();
-    return rows.slice(start, start + this.pageSize());
-  });
-
-  readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.filteredRenewals().length / this.pageSize())),
-  );
+  readonly paginatedRenewals = this.pg.paginated(this.filteredRenewals);
+  readonly totalPages = this.pg.totalPages(this.filteredRenewals);
 
   onSearch(event: Event): void {
     this.searchQuery.set((event.target as HTMLInputElement).value);
@@ -121,6 +111,10 @@ export class RenewalsWorkspacePageComponent {
   setFilter(filter: RenewalFilter): void {
     this.statusFilter.set(filter);
     this.pg.resetPage();
+  }
+
+  togglePolicy(): void {
+    this.policyExpanded.update((v) => !v);
   }
 
   savePolicy(): void {
@@ -145,12 +139,9 @@ export class RenewalsWorkspacePageComponent {
   sendReminder(): void {
     const row = this.selectedRenewal();
     if (!row || !row.canSendReminder) return;
-
     const ok = this.store.sendRenewalReminder(row.id);
     if (ok) {
-      this.selectedRenewal.set(
-        this.store.renewals().find((r) => r.id === row.id) ?? null,
-      );
+      this.selectedRenewal.set(this.store.renewals().find((r) => r.id === row.id) ?? null);
       this.showToast(this.copy().reminderSent);
     }
   }
@@ -160,9 +151,7 @@ export class RenewalsWorkspacePageComponent {
   }
 
   programBundle(row: RenewalRow): string {
-    const program = this.locale.isRtl() ? row.programAr : row.programEn;
-    const bundle = this.locale.isRtl() ? row.bundleAr : row.bundleEn;
-    return `${program} · ${bundle}`;
+    return `${this.locale.isRtl() ? row.programAr : row.programEn} · ${this.locale.isRtl() ? row.bundleAr : row.bundleEn}`;
   }
 
   tierLabel(row: RenewalRow): string {
@@ -205,28 +194,56 @@ export class RenewalsWorkspacePageComponent {
   }
 
   daysRemainingClass(days: number): string {
-    if (days < 0) return 'text-red-600';
+    if (days < 0) return 'text-rose-600';
     if (days <= 3) return 'text-orange-600';
     if (days <= 7) return 'text-amber-600';
     return 'text-slate-700';
   }
 
-  statusClass(status: RenewalStatus): string {
+  statusTone(status: RenewalStatus): StatusTone {
     switch (status) {
       case 'ExpiringSoon':
-        return 'bg-amber-50 text-amber-700 ring-amber-200';
+        return 'warning';
       case 'ReminderSent':
-        return 'bg-indigo-50 text-indigo-700 ring-indigo-200';
+        return 'info';
       case 'InProgress':
-        return 'bg-sky-50 text-sky-700 ring-sky-200';
+        return 'info';
       case 'Renewed':
-        return 'bg-emerald-50 text-emerald-700 ring-emerald-200';
-      case 'Lapsed':
-        return 'bg-slate-100 text-slate-600 ring-slate-200';
+        return 'success';
       case 'AtRisk':
-        return 'bg-red-50 text-red-700 ring-red-200';
+        return 'danger';
       default:
-        return 'bg-slate-100 text-slate-600 ring-slate-200';
+        return 'neutral';
+    }
+  }
+
+  statusBadgeClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-50 text-emerald-700 ring-emerald-600/15';
+      case 'warning':
+        return 'bg-amber-50 text-amber-700 ring-amber-600/15';
+      case 'danger':
+        return 'bg-rose-50 text-rose-700 ring-rose-600/15';
+      case 'info':
+        return 'bg-sky-50 text-sky-700 ring-sky-600/15';
+      default:
+        return 'bg-slate-50 text-slate-700 ring-slate-600/15';
+    }
+  }
+
+  statusDotClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-500';
+      case 'warning':
+        return 'bg-amber-500';
+      case 'danger':
+        return 'bg-rose-500';
+      case 'info':
+        return 'bg-sky-500';
+      default:
+        return 'bg-slate-400';
     }
   }
 

@@ -10,28 +10,24 @@ import {
   lucideUser,
   lucideUsersRound,
   lucideX,
+  lucideChevronRight,
+  lucideSlidersHorizontal,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { LIFECYCLE_I18N } from '@/core/i18n/translations/lifecycle.i18n';
-import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
 import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
 import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { SubscriptionsStore } from '../../data/subscriptions-store';
 import { FamilyGroupRow, FamilyGroupStatus } from '../../models/lifecycle.model';
 
 type FamilyFilter = 'all' | FamilyGroupStatus;
+type StatusTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 
 @Component({
   selector: 'mm-family-subscriptions-workspace-page',
   standalone: true,
-  imports: [
-    NgClass,
-    NgIcon,
-    RouterLink,
-    MmOperationsKpiCardComponent,
-    MmTablePaginationComponent,
-  ],
+  imports: [NgClass, NgIcon, RouterLink, MmTablePaginationComponent],
   providers: [
     provideIcons({
       lucideCircleAlert,
@@ -41,6 +37,8 @@ type FamilyFilter = 'all' | FamilyGroupStatus;
       lucideUser,
       lucideUsersRound,
       lucideX,
+      lucideChevronRight,
+      lucideSlidersHorizontal,
     }),
   ],
   templateUrl: './family-subscriptions-workspace-page.component.html',
@@ -55,7 +53,7 @@ export class FamilySubscriptionsWorkspacePageComponent {
   readonly statusFilter = signal<FamilyFilter>('all');
   readonly detailOpen = signal(false);
   readonly selectedGroup = signal<FamilyGroupRow | null>(null);
-  readonly pg = createTablePagination(8);
+  readonly pg = createTablePagination(5);
   readonly currentPage = this.pg.currentPage;
   readonly pageSize = this.pg.pageSize;
 
@@ -90,15 +88,8 @@ export class FamilySubscriptionsWorkspacePageComponent {
     return rows;
   });
 
-  readonly paginatedGroups = computed(() => {
-    const rows = this.filteredGroups();
-    const start = (this.currentPage() - 1) * this.pageSize();
-    return rows.slice(start, start + this.pageSize());
-  });
-
-  readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.filteredGroups().length / this.pageSize())),
-  );
+  readonly paginatedGroups = this.pg.paginated(this.filteredGroups);
+  readonly totalPages = this.pg.totalPages(this.filteredGroups);
 
   onSearch(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
@@ -155,31 +146,59 @@ export class FamilySubscriptionsWorkspacePageComponent {
     return this.locale.isRtl() ? member.statusAr : member.statusEn;
   }
 
-  statusClass(status: FamilyGroupStatus): string {
+  statusTone(status: FamilyGroupStatus): StatusTone {
     switch (status) {
       case 'Active':
-        return 'bg-emerald-50 text-emerald-700 ring-emerald-200';
+        return 'success';
       case 'Frozen':
-        return 'bg-sky-50 text-sky-700 ring-sky-200';
+        return 'info';
       case 'Dispute':
-        return 'bg-red-50 text-red-700 ring-red-200';
+        return 'danger';
       case 'PendingDetach':
-        return 'bg-amber-50 text-amber-700 ring-amber-200';
+        return 'warning';
       default:
-        return 'bg-slate-100 text-slate-600 ring-slate-200';
+        return 'neutral';
     }
   }
 
-  memberStatusClass(status: FamilyGroupRow['members'][number]['status']): string {
+  statusBadgeClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-50 text-emerald-700 ring-emerald-600/15';
+      case 'warning':
+        return 'bg-amber-50 text-amber-700 ring-amber-600/15';
+      case 'danger':
+        return 'bg-rose-50 text-rose-700 ring-rose-600/15';
+      case 'info':
+        return 'bg-sky-50 text-sky-700 ring-sky-600/15';
+      default:
+        return 'bg-slate-50 text-slate-700 ring-slate-600/15';
+    }
+  }
+
+  statusDotClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-500';
+      case 'warning':
+        return 'bg-amber-500';
+      case 'danger':
+        return 'bg-rose-500';
+      case 'info':
+        return 'bg-sky-500';
+      default:
+        return 'bg-slate-400';
+    }
+  }
+
+  memberStatusTone(status: FamilyGroupRow['members'][number]['status']): StatusTone {
     switch (status) {
       case 'Active':
-        return 'bg-emerald-50 text-emerald-700 ring-emerald-200';
+        return 'success';
       case 'Pending':
-        return 'bg-amber-50 text-amber-700 ring-amber-200';
-      case 'Detached':
-        return 'bg-slate-100 text-slate-600 ring-slate-200';
+        return 'warning';
       default:
-        return 'bg-slate-100 text-slate-600 ring-slate-200';
+        return 'neutral';
     }
   }
 

@@ -7,45 +7,45 @@ import {
   lucideCalendarClock,
   lucideCircleAlert,
   lucideClock,
-  lucideEye,
+  lucideChevronDown,
+  lucideChevronRight,
   lucideSave,
   lucideSearch,
   lucideSettings2,
+  lucideSlidersHorizontal,
   lucideSnowflake,
+  lucideUser,
   lucideX,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { LIFECYCLE_I18N } from '@/core/i18n/translations/lifecycle.i18n';
-import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
+import { MmDetailToastComponent } from '@/shared/components/accounts';
 import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
 import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { SubscriptionsStore } from '../../data/subscriptions-store';
 import { FreezeRequestRow, FreezeRequestStatus } from '../../models/freeze.model';
 
 type FreezeFilter = 'all' | FreezeRequestStatus;
+type StatusTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 
 @Component({
   selector: 'mm-freeze-workspace-page',
   standalone: true,
-  imports: [
-    FormsModule,
-    NgClass,
-    NgIcon,
-    RouterLink,
-    MmOperationsKpiCardComponent,
-    MmTablePaginationComponent,
-  ],
+  imports: [FormsModule, NgClass, NgIcon, RouterLink, MmDetailToastComponent, MmTablePaginationComponent],
   providers: [
     provideIcons({
       lucideCalendarClock,
       lucideCircleAlert,
       lucideClock,
-      lucideEye,
+      lucideChevronDown,
+      lucideChevronRight,
       lucideSave,
       lucideSearch,
       lucideSettings2,
+      lucideSlidersHorizontal,
       lucideSnowflake,
+      lucideUser,
       lucideX,
     }),
   ],
@@ -60,10 +60,11 @@ export class FreezeWorkspacePageComponent {
   readonly searchQuery = signal('');
   readonly statusFilter = signal<FreezeFilter>('all');
   readonly detailOpen = signal(false);
+  readonly policyExpanded = signal(false);
   readonly selectedRequest = signal<FreezeRequestRow | null>(null);
   readonly toast = signal<string | null>(null);
   readonly policyDraft = signal(this.store.freezePolicy().defaultDurationDays);
-  readonly pg = createTablePagination(8);
+  readonly pg = createTablePagination(5);
   readonly currentPage = this.pg.currentPage;
   readonly pageSize = this.pg.pageSize;
 
@@ -81,10 +82,7 @@ export class FreezeWorkspacePageComponent {
     let rows = this.store.freezeRequests();
     const q = this.searchQuery().toLowerCase().trim();
     const st = this.statusFilter();
-
-    if (st !== 'all') {
-      rows = rows.filter((r) => r.status === st);
-    }
+    if (st !== 'all') rows = rows.filter((r) => r.status === st);
     if (q) {
       rows = rows.filter(
         (r) =>
@@ -97,15 +95,8 @@ export class FreezeWorkspacePageComponent {
     return rows;
   });
 
-  readonly paginatedRequests = computed(() => {
-    const rows = this.filteredRequests();
-    const start = (this.currentPage() - 1) * this.pageSize();
-    return rows.slice(start, start + this.pageSize());
-  });
-
-  readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.filteredRequests().length / this.pageSize())),
-  );
+  readonly paginatedRequests = this.pg.paginated(this.filteredRequests);
+  readonly totalPages = this.pg.totalPages(this.filteredRequests);
 
   onSearch(event: Event): void {
     this.searchQuery.set((event.target as HTMLInputElement).value);
@@ -117,9 +108,12 @@ export class FreezeWorkspacePageComponent {
     this.pg.resetPage();
   }
 
+  togglePolicy(): void {
+    this.policyExpanded.update((v) => !v);
+  }
+
   onPolicyDurationChange(value: string): void {
-    const days = Math.max(1, Math.min(30, Number(value) || 1));
-    this.policyDraft.set(days);
+    this.policyDraft.set(Math.max(1, Math.min(30, Number(value) || 1)));
   }
 
   savePolicy(): void {
@@ -141,12 +135,9 @@ export class FreezeWorkspacePageComponent {
     const row = this.selectedRequest();
     if (!row || !row.canEndEarly) return;
     if (!confirm(this.copy().endFreezeConfirm)) return;
-
     const ok = this.store.endFreezeEarly(row.id);
     if (ok) {
-      this.selectedRequest.set(
-        this.store.freezeRequests().find((r) => r.id === row.id) ?? null,
-      );
+      this.selectedRequest.set(this.store.freezeRequests().find((r) => r.id === row.id) ?? null);
       this.showToast(this.copy().endFreezeEarly);
     }
   }
@@ -156,9 +147,7 @@ export class FreezeWorkspacePageComponent {
   }
 
   programBundle(row: FreezeRequestRow): string {
-    const program = this.locale.isRtl() ? row.programAr : row.programEn;
-    const bundle = this.locale.isRtl() ? row.bundleAr : row.bundleEn;
-    return `${program} · ${bundle}`;
+    return `${this.locale.isRtl() ? row.programAr : row.programEn} · ${this.locale.isRtl() ? row.bundleAr : row.bundleEn}`;
   }
 
   tierLabel(row: FreezeRequestRow): string {
@@ -195,18 +184,44 @@ export class FreezeWorkspacePageComponent {
     return this.locale.isRtl() ? row.conflictNoteAr ?? null : row.conflictNoteEn ?? null;
   }
 
-  statusClass(status: FreezeRequestStatus): string {
+  statusTone(status: FreezeRequestStatus): StatusTone {
     switch (status) {
       case 'Active':
-        return 'bg-sky-50 text-sky-700 ring-sky-200';
+        return 'info';
       case 'PendingStart':
-        return 'bg-amber-50 text-amber-700 ring-amber-200';
+        return 'warning';
       case 'EndingSoon':
-        return 'bg-orange-50 text-orange-700 ring-orange-200';
+        return 'warning';
       case 'Completed':
-        return 'bg-emerald-50 text-emerald-700 ring-emerald-200';
+        return 'success';
       default:
-        return 'bg-slate-100 text-slate-600 ring-slate-200';
+        return 'neutral';
+    }
+  }
+
+  statusBadgeClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-50 text-emerald-700 ring-emerald-600/15';
+      case 'warning':
+        return 'bg-amber-50 text-amber-700 ring-amber-600/15';
+      case 'info':
+        return 'bg-sky-50 text-sky-700 ring-sky-600/15';
+      default:
+        return 'bg-slate-50 text-slate-700 ring-slate-600/15';
+    }
+  }
+
+  statusDotClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-500';
+      case 'warning':
+        return 'bg-amber-500';
+      case 'info':
+        return 'bg-sky-500';
+      default:
+        return 'bg-slate-400';
     }
   }
 

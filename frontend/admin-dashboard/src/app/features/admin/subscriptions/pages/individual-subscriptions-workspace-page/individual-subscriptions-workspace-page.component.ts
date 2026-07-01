@@ -4,16 +4,17 @@ import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideClock,
-  lucideExternalLink,
+  lucideChevronRight,
   lucideSearch,
   lucideShieldCheck,
+  lucideSlidersHorizontal,
   lucideSnowflake,
+  lucideUser,
   lucideUserX,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { LIFECYCLE_I18N } from '@/core/i18n/translations/lifecycle.i18n';
-import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
 import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
 import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { SubscriptionsStore } from '../../data/subscriptions-store';
@@ -23,24 +24,21 @@ import {
 } from '../../models/lifecycle.model';
 
 type IndividualFilter = 'all' | IndividualSubscriptionStatus;
+type StatusTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 
 @Component({
   selector: 'mm-individual-subscriptions-workspace-page',
   standalone: true,
-  imports: [
-    NgClass,
-    NgIcon,
-    RouterLink,
-    MmOperationsKpiCardComponent,
-    MmTablePaginationComponent,
-  ],
+  imports: [NgClass, NgIcon, RouterLink, MmTablePaginationComponent],
   providers: [
     provideIcons({
       lucideClock,
-      lucideExternalLink,
+      lucideChevronRight,
       lucideSearch,
       lucideShieldCheck,
+      lucideSlidersHorizontal,
       lucideSnowflake,
+      lucideUser,
       lucideUserX,
     }),
   ],
@@ -54,7 +52,7 @@ export class IndividualSubscriptionsWorkspacePageComponent {
   readonly copy = computed(() => LIFECYCLE_I18N[this.locale.locale()]);
   readonly searchQuery = signal('');
   readonly statusFilter = signal<IndividualFilter>('all');
-  readonly pg = createTablePagination(10);
+  readonly pg = createTablePagination(5);
   readonly currentPage = this.pg.currentPage;
   readonly pageSize = this.pg.pageSize;
 
@@ -71,10 +69,7 @@ export class IndividualSubscriptionsWorkspacePageComponent {
     let rows = this.store.individualSubscriptions();
     const q = this.searchQuery().toLowerCase().trim();
     const st = this.statusFilter();
-
-    if (st !== 'all') {
-      rows = rows.filter((r) => r.status === st);
-    }
+    if (st !== 'all') rows = rows.filter((r) => r.status === st);
     if (q) {
       rows = rows.filter(
         (r) =>
@@ -89,19 +84,11 @@ export class IndividualSubscriptionsWorkspacePageComponent {
     return rows;
   });
 
-  readonly paginatedRows = computed(() => {
-    const rows = this.filteredRows();
-    const start = (this.currentPage() - 1) * this.pageSize();
-    return rows.slice(start, start + this.pageSize());
-  });
-
-  readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.filteredRows().length / this.pageSize())),
-  );
+  readonly paginatedRows = this.pg.paginated(this.filteredRows);
+  readonly totalPages = this.pg.totalPages(this.filteredRows);
 
   onSearch(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.searchQuery.set(value);
+    this.searchQuery.set((event.target as HTMLInputElement).value);
     this.pg.resetPage();
   }
 
@@ -136,18 +123,44 @@ export class IndividualSubscriptionsWorkspacePageComponent {
     return this.locale.isRtl() ? row.startDateAr : row.startDateEn;
   }
 
-  statusClass(status: IndividualSubscriptionStatus): string {
+  statusTone(status: IndividualSubscriptionStatus): StatusTone {
     switch (status) {
       case 'Active':
-        return 'bg-emerald-50 text-emerald-700 ring-emerald-200';
+        return 'success';
       case 'Frozen':
-        return 'bg-sky-50 text-sky-700 ring-sky-200';
+        return 'info';
       case 'Expiring':
-        return 'bg-amber-50 text-amber-700 ring-amber-200';
+        return 'warning';
       case 'Cancelled':
-        return 'bg-slate-100 text-slate-600 ring-slate-200';
+        return 'neutral';
       default:
-        return 'bg-slate-100 text-slate-600 ring-slate-200';
+        return 'neutral';
+    }
+  }
+
+  statusBadgeClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-50 text-emerald-700 ring-emerald-600/15';
+      case 'warning':
+        return 'bg-amber-50 text-amber-700 ring-amber-600/15';
+      case 'info':
+        return 'bg-sky-50 text-sky-700 ring-sky-600/15';
+      default:
+        return 'bg-slate-50 text-slate-700 ring-slate-600/15';
+    }
+  }
+
+  statusDotClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-500';
+      case 'warning':
+        return 'bg-amber-500';
+      case 'info':
+        return 'bg-sky-500';
+      default:
+        return 'bg-slate-400';
     }
   }
 

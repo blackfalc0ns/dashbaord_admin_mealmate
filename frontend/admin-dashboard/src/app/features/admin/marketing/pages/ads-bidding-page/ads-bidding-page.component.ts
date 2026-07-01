@@ -5,6 +5,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideBadgeCheck,
   lucideBan,
+  lucideChevronRight,
   lucideCircleDollarSign,
   lucideClock,
   lucideEye,
@@ -26,9 +27,9 @@ import {
 
 import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
-import { MmShellCardComponent } from '@/shared/components/layout/shell-card';
-import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
+import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
 import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
+import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { AdsStore } from '../../data/ads-store';
 import {
   AdAreaOption,
@@ -44,6 +45,7 @@ type AdsSection = 'placements' | 'audit';
 type SlotFilter = 'all' | AdSlotStatus | 'issues';
 type BidFilter = 'all' | AdBidStatus | 'policy';
 type SlotModalTab = 'bids' | 'preview' | 'policy';
+type StatusTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 
 const ADS_COPY = {
   ar: {
@@ -228,14 +230,14 @@ const ADS_COPY = {
     NgClass,
     NgIcon,
     ReactiveFormsModule,
-    MmShellCardComponent,
-    MmOperationsKpiCardComponent,
+    MmTablePaginationComponent,
     HasPermissionDirective,
   ],
   providers: [
     provideIcons({
       lucideBadgeCheck,
       lucideBan,
+      lucideChevronRight,
       lucideCircleDollarSign,
       lucideClock,
       lucideEye,
@@ -276,6 +278,12 @@ export class AdsBiddingPageComponent implements OnInit {
   readonly selectedAuditId = signal<string | null>(null);
   readonly createModalOpen = signal(false);
   readonly createFormError = signal<string | null>(null);
+  readonly slotPg = createTablePagination(5);
+  readonly auditPg = createTablePagination(5);
+  readonly slotCurrentPage = this.slotPg.currentPage;
+  readonly slotPageSize = this.slotPg.pageSize;
+  readonly auditCurrentPage = this.auditPg.currentPage;
+  readonly auditPageSize = this.auditPg.pageSize;
 
   readonly createForm = this.fb.nonNullable.group({
     areaId: ['', Validators.required],
@@ -349,6 +357,12 @@ export class AdsBiddingPageComponent implements OnInit {
     });
   });
 
+  readonly paginatedSlots = this.slotPg.paginated(this.filteredSlots);
+  readonly slotTotalPages = this.slotPg.totalPages(this.filteredSlots);
+
+  readonly paginatedAudit = this.auditPg.paginated(this.store.audit);
+  readonly auditTotalPages = this.auditPg.totalPages(this.store.audit);
+
   readonly visibleBids = computed(() => {
     const slot = this.store.selectedSlot();
     if (!slot) return [];
@@ -391,19 +405,6 @@ export class AdsBiddingPageComponent implements OnInit {
     this.activeSection.set(section);
   }
 
-  sectionNavClass(section: AdsSection): string {
-    const base =
-      'flex w-full min-h-8 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-transparent px-2 py-1.5 text-[0.6875rem] font-bold leading-snug whitespace-nowrap transition-[color,background,box-shadow,border-color] duration-150';
-    if (this.activeSection() === section) {
-      return `${base} border-emerald-200/70 bg-white text-emerald-700 shadow-[0_1px_2px_rgba(15,29,50,0.05),inset_0_0_0_1px_rgba(255,255,255,0.85)]`;
-    }
-    return `${base} text-slate-500 hover:bg-white/55 hover:text-slate-700`;
-  }
-
-  sectionIconClass(section: AdsSection): string {
-    return this.activeSection() === section ? 'text-emerald-600' : 'text-slate-400';
-  }
-
   slotModalTabClass(tab: SlotModalTab): string {
     return this.slotModalTab() === tab
       ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
@@ -416,10 +417,21 @@ export class AdsBiddingPageComponent implements OnInit {
 
   onSearch(event: Event): void {
     this.searchQuery.set((event.target as HTMLInputElement).value);
+    this.slotPg.resetPage();
+    this.auditPg.resetPage();
   }
 
   setSlotFilter(filter: SlotFilter): void {
     this.slotFilter.set(filter);
+    this.slotPg.resetPage();
+  }
+
+  onSlotPageChange(page: number): void {
+    this.slotPg.onPageChange(page, this.slotTotalPages());
+  }
+
+  onAuditPageChange(page: number): void {
+    this.auditPg.onPageChange(page, this.auditTotalPages());
   }
 
   setBidFilter(filter: BidFilter): void {
@@ -561,16 +573,66 @@ export class AdsBiddingPageComponent implements OnInit {
     return map[placement];
   }
 
-  statusClass(status: AdSlotStatus): string {
-    const map: Record<AdSlotStatus, string> = {
-      Open: 'bg-blue-50 text-blue-700 ring-blue-200',
-      ClosingSoon: 'bg-amber-50 text-amber-700 ring-amber-200',
-      Awarded: 'bg-violet-50 text-violet-700 ring-violet-200',
-      Live: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-      Paused: 'bg-slate-100 text-slate-600 ring-slate-200',
-      Expired: 'bg-rose-50 text-rose-700 ring-rose-200',
-    };
-    return map[status];
+  slotStatusTone(status: AdSlotStatus): StatusTone {
+    switch (status) {
+      case 'Live':
+        return 'success';
+      case 'ClosingSoon':
+        return 'warning';
+      case 'Expired':
+        return 'danger';
+      case 'Open':
+      case 'Awarded':
+        return 'info';
+      default:
+        return 'neutral';
+    }
+  }
+
+  bidStatusTone(status: AdBidStatus): StatusTone {
+    switch (status) {
+      case 'Approved':
+      case 'Winning':
+        return 'success';
+      case 'Pending':
+        return 'warning';
+      case 'Rejected':
+        return 'danger';
+      case 'Leading':
+        return 'info';
+      default:
+        return 'neutral';
+    }
+  }
+
+  statusBadgeClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-50 text-emerald-700 ring-emerald-600/15';
+      case 'warning':
+        return 'bg-amber-50 text-amber-700 ring-amber-600/15';
+      case 'danger':
+        return 'bg-rose-50 text-rose-700 ring-rose-600/15';
+      case 'info':
+        return 'bg-sky-50 text-sky-700 ring-sky-600/15';
+      default:
+        return 'bg-slate-50 text-slate-700 ring-slate-600/15';
+    }
+  }
+
+  statusDotClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-500';
+      case 'warning':
+        return 'bg-amber-500';
+      case 'danger':
+        return 'bg-rose-500';
+      case 'info':
+        return 'bg-sky-500';
+      default:
+        return 'bg-slate-400';
+    }
   }
 
   bidStatusClass(status: AdBidStatus): string {
@@ -583,12 +645,6 @@ export class AdsBiddingPageComponent implements OnInit {
       Rejected: 'bg-rose-50 text-rose-700 ring-rose-200',
     };
     return map[status];
-  }
-
-  filterClass(filter: SlotFilter): string {
-    return this.slotFilter() === filter
-      ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-      : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50';
   }
 
   policyClass(rule: AdPolicyRule): string {

@@ -10,6 +10,14 @@ import {
   lucideTrendingDown,
   lucideX,
   lucideSettings2,
+  lucideSearch,
+  lucideChevronRight,
+  lucideChevronDown,
+  lucideSlidersHorizontal,
+  lucideAward,
+  lucideSparkles,
+  lucideCrown,
+  lucideBanknote,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
@@ -19,10 +27,14 @@ import { HasPermissionDirective } from '@/shared/directives/has-permission.direc
 import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
 import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { SubscriptionsStore } from '../../data/subscriptions-store';
-import { PlatformCommissionBounds, PlatformCommissionMode, RestaurantTier } from '../../models';
+import {
+  PlatformCommissionBounds,
+  PlatformCommissionMode,
+  ProfitabilityAlert,
+  RestaurantTier,
+  TierAverageRow,
+} from '../../models';
 import { commissionPct } from '../../data/subscription-formulas';
-import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
-import { MmDetailPanelCardComponent } from '@/shared/components/accounts';
 import { MmDetailToastComponent } from '@/shared/components/accounts';
 
 const PREVIEW_DAYS = [1, 6, 12, 26] as const;
@@ -35,8 +47,6 @@ const PREVIEW_DAYS = [1, 6, 12, 26] as const;
     NgClass,
     FormsModule,
     NgIcon,
-    MmOperationsKpiCardComponent,
-    MmDetailPanelCardComponent,
     MmDetailToastComponent,
     HasPermissionDirective,
     MmTablePaginationComponent,
@@ -50,6 +60,14 @@ const PREVIEW_DAYS = [1, 6, 12, 26] as const;
       lucideTrendingDown,
       lucideX,
       lucideSettings2,
+      lucideSearch,
+      lucideChevronRight,
+      lucideChevronDown,
+      lucideSlidersHorizontal,
+      lucideAward,
+      lucideSparkles,
+      lucideCrown,
+      lucideBanknote,
     }),
   ],
   templateUrl: './pricing-workspace-page.component.html',
@@ -70,14 +88,38 @@ export class PricingWorkspacePageComponent {
   readonly toast = signal<string | null>(null);
   readonly dirty = signal(false);
   readonly commissionModalOpen = signal(false);
+  readonly alertsExpanded = signal(false);
+  readonly searchQuery = signal('');
+  readonly tierFilter = signal<'all' | RestaurantTier>('all');
+
   readonly pg = createTablePagination(5);
   readonly currentPage = this.pg.currentPage;
   readonly pageSize = this.pg.pageSize;
 
   readonly alerts = computed(() => this.store.profitabilityAlerts());
-  readonly tierAverages = computed(() => this.store.tierAverages());
-  readonly paginatedTierAverages = this.pg.paginated(this.tierAverages);
-  readonly totalPages = this.pg.totalPages(this.tierAverages);
+  readonly liveConfig = computed(() => this.store.platformCommissionConfig());
+
+  readonly filteredTierAverages = computed(() => {
+    let rows = this.store.tierAverages();
+    const q = this.searchQuery().toLowerCase().trim();
+    const tier = this.tierFilter();
+    if (tier !== 'all') rows = rows.filter((r) => r.tier === tier);
+    if (q) {
+      rows = rows.filter(
+        (r) =>
+          r.programNameAr.toLowerCase().includes(q) ||
+          r.programNameEn.toLowerCase().includes(q) ||
+          r.bundleNameAr.toLowerCase().includes(q) ||
+          r.bundleNameEn.toLowerCase().includes(q) ||
+          r.programId.toLowerCase().includes(q) ||
+          r.bundleId.toLowerCase().includes(q),
+      );
+    }
+    return rows;
+  });
+
+  readonly paginatedTierAverages = this.pg.paginated(this.filteredTierAverages);
+  readonly totalPages = this.pg.totalPages(this.filteredTierAverages);
   readonly paginationItems = computed(() => (this.locale.isRtl() ? 'متوسط' : 'averages'));
 
   readonly activeBundles = computed(() =>
@@ -86,13 +128,11 @@ export class PricingWorkspacePageComponent {
 
   readonly commissionModeLabel = computed(() => {
     const c = this.copy();
-    return this.store.platformCommissionConfig().mode === 'global'
-      ? c.commissionModeGlobal
-      : c.commissionModePerBundle;
+    return this.liveConfig().mode === 'global' ? c.commissionModeGlobal : c.commissionModePerBundle;
   });
 
   readonly kpiMaxDisplay = computed(() => {
-    const cfg = this.store.platformCommissionConfig();
+    const cfg = this.liveConfig();
     if (cfg.mode === 'global') return `${cfg.global.maxCommissionPct}${this.copy().pct}`;
     const values = Object.values(cfg.perBundle).map((b) => b.maxCommissionPct);
     if (!values.length) return `${cfg.global.maxCommissionPct}${this.copy().pct}`;
@@ -100,7 +140,7 @@ export class PricingWorkspacePageComponent {
   });
 
   readonly kpiMinDisplay = computed(() => {
-    const cfg = this.store.platformCommissionConfig();
+    const cfg = this.liveConfig();
     if (cfg.mode === 'global') return `${cfg.global.minCommissionPct}${this.copy().pct}`;
     const values = Object.values(cfg.perBundle).map((b) => b.minCommissionPct);
     if (!values.length) return `${cfg.global.minCommissionPct}${this.copy().pct}`;
@@ -138,12 +178,19 @@ export class PricingWorkspacePageComponent {
     return TIER_LABELS[this.locale.locale()][tier] ?? tier;
   }
 
-  programBundleLabel(row: {
-    programNameAr: string;
-    programNameEn: string;
-    bundleNameAr: string;
-    bundleNameEn: string;
-  }): string {
+  tierBadgeClass(tier: RestaurantTier): string {
+    if (tier === 'elite') return 'bg-amber-50 text-amber-700 ring-amber-600/15';
+    if (tier === 'platinum') return 'bg-violet-50 text-violet-700 ring-violet-600/15';
+    return 'bg-slate-50 text-slate-700 ring-slate-600/15';
+  }
+
+  tierDotClass(tier: RestaurantTier): string {
+    if (tier === 'elite') return 'bg-amber-500';
+    if (tier === 'platinum') return 'bg-violet-500';
+    return 'bg-slate-400';
+  }
+
+  programBundleLabel(row: TierAverageRow): string {
     return this.locale.isRtl()
       ? `${row.programNameAr} / ${row.bundleNameAr}`
       : `${row.programNameEn} / ${row.bundleNameEn}`;
@@ -151,6 +198,46 @@ export class PricingWorkspacePageComponent {
 
   bundleName(bundle: { nameAr: string; nameEn: string }): string {
     return this.locale.isRtl() ? bundle.nameAr : bundle.nameEn;
+  }
+
+  alertMessage(alert: ProfitabilityAlert): string {
+    return this.locale.isRtl() ? alert.messageAr : alert.messageEn;
+  }
+
+  alertSeverityClass(severity: ProfitabilityAlert['severity']): string {
+    return severity === 'danger'
+      ? 'bg-rose-50 text-rose-700 ring-rose-600/15'
+      : 'bg-amber-50 text-amber-700 ring-amber-600/15';
+  }
+
+  alertDotClass(severity: ProfitabilityAlert['severity']): string {
+    return severity === 'danger' ? 'bg-rose-500' : 'bg-amber-500';
+  }
+
+  livePreviewPct(days: number): number {
+    const cfg = this.liveConfig();
+    const bounds = cfg.global;
+    return commissionPct(days, bounds.maxCommissionPct, bounds.minCommissionPct);
+  }
+
+  liveBarWidth(pct: number): number {
+    const cfg = this.liveConfig();
+    return this.barWidth(pct, cfg.global.maxCommissionPct, cfg.global.minCommissionPct);
+  }
+
+  setTierFilter(tier: 'all' | RestaurantTier): void {
+    this.tierFilter.set(tier);
+    this.pg.resetPage();
+  }
+
+  onSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchQuery.set(input.value);
+    this.pg.resetPage();
+  }
+
+  toggleAlerts(): void {
+    this.alertsExpanded.update((v) => !v);
   }
 
   openCommissionModal(): void {

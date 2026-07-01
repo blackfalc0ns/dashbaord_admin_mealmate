@@ -127,249 +127,314 @@
   <!-- ═══ TEMPLATES TAB ═══ -->
   @if (activeSection() === 'templates') {
     <div class="mm-as-auto-selection-tab flex flex-col gap-2.5">
-    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div class="flex flex-col gap-3">
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div class="relative w-full max-w-sm">
-            <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
-              <ng-icon name="lucideSearch" size="16" />
+
+      <!-- ═══ Combined Filters + Table Card ═══ -->
+      <div class="rounded-3xl border border-slate-200/60 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03),0_8px_32px_-8px_rgba(15,23,42,0.08)] overflow-hidden">
+
+        <!-- Header -->
+        <div class="px-5 py-3.5 border-b border-slate-100/70">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-9 h-9 rounded-2xl bg-slate-50 ring-1 ring-slate-200 flex items-center justify-center">
+                <ng-icon name="lucideLayoutTemplate" size="16" class="text-slate-700" />
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-slate-900 leading-none">{{ copy().sectionTemplates }}</h2>
+                <p class="text-[10px] text-slate-500 mt-1">{{ copy().kpiTemplatesDesc }}</p>
+              </div>
+            </div>
+            <span class="rounded-full bg-white ring-1 ring-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 font-mono shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+              {{ filteredTemplates().length }}
             </span>
-            <input
-              type="text"
-              class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 ps-9 pe-3 text-sm outline-none focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100"
-              [placeholder]="copy().search"
-              (input)="onSearch($event)"
-            />
-          </div>
-          <div class="flex flex-wrap gap-2">
-            @for (filter of filters; track filter) {
-              <button
-                type="button"
-                class="rounded-lg border px-2.5 py-1.5 text-xs font-bold transition"
-                [class]="filterClass(filter)"
-                (click)="setFilter(filter)"
-              >
-                {{ filterLabel(filter) }}
-              </button>
-            }
           </div>
         </div>
 
-        <p class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
-          {{ copy().privacyNote }}
-        </p>
-      </div>
-    </div>
+        <!-- Filters bar -->
+        <div class="border-b border-slate-100/70 px-4 py-3 bg-slate-50/40 flex flex-col gap-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="relative w-full sm:w-64 me-auto">
+              <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+                <ng-icon name="lucideSearch" size="13" />
+              </span>
+              <input
+                type="text"
+                class="h-8 w-full rounded-lg border border-slate-200 bg-white ps-8 pe-3 text-[11px] transition-all focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 placeholder:text-slate-400"
+                [placeholder]="copy().search"
+                (input)="onSearch($event)"
+              />
+            </div>
 
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div class="overflow-x-auto">
-        <table class="mm-as-auto-selection__data-table min-w-full text-sm">
-          <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-500">
-            <tr>
-              <th class="px-4 py-3 text-start">{{ copy().colName }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colKind }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colStatus }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colVersion }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colPage }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colUpdated }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colActions }}</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100">
-            @for (template of filteredTemplates(); track template.id) {
-              <tr class="hover:bg-slate-50/80">
-                <td class="px-4 py-3">
-                  <div class="font-bold text-slate-900">{{ templateName(template) }}</div>
-                  <div class="mt-0.5 text-xs text-slate-500">{{ templateDescription(template) }}</div>
-                </td>
-                <td class="px-4 py-3">
-                  <span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600">
-                    {{ kindLabel(template.kind) }}
-                  </span>
-                </td>
-                <td class="px-4 py-3">
-                  <span
-                    class="inline-flex rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset"
-                    [class]="statusClass(template.status)"
-                  >
-                    {{ statusLabel(template.status) }}
-                  </span>
-                </td>
-                <td class="px-4 py-3 font-mono text-xs text-slate-600">v{{ template.version }}</td>
-                <td class="px-4 py-3 text-xs text-slate-600">
-                  {{ template.widthPx }}×{{ template.heightPx }}px
-                </td>
-                <td class="px-4 py-3 text-xs text-slate-500">
-                  {{ template.updatedAt | date: 'medium' }}
-                </td>
-                <td class="px-4 py-3">
-                  <div class="flex flex-wrap gap-1.5">
-                    <button
-                      type="button"
-                      class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-bold text-white hover:bg-emerald-700"
-                      (click)="navigateToDesigner(template)"
-                    >
-                      <ng-icon name="lucidePenLine" size="12" />
-                      {{ copy().design }}
-                    </button>
-                    <button
-                      type="button"
-                      class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50"
-                      (click)="openPreview(template)"
-                    >
-                      <ng-icon name="lucideEye" size="12" />
-                      {{ copy().preview }}
-                    </button>
-                    <button
-                      type="button"
-                      class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50"
-                      (click)="duplicate(template)"
-                    >
-                      <ng-icon name="lucideCopy" size="12" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="7" class="px-4 py-12 text-center text-sm text-slate-500">
-                  {{ copy().noRows }}
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+            <div class="inline-flex rounded-lg bg-white ring-1 ring-slate-200 p-0.5 flex-wrap">
+              @for (filter of filters; track filter) {
+                <button
+                  type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeFilter() === filter ? 'bg-emerald-100 text-emerald-800 shadow-sm ring-1 ring-emerald-300' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="setFilter(filter)"
+                >
+                  {{ filterLabel(filter) }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <p class="rounded-lg border border-amber-200 bg-amber-50/60 px-3 py-1.5 text-[10px] font-medium text-amber-800">
+            {{ copy().privacyNote }}
+          </p>
+        </div>
+
+        <!-- Table -->
+        @if (filteredTemplates().length === 0) {
+          <div class="p-10">
+            <div class="flex flex-col items-center justify-center gap-2 text-slate-400">
+              <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <ng-icon name="lucideLayoutTemplate" size="20" />
+              </div>
+              <p class="text-sm font-bold text-slate-500">{{ copy().noRows }}</p>
+            </div>
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="mm-as-auto-selection__data-table w-full text-sm">
+              <thead>
+                <tr class="text-[9px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/60 border-b border-slate-100">
+                  <th class="px-4 py-3 text-start">{{ copy().colName }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colKind }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colStatus }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colVersion }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colPage }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colUpdated }}</th>
+                  <th class="px-3 py-3 text-end">{{ copy().colActions }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                @for (template of filteredTemplates(); track template.id) {
+                  <tr class="hover:bg-slate-50/60 transition-colors">
+                    <td class="px-4 py-3">
+                      <div class="text-xs font-bold text-slate-900">{{ templateName(template) }}</div>
+                      <div class="mt-0.5 text-[10px] text-slate-500">{{ templateDescription(template) }}</div>
+                    </td>
+                    <td class="px-3 py-3">
+                      <span class="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 ring-1 ring-slate-200">
+                        {{ kindLabel(template.kind) }}
+                      </span>
+                    </td>
+                    <td class="px-3 py-3">
+                      <span
+                        class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset"
+                        [class]="statusClass(template.status)"
+                      >
+                        {{ statusLabel(template.status) }}
+                      </span>
+                    </td>
+                    <td class="px-3 py-3 font-mono text-[10px] text-slate-600">v{{ template.version }}</td>
+                    <td class="px-3 py-3 text-[10px] text-slate-600 font-mono">
+                      {{ template.widthPx }}×{{ template.heightPx }}
+                    </td>
+                    <td class="px-3 py-3 text-[10px] text-slate-500 font-mono">
+                      {{ template.updatedAt | date: 'short' }}
+                    </td>
+                    <td class="px-3 py-3">
+                      <div class="flex flex-wrap justify-end gap-1">
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-emerald-700 transition"
+                          (click)="navigateToDesigner(template)"
+                        >
+                          <ng-icon name="lucidePenLine" size="10" />
+                          {{ copy().design }}
+                        </button>
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50 transition"
+                          (click)="openPreview(template)"
+                        >
+                          <ng-icon name="lucideEye" size="10" />
+                          {{ copy().preview }}
+                        </button>
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50 transition"
+                          (click)="duplicate(template)"
+                        >
+                          <ng-icon name="lucideCopy" size="10" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
-    </div>
     </div>
   }
 
   <!-- ═══ GENERATED TAB ═══ -->
   @if (activeSection() === 'generated') {
     <div class="mm-as-auto-selection-tab flex flex-col gap-2.5">
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div class="border-b border-slate-100 px-4 py-3">
-        <h2 class="text-sm font-extrabold text-slate-900">{{ copy().history }}</h2>
+      <div class="rounded-3xl border border-slate-200/60 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03),0_8px_32px_-8px_rgba(15,23,42,0.08)] overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-slate-100/70">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-9 h-9 rounded-2xl bg-slate-50 ring-1 ring-slate-200 flex items-center justify-center">
+                <ng-icon name="lucideHistory" size="16" class="text-slate-700" />
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-slate-900 leading-none">{{ copy().history }}</h2>
+                <p class="text-[10px] text-slate-500 mt-1">{{ copy().kpiGeneratedDesc }}</p>
+              </div>
+            </div>
+            <span class="rounded-full bg-white ring-1 ring-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 font-mono shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+              {{ allGeneratedDocuments().length }}
+            </span>
+          </div>
+        </div>
+        @if (allGeneratedDocuments().length === 0) {
+          <div class="p-10">
+            <div class="flex flex-col items-center justify-center gap-2 text-slate-400">
+              <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <ng-icon name="lucideHistory" size="20" />
+              </div>
+              <p class="text-sm font-bold text-slate-500">{{ copy().noDocuments }}</p>
+            </div>
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="mm-as-auto-selection__data-table w-full text-sm">
+              <thead>
+                <tr class="text-[9px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/60 border-b border-slate-100">
+                  <th class="px-4 py-3 text-start">{{ copy().colOrder }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colDocument }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colKind }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colStatus }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colActor }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colDate }}</th>
+                  <th class="px-3 py-3 text-end">{{ copy().colActions }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                @for (doc of allGeneratedDocuments(); track doc.id) {
+                  <tr class="hover:bg-slate-50/60 transition-colors">
+                    <td class="px-4 py-3">
+                      <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-700 ring-1 ring-slate-200">{{ doc.orderId }}</span>
+                    </td>
+                    <td class="px-3 py-3 font-mono text-[10px] text-slate-600">{{ doc.id }}</td>
+                    <td class="px-3 py-3">
+                      <span class="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 ring-1 ring-slate-200">
+                        {{ kindLabel(doc.kind) }}
+                      </span>
+                    </td>
+                    <td class="px-3 py-3">
+                      <span
+                        class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset"
+                        [class]="docStatusClass(doc.status)"
+                      >
+                        {{ docStatusLabel(doc.status) }}
+                      </span>
+                    </td>
+                    <td class="px-3 py-3 text-[11px] text-slate-700 font-semibold">{{ doc.actorName }}</td>
+                    <td class="px-3 py-3 text-[10px] text-slate-500 font-mono">
+                      {{ doc.generatedAt | date: 'short' }}
+                    </td>
+                    <td class="px-3 py-3 text-end">
+                      <button
+                        type="button"
+                        class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50 transition"
+                        (click)="openHistoryDetail(doc)"
+                      >
+                        {{ copy().viewDetails }}
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
-      <div class="overflow-x-auto">
-        <table class="mm-as-auto-selection__data-table min-w-full text-sm">
-          <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-500">
-            <tr>
-              <th class="px-4 py-3 text-start">{{ copy().colOrder }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colDocument }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colKind }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colStatus }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colActor }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colDate }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colActions }}</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100">
-            @for (doc of allGeneratedDocuments(); track doc.id) {
-              <tr class="hover:bg-slate-50/80">
-                <td class="px-4 py-3 font-mono text-xs font-bold text-slate-800">{{ doc.orderId }}</td>
-                <td class="px-4 py-3 text-xs text-slate-600">{{ doc.id }}</td>
-                <td class="px-4 py-3">
-                  <span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600">
-                    {{ kindLabel(doc.kind) }}
-                  </span>
-                </td>
-                <td class="px-4 py-3">
-                  <span
-                    class="inline-flex rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset"
-                    [class]="docStatusClass(doc.status)"
-                  >
-                    {{ docStatusLabel(doc.status) }}
-                  </span>
-                </td>
-                <td class="px-4 py-3 text-xs text-slate-600">{{ doc.actorName }}</td>
-                <td class="px-4 py-3 text-xs text-slate-500">
-                  {{ doc.generatedAt | date: 'medium' }}
-                </td>
-                <td class="px-4 py-3">
-                  <button
-                    type="button"
-                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50"
-                    (click)="openHistoryDetail(doc)"
-                  >
-                    {{ copy().viewDetails }}
-                  </button>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="7" class="px-4 py-12 text-center text-sm text-slate-500">
-                  {{ copy().noDocuments }}
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
     </div>
   }
 
   <!-- ═══ AUDIT TAB ═══ -->
   @if (activeSection() === 'audit') {
     <div class="mm-as-auto-selection-tab flex flex-col gap-2.5">
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div class="border-b border-slate-100 px-4 py-3">
-        <h2 class="text-sm font-extrabold text-slate-900">{{ copy().audit }}</h2>
+      <div class="rounded-3xl border border-slate-200/60 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03),0_8px_32px_-8px_rgba(15,23,42,0.08)] overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-slate-100/70">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-9 h-9 rounded-2xl bg-slate-50 ring-1 ring-slate-200 flex items-center justify-center">
+                <ng-icon name="lucideScrollText" size="16" class="text-slate-700" />
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-slate-900 leading-none">{{ copy().audit }}</h2>
+                <p class="text-[10px] text-slate-500 mt-1">{{ copy().sectionAudit }}</p>
+              </div>
+            </div>
+            <span class="rounded-full bg-white ring-1 ring-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 font-mono shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+              {{ allAuditEvents().length }}
+            </span>
+          </div>
+        </div>
+        @if (allAuditEvents().length === 0) {
+          <div class="p-10">
+            <div class="flex flex-col items-center justify-center gap-2 text-slate-400">
+              <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <ng-icon name="lucideScrollText" size="20" />
+              </div>
+              <p class="text-sm font-bold text-slate-500">{{ copy().noAudit }}</p>
+            </div>
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="mm-as-auto-selection__data-table w-full text-sm">
+              <thead>
+                <tr class="text-[9px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/60 border-b border-slate-100">
+                  <th class="px-4 py-3 text-start">{{ copy().colAction }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colName }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colActor }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colReason }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().colDate }}</th>
+                  <th class="px-3 py-3 text-end">{{ copy().colActions }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                @for (event of allAuditEvents(); track event.id) {
+                  <tr class="hover:bg-slate-50/60 transition-colors">
+                    <td class="px-4 py-3">
+                      <span class="inline-flex items-center rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-700 ring-1 ring-inset ring-violet-600/15">
+                        {{ event.action }}
+                      </span>
+                    </td>
+                    <td class="px-3 py-3 text-[11px] text-slate-700 font-semibold">
+                      @if (templateForId(event.templateId); as tpl) {
+                        {{ templateName(tpl) }}
+                      } @else {
+                        <span class="font-mono text-[10px]">{{ event.templateId }}</span>
+                      }
+                    </td>
+                    <td class="px-3 py-3 text-[11px] text-slate-700 font-semibold">{{ event.actorName }}</td>
+                    <td class="max-w-xs truncate px-3 py-3 text-[11px] text-slate-500">{{ event.reason }}</td>
+                    <td class="px-3 py-3 text-[10px] text-slate-500 font-mono">
+                      {{ event.createdAt | date: 'short' }}
+                    </td>
+                    <td class="px-3 py-3 text-end">
+                      <button
+                        type="button"
+                        class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50 transition"
+                        (click)="openAuditDetail(event)"
+                      >
+                        {{ copy().viewDetails }}
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
-      <div class="overflow-x-auto">
-        <table class="mm-as-auto-selection__data-table min-w-full text-sm">
-          <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-500">
-            <tr>
-              <th class="px-4 py-3 text-start">{{ copy().colAction }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colName }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colActor }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colReason }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colDate }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().colActions }}</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100">
-            @for (event of allAuditEvents(); track event.id) {
-              <tr class="hover:bg-slate-50/80">
-                <td class="px-4 py-3">
-                  <span class="rounded-md bg-violet-50 px-2 py-1 text-xs font-bold text-violet-700">
-                    {{ event.action }}
-                  </span>
-                </td>
-                <td class="px-4 py-3 text-xs text-slate-600">
-                  @if (templateForId(event.templateId); as tpl) {
-                    {{ templateName(tpl) }}
-                  } @else {
-                    {{ event.templateId }}
-                  }
-                </td>
-                <td class="px-4 py-3 text-xs text-slate-600">{{ event.actorName }}</td>
-                <td class="max-w-xs truncate px-4 py-3 text-xs text-slate-500">{{ event.reason }}</td>
-                <td class="px-4 py-3 text-xs text-slate-500">
-                  {{ event.createdAt | date: 'medium' }}
-                </td>
-                <td class="px-4 py-3">
-                  <button
-                    type="button"
-                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50"
-                    (click)="openAuditDetail(event)"
-                  >
-                    {{ copy().viewDetails }}
-                  </button>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="6" class="px-4 py-12 text-center text-sm text-slate-500">
-                  {{ copy().noAudit }}
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
     </div>
   }
   </div>

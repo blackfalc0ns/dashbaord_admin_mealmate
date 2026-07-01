@@ -7,50 +7,49 @@ import {
   lucideArrowUpRight,
   lucideAward,
   lucideCheck,
+  lucideChevronDown,
+  lucideChevronRight,
   lucideCircleAlert,
   lucideClock,
-  lucideEye,
   lucideSave,
   lucideSearch,
   lucideSettings2,
+  lucideSlidersHorizontal,
   lucideTrendingUp,
+  lucideUser,
   lucideX,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { LIFECYCLE_I18N } from '@/core/i18n/translations/lifecycle.i18n';
-import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
+import { MmDetailToastComponent } from '@/shared/components/accounts';
 import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
 import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { SubscriptionsStore } from '../../data/subscriptions-store';
 import { UpgradeRequestRow, UpgradeStatus, UpgradeTier } from '../../models/upgrade.model';
 
 type UpgradeFilter = 'all' | UpgradeStatus;
+type StatusTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 
 @Component({
   selector: 'mm-upgrades-workspace-page',
   standalone: true,
-  imports: [
-    DecimalPipe,
-    FormsModule,
-    NgClass,
-    NgIcon,
-    RouterLink,
-    MmOperationsKpiCardComponent,
-    MmTablePaginationComponent,
-  ],
+  imports: [DecimalPipe, FormsModule, NgClass, NgIcon, RouterLink, MmDetailToastComponent, MmTablePaginationComponent],
   providers: [
     provideIcons({
       lucideArrowUpRight,
       lucideAward,
       lucideCheck,
+      lucideChevronDown,
+      lucideChevronRight,
       lucideCircleAlert,
       lucideClock,
-      lucideEye,
       lucideSave,
       lucideSearch,
       lucideSettings2,
+      lucideSlidersHorizontal,
       lucideTrendingUp,
+      lucideUser,
       lucideX,
     }),
   ],
@@ -65,12 +64,13 @@ export class UpgradesWorkspacePageComponent {
   readonly searchQuery = signal('');
   readonly statusFilter = signal<UpgradeFilter>('all');
   readonly detailOpen = signal(false);
+  readonly policyExpanded = signal(false);
   readonly selectedRequest = signal<UpgradeRequestRow | null>(null);
   readonly toast = signal<string | null>(null);
   readonly policyProrate = signal(this.store.upgradePolicy().prorateRemainingDays);
   readonly policyEliteReview = signal(this.store.upgradePolicy().requireReviewForElite);
   readonly policySnapshot = signal(this.store.upgradePolicy().savePricingSnapshot);
-  readonly pg = createTablePagination(8);
+  readonly pg = createTablePagination(5);
   readonly currentPage = this.pg.currentPage;
   readonly pageSize = this.pg.pageSize;
 
@@ -89,10 +89,7 @@ export class UpgradesWorkspacePageComponent {
     let rows = this.store.upgradeRequests();
     const q = this.searchQuery().toLowerCase().trim();
     const st = this.statusFilter();
-
-    if (st !== 'all') {
-      rows = rows.filter((r) => r.status === st);
-    }
+    if (st !== 'all') rows = rows.filter((r) => r.status === st);
     if (q) {
       rows = rows.filter(
         (r) =>
@@ -105,15 +102,8 @@ export class UpgradesWorkspacePageComponent {
     return rows;
   });
 
-  readonly paginatedRequests = computed(() => {
-    const rows = this.filteredRequests();
-    const start = (this.currentPage() - 1) * this.pageSize();
-    return rows.slice(start, start + this.pageSize());
-  });
-
-  readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.filteredRequests().length / this.pageSize())),
-  );
+  readonly paginatedRequests = this.pg.paginated(this.filteredRequests);
+  readonly totalPages = this.pg.totalPages(this.filteredRequests);
 
   onSearch(event: Event): void {
     this.searchQuery.set((event.target as HTMLInputElement).value);
@@ -123,6 +113,10 @@ export class UpgradesWorkspacePageComponent {
   setFilter(filter: UpgradeFilter): void {
     this.statusFilter.set(filter);
     this.pg.resetPage();
+  }
+
+  togglePolicy(): void {
+    this.policyExpanded.update((v) => !v);
   }
 
   savePolicy(): void {
@@ -147,12 +141,9 @@ export class UpgradesWorkspacePageComponent {
   approveUpgrade(): void {
     const row = this.selectedRequest();
     if (!row || !row.canApprove) return;
-
     const ok = this.store.approveUpgrade(row.id);
     if (ok) {
-      this.selectedRequest.set(
-        this.store.upgradeRequests().find((r) => r.id === row.id) ?? null,
-      );
+      this.selectedRequest.set(this.store.upgradeRequests().find((r) => r.id === row.id) ?? null);
       this.showToast(this.copy().upgradeApproved);
     }
   }
@@ -161,16 +152,13 @@ export class UpgradesWorkspacePageComponent {
     const row = this.selectedRequest();
     if (!row || !row.canReject) return;
     if (!confirm(this.copy().rejectConfirm)) return;
-
     const ok = this.store.rejectUpgrade(
       row.id,
       'مرفوض من الأدمن — لا يلبي شروط الترقية',
       'Rejected by admin — does not meet upgrade criteria',
     );
     if (ok) {
-      this.selectedRequest.set(
-        this.store.upgradeRequests().find((r) => r.id === row.id) ?? null,
-      );
+      this.selectedRequest.set(this.store.upgradeRequests().find((r) => r.id === row.id) ?? null);
       this.showToast(this.copy().upgradeRejected);
     }
   }
@@ -180,9 +168,7 @@ export class UpgradesWorkspacePageComponent {
   }
 
   programBundle(row: UpgradeRequestRow): string {
-    const program = this.locale.isRtl() ? row.programAr : row.programEn;
-    const bundle = this.locale.isRtl() ? row.bundleAr : row.bundleEn;
-    return `${program} · ${bundle}`;
+    return `${this.locale.isRtl() ? row.programAr : row.programEn} · ${this.locale.isRtl() ? row.bundleAr : row.bundleEn}`;
   }
 
   tierLabel(tierAr: string, tierEn: string): string {
@@ -224,30 +210,60 @@ export class UpgradesWorkspacePageComponent {
   tierClass(tier: UpgradeTier): string {
     switch (tier) {
       case 'basic':
-        return 'bg-slate-100 text-slate-700 ring-slate-200';
+        return 'bg-slate-50 text-slate-700 ring-slate-600/15';
       case 'platinum':
-        return 'bg-indigo-50 text-indigo-700 ring-indigo-200';
+        return 'bg-indigo-50 text-indigo-700 ring-indigo-600/15';
       case 'elite':
-        return 'bg-amber-50 text-amber-800 ring-amber-200';
+        return 'bg-amber-50 text-amber-800 ring-amber-600/15';
       default:
-        return 'bg-slate-100 text-slate-600 ring-slate-200';
+        return 'bg-slate-50 text-slate-600 ring-slate-600/15';
     }
   }
 
-  statusClass(status: UpgradeStatus): string {
+  statusTone(status: UpgradeStatus): StatusTone {
     switch (status) {
       case 'Pending':
-        return 'bg-amber-50 text-amber-700 ring-amber-200';
+        return 'warning';
       case 'InProgress':
-        return 'bg-sky-50 text-sky-700 ring-sky-200';
+        return 'info';
       case 'NeedsReview':
-        return 'bg-orange-50 text-orange-700 ring-orange-200';
+        return 'warning';
       case 'Completed':
-        return 'bg-emerald-50 text-emerald-700 ring-emerald-200';
+        return 'success';
       case 'Rejected':
-        return 'bg-red-50 text-red-700 ring-red-200';
+        return 'danger';
       default:
-        return 'bg-slate-100 text-slate-600 ring-slate-200';
+        return 'neutral';
+    }
+  }
+
+  statusBadgeClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-50 text-emerald-700 ring-emerald-600/15';
+      case 'warning':
+        return 'bg-amber-50 text-amber-700 ring-amber-600/15';
+      case 'danger':
+        return 'bg-rose-50 text-rose-700 ring-rose-600/15';
+      case 'info':
+        return 'bg-sky-50 text-sky-700 ring-sky-600/15';
+      default:
+        return 'bg-slate-50 text-slate-700 ring-slate-600/15';
+    }
+  }
+
+  statusDotClass(tone: StatusTone): string {
+    switch (tone) {
+      case 'success':
+        return 'bg-emerald-500';
+      case 'warning':
+        return 'bg-amber-500';
+      case 'danger':
+        return 'bg-rose-500';
+      case 'info':
+        return 'bg-sky-500';
+      default:
+        return 'bg-slate-400';
     }
   }
 

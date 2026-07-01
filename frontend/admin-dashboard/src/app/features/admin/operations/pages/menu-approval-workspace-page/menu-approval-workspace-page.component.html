@@ -6,22 +6,6 @@
       </div>
     }
 
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <h1 class="text-xl font-extrabold text-slate-950">{{ copy().title }}</h1>
-        <p class="text-sm text-slate-500">{{ copy().subtitle }}</p>
-      </div>
-      <button
-        type="button"
-        *mmHasPermission="perms.operationsView"
-        class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-emerald-700"
-        (click)="createRequest()"
-      >
-        <ng-icon name="lucidePlus" size="16" />
-        {{ copy().createRequest }}
-      </button>
-    </div>
-
     <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
       <mm-operations-kpi-card [label]="copy().pendingKpi" [description]="copy().pending" [value]="kpis().pending" icon="lucideClipboardCheck" [active]="activeFilter() === 'pending'" (clicked)="setFilter('pending')" />
       <mm-operations-kpi-card [label]="copy().translationKpi" [description]="copy().blocked" [value]="kpis().translationIssues" icon="lucideLanguages" valueClass="text-amber-600" iconWrapClass="bg-amber-50 text-amber-600 ring-amber-100" [active]="activeFilter() === 'blocked'" (clicked)="setFilter('blocked')" />
@@ -31,108 +15,132 @@
       <mm-operations-kpi-card [label]="copy().labelKpi" [description]="copy().labelReady" [value]="kpis().labelReadyPercent + '%'" icon="lucideBadgeCheck" valueClass="text-emerald-600" iconWrapClass="bg-emerald-50 text-emerald-600 ring-emerald-100" [active]="activeFilter() === 'label_ready'" (clicked)="setFilter('label_ready')" />
     </div>
 
-    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-        <div class="relative w-full xl:max-w-md">
-          <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
-            <ng-icon name="lucideSearch" size="16" />
-          </span>
-          <input
-            type="text"
-            class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-sm outline-none focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100"
-            [placeholder]="copy().search"
-            (input)="onSearch($event)"
-          />
-        </div>
-
-        <div class="flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
-          @for (filter of filters(); track filter.id) {
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeFilter() === filter.id"
-              [class.shadow-sm]="activeFilter() === filter.id"
-              [class.text-slate-900]="activeFilter() === filter.id"
-              [class.text-slate-500]="activeFilter() !== filter.id"
-              (click)="setFilter(filter.id)"
-            >
-              {{ filter.label }}
-            </button>
-          }
-        </div>
-      </div>
-    </div>
-
     <div class="grid gap-4">
-      <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div class="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-          <div class="flex items-center gap-2">
-            <ng-icon name="lucideUtensils" size="17" class="text-emerald-600" />
-            <h2 class="text-sm font-extrabold text-slate-900">{{ copy().requests }}</h2>
+      <!-- ═══ Combined Filters + Table Card ═══ -->
+      <div class="rounded-3xl border border-slate-200/60 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03),0_8px_32px_-8px_rgba(15,23,42,0.08)] overflow-hidden">
+
+        <!-- Header -->
+        <div class="px-5 py-3.5 border-b border-slate-100/70">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-9 h-9 rounded-2xl bg-slate-50 ring-1 ring-slate-200 flex items-center justify-center">
+                <ng-icon name="lucideUtensils" size="16" class="text-slate-700" />
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-slate-900 leading-none">{{ copy().requests }}</h2>
+                <p class="text-[10px] text-slate-500 mt-1">{{ copy().subtitle }}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="rounded-full bg-white ring-1 ring-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 font-mono shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+                {{ formatNumber(rows().length) }}
+              </span>
+              <button
+                type="button"
+                *mmHasPermission="perms.operationsView"
+                class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-[0_1px_2px_rgba(15,23,42,0.05)] hover:bg-emerald-700 transition-all"
+                (click)="createRequest()"
+              >
+                <ng-icon name="lucidePlus" size="12" />
+                {{ copy().createRequest }}
+              </button>
+            </div>
           </div>
-          <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">{{ formatNumber(rows().length) }}</span>
         </div>
 
+        <!-- Filters bar -->
+        <div class="border-b border-slate-100/70 px-4 py-3 bg-slate-50/40 flex flex-wrap items-center gap-2">
+          <div class="relative w-full sm:w-64 me-auto">
+            <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+              <ng-icon name="lucideSearch" size="13" />
+            </span>
+            <input
+              type="text"
+              class="h-8 w-full rounded-lg border border-slate-200 bg-white ps-8 pe-3 text-[11px] transition-all focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 placeholder:text-slate-400"
+              [placeholder]="copy().search"
+              (input)="onSearch($event)"
+            />
+          </div>
+
+          <div class="inline-flex rounded-lg bg-white ring-1 ring-slate-200 p-0.5 flex-wrap">
+            @for (filter of filters(); track filter.id) {
+              <button
+                type="button"
+                class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                [ngClass]="activeFilter() === filter.id ? 'bg-emerald-100 text-emerald-800 shadow-sm ring-1 ring-emerald-300' : 'text-slate-500 hover:text-slate-700'"
+                (click)="setFilter(filter.id)"
+              >
+                {{ filter.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Table -->
         @if (rows().length === 0) {
-          <div class="flex flex-col items-center gap-2 px-6 py-14 text-center">
-            <ng-icon name="lucideSearch" size="26" class="text-slate-300" />
-            <p class="text-sm text-slate-500">{{ copy().noRows }}</p>
+          <div class="p-10">
+            <div class="flex flex-col items-center justify-center gap-2 text-slate-400">
+              <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <ng-icon name="lucideUtensils" size="20" />
+              </div>
+              <p class="text-sm font-bold text-slate-500">{{ copy().noRows }}</p>
+            </div>
           </div>
         } @else {
           <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-100 text-sm">
-              <thead class="bg-slate-50 text-xs font-bold text-slate-500">
-                <tr>
+            <table class="w-full min-w-[820px] text-sm">
+              <thead>
+                <tr class="text-[9px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/60 border-b border-slate-100">
                   <th class="px-4 py-3 text-start">{{ copy().meal }}</th>
-                  <th class="px-4 py-3 text-start">{{ copy().restaurant }}</th>
-                  <th class="px-4 py-3 text-start">{{ copy().type }}</th>
-                  <th class="px-4 py-3 text-start">{{ copy().price }}</th>
-                  <th class="px-4 py-3 text-start">{{ copy().status }}</th>
-                  <th class="px-4 py-3 text-start">{{ copy().updated }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().restaurant }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().type }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().price }}</th>
+                  <th class="px-3 py-3 text-start">{{ copy().status }}</th>
+                  <th class="px-3 py-3 text-end">{{ copy().updated }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
                 @for (request of paginatedRows(); track request.id) {
                   <tr
-                    class="cursor-pointer transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-200"
-                    [ngClass]="isSelected(request) ? 'bg-emerald-50/70' : ''"
+                    class="cursor-pointer hover:bg-slate-50/60 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-200"
+                    [ngClass]="isSelected(request) ? 'bg-emerald-50/40 ring-1 ring-inset ring-emerald-200/60' : ''"
                     tabindex="0"
                     (click)="openDetails(request)"
                     (keydown.enter)="openDetails(request)"
                   >
                     <td class="min-w-[230px] px-4 py-3">
-                      <div class="flex items-start gap-3">
-                        <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
-                          <ng-icon name="lucideUtensils" size="16" />
+                      <div class="flex items-start gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-50 ring-1 ring-emerald-200 flex items-center justify-center shrink-0 text-emerald-600">
+                          <ng-icon name="lucideUtensils" size="14" />
                         </div>
                         <div class="min-w-0">
-                          <p class="truncate font-extrabold text-slate-900">{{ mealName(request) }}</p>
-                          <p class="mt-0.5 text-[11px] text-slate-500">{{ request.id }} - {{ mealTypeLabel(request.meal.mealType) }}</p>
+                          <p class="truncate text-xs font-bold text-slate-900">{{ mealName(request) }}</p>
+                          <p class="mt-0.5 text-[10px] font-mono text-slate-400">{{ request.id }} · {{ mealTypeLabel(request.meal.mealType) }}</p>
                           @if (hasCriticalBlockers(request)) {
-                            <span class="mt-1 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 ring-1 ring-rose-100">
-                              <ng-icon name="lucideCircleAlert" size="12" />
+                            <span class="mt-1 inline-flex items-center gap-1 rounded-full bg-rose-50 px-1.5 py-0.5 text-[9px] font-bold text-rose-700 ring-1 ring-rose-600/15">
+                              <ng-icon name="lucideCircleAlert" size="10" />
                               {{ copy().blocked }}
                             </span>
                           }
                         </div>
                       </div>
                     </td>
-                    <td class="px-4 py-3">
-                      <p class="font-bold text-slate-800">{{ restaurantName(request) }}</p>
-                      <p class="text-[11px] text-slate-400">{{ request.restaurantId }}</p>
+                    <td class="px-3 py-3">
+                      <p class="text-[11px] font-bold text-slate-800">{{ restaurantName(request) }}</p>
+                      <p class="text-[10px] font-mono text-slate-400">{{ request.restaurantId }}</p>
                     </td>
-                    <td class="px-4 py-3">
-                      <span class="rounded-full bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600">
+                    <td class="px-3 py-3">
+                      <span class="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 ring-1 ring-slate-200">
                         {{ requestTypeLabel(request.requestType) }}
                       </span>
                     </td>
-                    <td class="px-4 py-3 font-bold text-slate-900">{{ formatKd(request.meal.priceKd) }}</td>
-                    <td class="px-4 py-3">
-                      <span class="inline-flex rounded-full px-2 py-1 text-xs font-bold ring-1" [ngClass]="statusClass(request.status)">
+                    <td class="px-3 py-3 text-sm font-mono font-bold text-slate-900">{{ formatKd(request.meal.priceKd) }}</td>
+                    <td class="px-3 py-3">
+                      <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset" [ngClass]="statusClass(request.status)">
                         {{ statusLabel(request.status) }}
                       </span>
                     </td>
-                    <td class="px-4 py-3 text-xs text-slate-500">{{ request.updatedAtUtc | date: 'short' }}</td>
+                    <td class="px-3 py-3 text-end text-[10px] text-slate-500 font-mono">{{ request.updatedAtUtc | date: 'short' }}</td>
                   </tr>
                 }
               </tbody>

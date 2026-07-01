@@ -1,112 +1,226 @@
-<section class="mm-page flex flex-col gap-4" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
-  <div class="flex flex-wrap items-center justify-between gap-3">
-    <div>
-      <h1 class="text-xl font-extrabold text-slate-900">{{ copy().collabCampaignsTitle }}</h1>
-      <p class="text-xs text-slate-500">{{ copy().collabCampaignsSubtitle }}</p>
-    </div>
-    <button type="button" *mmHasPermission="perms.marketingManage" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-emerald-700" (click)="openWizard()">
-      <ng-icon name="lucidePlus" size="16" /> {{ copy().addCampaign }}
-    </button>
-  </div>
+<section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
+  <div class="flex w-full flex-col gap-5">
 
-  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <span class="text-xs font-bold text-slate-500">{{ copy().campaignKpiActive }}</span>
-      <p class="text-2xl font-extrabold text-emerald-600">{{ kpis().active }}</p>
-    </div>
-    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <span class="text-xs font-bold text-slate-500">{{ copy().sendCampaign }}</span>
-      <p class="text-2xl font-extrabold text-blue-600">{{ kpis().open }}</p>
-    </div>
-    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <span class="text-xs font-bold text-slate-500">{{ copy().draft }}</span>
-      <p class="text-2xl font-extrabold text-slate-600">{{ kpis().draft }}</p>
-    </div>
-    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <span class="text-xs font-bold text-slate-500">{{ copy().currentSubscribers }}</span>
-      <p class="text-2xl font-extrabold text-violet-700">{{ kpis().subscribers }}</p>
-    </div>
-  </div>
-
-  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div class="relative w-full sm:max-w-xs">
-        <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
-          <ng-icon name="lucideSearch" size="16" />
-        </span>
-        <input type="text" [placeholder]="copy().campaignSearchPlaceholder" class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-xs focus:border-emerald-500 focus:outline-none" (input)="onSearch($event)" />
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-lg font-extrabold text-slate-900 leading-none">{{ copy().collabCampaignsTitle }}</h1>
+        <p class="text-[10px] text-slate-500 mt-1">{{ copy().collabCampaignsSubtitle }}</p>
       </div>
-      <div class="flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
-        @for (f of [
-          { id: 'all', label: copy().all },
-          { id: 'Draft', label: copy().draft },
-          { id: 'OpenForJoin', label: copy().sendCampaign },
-          { id: 'Reviewed', label: copy().markReviewed },
-          { id: 'Active', label: copy().active },
-          { id: 'Stopped', label: copy().stopCampaign },
-        ]; track f.id) {
-          <button type="button" class="rounded-md px-3 py-1 font-semibold transition-all" [class.bg-white]="statusFilter() === f.id" [class.shadow-sm]="statusFilter() === f.id" [class.text-slate-900]="statusFilter() === f.id" [class.text-slate-500]="statusFilter() !== f.id" (click)="setStatusFilter(f.id)">
-            {{ f.label }}
-          </button>
-        }
-      </div>
+      <button
+        type="button"
+        *mmHasPermission="perms.marketingManage"
+        class="inline-flex h-8 items-center gap-1.5 rounded-lg bg-emerald-600 px-3 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition"
+        (click)="openWizard()"
+      >
+        <ng-icon name="lucidePlus" size="14" />
+        {{ copy().addCampaign }}
+      </button>
     </div>
-  </div>
 
-  @if (viewState() === 'loading') {
-    <mm-page-state [viewState]="'loading'" [emptyMessage]="copy().loading" />
-  } @else if (viewState() === 'empty') {
-    <mm-page-state [viewState]="'empty'" [emptyMessage]="copy().noData" />
-  } @else if (viewState() === 'success') {
-    @if (!filtered().length) {
-      <p class="rounded-xl border border-dashed border-slate-200 bg-white py-12 text-center text-sm text-slate-500">{{ copy().noData }}</p>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <button
+        type="button"
+        class="rounded-2xl border border-slate-200/60 bg-white p-4 text-start shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]"
+        [class.ring-2]="statusFilter() === 'Active'"
+        [class.ring-emerald-300]="statusFilter() === 'Active'"
+        (click)="setStatusFilter('Active')"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-slate-500">{{ copy().campaignKpiActive }}</span>
+            <span class="text-2xl font-extrabold text-emerald-600">{{ kpis().active }}</span>
+          </div>
+          <div class="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
+            <ng-icon name="lucideTrendingUp" size="20" />
+          </div>
+        </div>
+        <div class="mt-2 text-[10px] text-slate-400">{{ copy().active }}</div>
+      </button>
+
+      <button
+        type="button"
+        class="rounded-2xl border border-slate-200/60 bg-white p-4 text-start shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]"
+        [class.ring-2]="statusFilter() === 'OpenForJoin'"
+        [class.ring-sky-300]="statusFilter() === 'OpenForJoin'"
+        (click)="setStatusFilter('OpenForJoin')"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-slate-500">{{ copy().sendCampaign }}</span>
+            <span class="text-2xl font-extrabold text-sky-600">{{ kpis().open }}</span>
+          </div>
+          <div class="flex size-10 items-center justify-center rounded-xl bg-sky-50 text-sky-600 ring-1 ring-sky-100">
+            <ng-icon name="lucideMegaphone" size="20" />
+          </div>
+        </div>
+        <div class="mt-2 text-[10px] text-slate-400">{{ copy().sendCampaign }}</div>
+      </button>
+
+      <button
+        type="button"
+        class="rounded-2xl border border-slate-200/60 bg-white p-4 text-start shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]"
+        [class.ring-2]="statusFilter() === 'Draft'"
+        [class.ring-slate-300]="statusFilter() === 'Draft'"
+        (click)="setStatusFilter('Draft')"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-slate-500">{{ copy().draft }}</span>
+            <span class="text-2xl font-extrabold text-slate-700">{{ kpis().draft }}</span>
+          </div>
+          <div class="flex size-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 ring-1 ring-slate-100">
+            <ng-icon name="lucideSlidersHorizontal" size="20" />
+          </div>
+        </div>
+        <div class="mt-2 text-[10px] text-slate-400">{{ copy().draft }}</div>
+      </button>
+
+      <button
+        type="button"
+        class="rounded-2xl border border-slate-200/60 bg-white p-4 text-start shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]"
+        [class.ring-2]="statusFilter() === 'all'"
+        [class.ring-violet-300]="statusFilter() === 'all'"
+        (click)="setStatusFilter('all')"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-slate-500">{{ copy().currentSubscribers }}</span>
+            <span class="text-2xl font-extrabold text-violet-600">{{ kpis().subscribers }}</span>
+          </div>
+          <div class="flex size-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600 ring-1 ring-violet-100">
+            <ng-icon name="lucideUsers" size="20" />
+          </div>
+        </div>
+        <div class="mt-2 text-[10px] text-slate-400">{{ copy().all }}</div>
+      </button>
+    </div>
+
+    @if (viewState() === 'loading') {
+      <mm-page-state [viewState]="'loading'" [emptyMessage]="copy().loading" />
     } @else {
-      <div class="grid gap-4 lg:grid-cols-2">
-        @for (c of filtered(); track c.id) {
-          <article class="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-violet-200 hover:shadow-md" (click)="openDetail(c.id)" tabindex="0" role="button">
-            <div class="mb-3 flex items-start justify-between gap-2">
-              <div class="flex items-start gap-3">
-                <div class="flex size-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
-                  <ng-icon name="lucideMegaphone" size="18" />
-                </div>
-                <div>
-                  <h2 class="text-lg font-bold text-slate-900 group-hover:text-violet-700">{{ name(c) }}</h2>
-                  <p class="text-xs font-bold text-violet-700">{{ c.totalDiscountPercent }}% ({{ c.restaurantSharePercent }}+{{ c.platformSharePercent }})</p>
-                </div>
-              </div>
-              <span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1" [ngClass]="statusClass(c.status)">{{ statusLabel(c.status) }}</span>
+      <div class="rounded-3xl border border-slate-200/60 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03),0_8px_32px_-8px_rgba(15,23,42,0.08)] overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-slate-100/70 flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 rounded-2xl bg-violet-50 ring-1 ring-violet-100 flex items-center justify-center shrink-0">
+              <ng-icon name="lucideMegaphone" size="16" class="text-violet-700" />
             </div>
-            <p class="mb-3 text-xs text-slate-500">{{ copy().campaignPeriod }}: {{ c.startAtUtc | date: 'mediumDate' }} — {{ c.endAtUtc | date: 'mediumDate' }}</p>
-            <dl class="grid grid-cols-4 gap-2 text-center text-xs">
-              <div class="rounded-lg bg-slate-50 p-2">
-                <dt class="text-slate-500">{{ copy().subscriberCap }}</dt>
-                <dd class="text-lg font-extrabold">{{ c.currentSubscribers }}/{{ c.maxSubscribers }}</dd>
-              </div>
-              <div class="rounded-lg bg-slate-50 p-2">
-                <dt class="text-slate-500">{{ copy().capacityCurrent }}</dt>
-                <dd class="text-lg font-extrabold text-emerald-600">{{ capacity(c) }}</dd>
-              </div>
-              <div class="rounded-lg bg-slate-50 p-2">
-                <dt class="text-slate-500">{{ copy().tabPrograms }}</dt>
-                <dd class="text-lg font-extrabold">{{ c.programs.length }}</dd>
-              </div>
-              <div class="rounded-lg bg-slate-50 p-2">
-                <dt class="text-slate-500">{{ copy().tabParticipants }}</dt>
-                <dd class="text-lg font-extrabold">{{ c.participants.length }}</dd>
-              </div>
-            </dl>
-            <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-              <span class="font-mono text-[10px] text-slate-400">{{ c.id }}</span>
-              <span class="inline-flex items-center gap-1 text-xs font-bold text-violet-700 group-hover:underline">
-                {{ copy().campaignOpenDetail }}
-                <ng-icon name="lucideArrowLeft" size="12" [class.rotate-180]="!locale.isRtl()" />
-              </span>
+            <div>
+              <h2 class="text-sm font-bold text-slate-900 leading-none">{{ copy().collabCampaignsTitle }}</h2>
+              <p class="text-[10px] text-slate-500 mt-1">{{ locale.isRtl() ? 'حملات الخصم التشاركية وحالة الانضمام' : 'Collaborative discount campaigns and enrollment' }}</p>
             </div>
-          </article>
-        }
+          </div>
+          <span class="rounded-full bg-white ring-1 ring-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 font-mono shadow-[0_1px_2px_rgba(15,23,42,0.03)]">{{ filtered().length }}</span>
+        </div>
+
+        <div class="border-b border-slate-100/70 px-4 py-3 bg-slate-50/40 flex flex-wrap items-center gap-2">
+          <div class="relative w-full sm:w-64 me-auto">
+            <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+              <ng-icon name="lucideSearch" size="13" />
+            </span>
+            <input
+              type="text"
+              [placeholder]="copy().campaignSearchPlaceholder"
+              class="h-8 w-full rounded-lg border border-slate-200 bg-white ps-8 pe-3 text-[11px] transition-all focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 placeholder:text-slate-400"
+              (input)="onSearch($event)"
+            />
+          </div>
+          <div class="inline-flex rounded-lg bg-white ring-1 ring-slate-200 p-0.5 flex-wrap">
+            <button type="button" class="rounded-md px-2 py-1 text-[10px] font-bold transition-all" [ngClass]="statusFilter() === 'all' ? 'bg-slate-100 text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'" (click)="setStatusFilter('all')">{{ copy().all }}</button>
+            <button type="button" class="rounded-md px-2 py-1 text-[10px] font-bold transition-all" [ngClass]="statusFilter() === 'Draft' ? 'bg-slate-100 text-slate-800 shadow-sm ring-1 ring-slate-300' : 'text-slate-500 hover:text-slate-700'" (click)="setStatusFilter('Draft')">{{ copy().draft }}</button>
+            <button type="button" class="rounded-md px-2 py-1 text-[10px] font-bold transition-all" [ngClass]="statusFilter() === 'OpenForJoin' ? 'bg-sky-100 text-sky-800 shadow-sm ring-1 ring-sky-300' : 'text-slate-500 hover:text-slate-700'" (click)="setStatusFilter('OpenForJoin')">{{ copy().sendCampaign }}</button>
+            <button type="button" class="rounded-md px-2 py-1 text-[10px] font-bold transition-all" [ngClass]="statusFilter() === 'Reviewed' ? 'bg-indigo-100 text-indigo-800 shadow-sm ring-1 ring-indigo-300' : 'text-slate-500 hover:text-slate-700'" (click)="setStatusFilter('Reviewed')">{{ copy().markReviewed }}</button>
+            <button type="button" class="rounded-md px-2 py-1 text-[10px] font-bold transition-all" [ngClass]="statusFilter() === 'Active' ? 'bg-emerald-100 text-emerald-800 shadow-sm ring-1 ring-emerald-300' : 'text-slate-500 hover:text-slate-700'" (click)="setStatusFilter('Active')">{{ copy().active }}</button>
+            <button type="button" class="rounded-md px-2 py-1 text-[10px] font-bold transition-all" [ngClass]="statusFilter() === 'Stopped' ? 'bg-rose-100 text-rose-800 shadow-sm ring-1 ring-rose-300' : 'text-slate-500 hover:text-slate-700'" (click)="setStatusFilter('Stopped')">{{ copy().stopCampaign }}</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[1080px] text-sm">
+            <thead>
+              <tr class="text-[9px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/60 border-b border-slate-100">
+                <th class="px-4 py-3 text-start">{{ copy().collabCampaignsTitle }}</th>
+                <th class="px-3 py-3 text-start">{{ copy().campaignPeriod }}</th>
+                <th class="px-3 py-3 text-end">{{ copy().subscriberCap }}</th>
+                <th class="px-3 py-3 text-end">{{ copy().capacityCurrent }}</th>
+                <th class="px-3 py-3 text-end">{{ copy().tabPrograms }}</th>
+                <th class="px-3 py-3 text-end">{{ copy().tabParticipants }}</th>
+                <th class="px-3 py-3 text-start">{{ copy().colStatus }}</th>
+                <th class="px-3 py-3 text-end">{{ copy().colAction }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              @for (c of paginatedCampaigns(); track c.id) {
+                <tr class="cursor-pointer hover:bg-slate-50/60 transition-colors" (click)="openDetail(c.id)">
+                  <td class="px-4 py-3">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-50 to-slate-50 ring-1 ring-violet-100 flex items-center justify-center shrink-0">
+                        <ng-icon name="lucideMegaphone" size="13" class="text-violet-600" />
+                      </div>
+                      <div class="min-w-0">
+                        <p class="text-xs font-bold text-slate-900 truncate">{{ name(c) }}</p>
+                        <p class="text-[10px] font-bold text-violet-700">{{ c.totalDiscountPercent }}% ({{ c.restaurantSharePercent }}+{{ c.platformSharePercent }})</p>
+                        <p class="text-[10px] text-slate-500 font-mono truncate">{{ c.id }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-3 py-3 text-[11px] text-slate-600 whitespace-nowrap">
+                    {{ c.startAtUtc | date: 'mediumDate' }} — {{ c.endAtUtc | date: 'mediumDate' }}
+                  </td>
+                  <td class="px-3 py-3 text-end">
+                    <div class="flex flex-col items-end gap-1">
+                      <span class="font-mono text-[11px] font-bold text-slate-800">{{ c.currentSubscribers }}/{{ c.maxSubscribers }}</span>
+                      <div class="h-1 w-16 rounded-full bg-slate-100 overflow-hidden">
+                        <div class="h-full rounded-full bg-violet-500 transition-all" [style.width.%]="subscriberProgress(c)"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-3 py-3 text-end font-mono text-[11px] font-bold text-emerald-700">{{ capacity(c) }}</td>
+                  <td class="px-3 py-3 text-end font-mono text-[11px] font-bold text-slate-800">{{ c.programs.length }}</td>
+                  <td class="px-3 py-3 text-end font-mono text-[11px] font-bold text-slate-800">{{ c.participants.length }}</td>
+                  <td class="px-3 py-3">
+                    <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset" [ngClass]="statusBadgeClass(statusTone(c.status))">
+                      <span class="w-1.5 h-1.5 rounded-full" [ngClass]="statusDotClass(statusTone(c.status))"></span>
+                      {{ statusLabel(c.status) }}
+                    </span>
+                  </td>
+                  <td class="px-3 py-3 text-end" (click)="$event.stopPropagation()">
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition-all"
+                      (click)="openDetail(c.id)"
+                    >
+                      <span>{{ copy().campaignOpenDetail }}</span>
+                      <ng-icon name="lucideChevronRight" size="11" class="rtl:rotate-180" />
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="8" class="px-4 py-10">
+                    <div class="flex flex-col items-center justify-center gap-2 text-slate-400">
+                      <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
+                        <ng-icon name="lucideMegaphone" size="20" />
+                      </div>
+                      <p class="text-sm font-bold text-slate-500">{{ copy().noData }}</p>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <mm-table-pagination
+          [currentPage]="currentPage()"
+          [totalPages]="totalPages()"
+          [pageSize]="pageSize()"
+          [totalItems]="filtered().length"
+          [itemLabel]="locale.isRtl() ? 'حملة' : 'campaigns'"
+          (pageChange)="onPageChange($event)"
+        />
       </div>
     }
-  }
+  </div>
 </section>
 
 <mm-campaign-form-wizard [open]="wizardOpen()" (closed)="closeWizard()" (created)="onCreated($event)" />
