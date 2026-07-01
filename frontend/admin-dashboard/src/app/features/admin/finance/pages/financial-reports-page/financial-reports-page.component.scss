@@ -1,0 +1,1 @@
+@keyframes report-in{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:none}}.report-refresh>*:not(:first-child){animation:report-in .45s cubic-bezier(.22,1,.36,1) both}@media(prefers-reduced-motion:reduce){.report-refresh>*{animation:none!important}}

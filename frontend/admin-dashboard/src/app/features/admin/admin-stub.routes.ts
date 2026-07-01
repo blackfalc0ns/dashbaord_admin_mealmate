@@ -77,10 +77,36 @@ export const ADMIN_STUB_ROUTES: Routes = [
         (m) => m.CancellationsWorkspacePageComponent,
       ),
   },
-  { path: 'finance/settlements', loadComponent: loadPlaceholder },
-  { path: 'finance/reports', loadComponent: loadPlaceholder },
-  { path: 'support/complaints', loadComponent: loadPlaceholder },
-  { path: 'support/wallet', loadComponent: loadPlaceholder },
+  {
+    path: 'finance/settlements',
+    canActivate: [adminPermissionGuard(AdminPermissions.financeView)],
+    loadComponent: () =>
+      import('./finance/pages/settlements-workspace-page/settlements-workspace-page.component').then(
+        (m) => m.SettlementsWorkspacePageComponent,
+      ),
+  },
+  {
+    path: 'finance/reports',
+    canActivate: [adminPermissionGuard(AdminPermissions.financeView)],
+    loadComponent: () =>
+      import('./finance/pages/financial-reports-page/financial-reports-page.component').then(
+        (m) => m.FinancialReportsPageComponent,
+      ),
+  },
+  {
+    path: 'support/complaints',
+    loadComponent: () =>
+      import('./support/pages/complaints-support-page/complaints-support-page.component').then(
+        (m) => m.ComplaintsSupportPageComponent,
+      ),
+  },
+  {
+    path: 'support/wallet',
+    loadComponent: () =>
+      import('./support/pages/wallet-support-page/wallet-support-page.component').then(
+        (m) => m.WalletSupportPageComponent,
+      ),
+  },
   { path: 'support/loyalty', loadComponent: loadPlaceholder },
   { path: 'support/ratings', loadComponent: loadPlaceholder },
   { path: 'settings/areas', loadComponent: loadPlaceholder },

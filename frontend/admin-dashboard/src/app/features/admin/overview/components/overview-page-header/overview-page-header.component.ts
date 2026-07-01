@@ -71,19 +71,13 @@ export class OverviewPageHeaderComponent {
 
   readonly pageDescription = computed(() => {
     const page = this.pageContext.context().page;
-    if (!page) {
-      return '';
-    }
-    return this.locale.isRtl()
-      ? (page.descriptionAr ?? '')
-      : (page.descriptionEn ?? '');
+    if (!page) return '';
+    return this.locale.isRtl() ? (page.descriptionAr ?? '') : (page.descriptionEn ?? '');
   });
 
   readonly breadcrumbItems = computed<BreadcrumbItem[]>(() => {
     const page = this.pageContext.context().page;
-    if (!page) {
-      return [];
-    }
+    if (!page) return [];
     return [{ label: this.pageTitle(), active: true }];
   });
 
