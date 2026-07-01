@@ -1,16 +1,35 @@
 {
   "folders": [
     {
-      "name": "Admin Dashboard",
-      "path": "."
+      "name": "Backend API (mealmeta_backend)",
+      "path": "backend"
     },
     {
-      "name": "Backend (mealmeta_backend)",
-      "path": "backend"
+      "name": "Admin Dashboard (dashbaord_admin_mealmate)",
+      "path": "frontend/admin-dashboard"
+    },
+    {
+      "name": "Restaurant Dashboard",
+      "path": "frontend/restaurant-dashboard"
+    },
+    {
+      "name": "Docs",
+      "path": "docs"
+    },
+    {
+      "name": "Workflows",
+      "path": "workflows"
     }
   ],
   "settings": {
+    "git.autoRepositoryDetection": true,
     "git.detectSubmodules": false,
-    "git.autoRepositoryDetection": true
+    "git.repositoryScanMaxDepth": -1,
+    "git.openRepositoryInParentFolders": "always",
+    "git.showUnpublishedCommitsButton": true,
+    "scm.alwaysShowRepositories": true,
+    "scm.repositories.visible": 10,
+    "scm.repositories.sortOrder": "discovery time",
+    "scm.defaultViewMode": "tree"
   }
 }

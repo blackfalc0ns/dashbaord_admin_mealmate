@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe, NgClass } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideLayers,
@@ -9,19 +10,21 @@ import {
   lucideSnowflake,
   lucideSlidersHorizontal,
   lucideSearch,
-  lucideEye,
   lucidePencil,
-  lucideTrash2,
   lucidePlus,
-  lucideAward,
+  lucideCheck,
+  lucideShieldAlert,
+  lucideCircleAlert,
+  lucideArrowRight,
+  lucideArrowLeft,
+  lucidePercent,
+  lucideChefHat,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { AdminPermissions } from '@/core/auth/admin-permissions';
 import { SUBSCRIPTIONS_I18N, TIER_LABELS } from '@/core/i18n/translations/subscriptions.i18n';
 import { HasPermissionDirective } from '@/shared/directives/has-permission.directive';
-import { MmTablePaginationComponent } from '@/shared/components/layout/table-pagination';
-import { createTablePagination } from '@/shared/utils/table-pagination.util';
 import { SubscriptionsStore } from '../../data/subscriptions-store';
 import { RestaurantTier } from '../../models';
 import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
@@ -32,15 +35,6 @@ import {
   CatalogItemDrawerComponent,
 } from '../../components/catalog-item-drawer/catalog-item-drawer.component';
 
-type ProgramsTab = 'durations' | 'programs' | 'tiers' | 'mealBundles';
-
-interface CustomerTierRow {
-  id: RestaurantTier;
-  tier: RestaurantTier;
-  accessKey: 'tierAccessBasic' | 'tierAccessPlatinum' | 'tierAccessElite';
-  pricingKey: 'pricingScopeBasic' | 'pricingScopePlatinum' | 'pricingScopeElite';
-}
-
 @Component({
   selector: 'mm-programs-workspace-page',
   standalone: true,
@@ -48,11 +42,11 @@ interface CustomerTierRow {
     DecimalPipe,
     NgClass,
     NgIcon,
+    RouterLink,
     MmOperationsKpiCardComponent,
     MmDetailToastComponent,
     CatalogItemDrawerComponent,
     HasPermissionDirective,
-    MmTablePaginationComponent,
   ],
   providers: [
     provideIcons({
@@ -63,11 +57,15 @@ interface CustomerTierRow {
       lucideSnowflake,
       lucideSlidersHorizontal,
       lucideSearch,
-      lucideEye,
       lucidePencil,
-      lucideTrash2,
       lucidePlus,
-      lucideAward,
+      lucideCheck,
+      lucideShieldAlert,
+      lucideCircleAlert,
+      lucideArrowRight,
+      lucideArrowLeft,
+      lucidePercent,
+      lucideChefHat,
     }),
   ],
   templateUrl: './programs-workspace-page.component.html',
@@ -79,18 +77,17 @@ export class ProgramsWorkspacePageComponent {
   readonly perms = AdminPermissions;
 
   readonly copy = computed(() => SUBSCRIPTIONS_I18N[this.locale.locale()]);
-  readonly activeTab = signal<ProgramsTab>('durations');
   readonly searchQuery = signal('');
   readonly statusFilter = signal<'all' | 'active' | 'inactive'>('all');
   readonly toast = signal<string | null>(null);
+
+  // Modern Unified Workspace Program Selector
+  readonly selectedProgramId = signal<string | null>('PRG-001');
 
   readonly drawerOpen = signal(false);
   readonly drawerEntity = signal<CatalogEntityType>('program');
   readonly drawerMode = signal<CatalogDrawerMode>('view');
   readonly drawerItemId = signal<string | null>(null);
-  readonly pg = createTablePagination(5);
-  readonly currentPage = this.pg.currentPage;
-  readonly pageSize = this.pg.pageSize;
 
   readonly stats = computed(() => this.store.stats());
   readonly readinessGaps = computed(() => this.store.readinessGaps());
@@ -122,76 +119,55 @@ export class ProgramsWorkspacePageComponent {
     return rows;
   });
 
-  readonly filteredBundles = computed(() => {
-    let rows = this.store.bundles();
-    const q = this.searchQuery().toLowerCase().trim();
-    if (q) {
-      rows = rows.filter(
-        (r) =>
-          r.nameAr.toLowerCase().includes(q) ||
-          r.nameEn.toLowerCase().includes(q) ||
-          r.id.toLowerCase().includes(q),
-      );
-    }
-    return rows;
+  readonly selectedProgram = computed(() => {
+    const id = this.selectedProgramId();
+    return this.store.programs().find((p) => p.id === id) || null;
   });
 
-  readonly customerTiers: CustomerTierRow[] = [
-    { id: 'basic', tier: 'basic', accessKey: 'tierAccessBasic', pricingKey: 'pricingScopeBasic' },
-    { id: 'platinum', tier: 'platinum', accessKey: 'tierAccessPlatinum', pricingKey: 'pricingScopePlatinum' },
-    { id: 'elite', tier: 'elite', accessKey: 'tierAccessElite', pricingKey: 'pricingScopeElite' },
-  ];
-
-  readonly filteredTiers = computed(() => {
-    const q = this.searchQuery().toLowerCase().trim();
-    if (!q) return this.customerTiers;
-    return this.customerTiers.filter((row) => {
-      const label = this.tierLabel(row.tier).toLowerCase();
-      const access = this.copy()[row.accessKey].toLowerCase();
-      const pricing = this.copy()[row.pricingKey].toLowerCase();
-      return label.includes(q) || access.includes(q) || pricing.includes(q) || row.tier.includes(q);
-    });
+  readonly selectedProgramPricedRestaurants = computed(() => {
+    const id = this.selectedProgramId();
+    if (!id) return [];
+    return this.store.getRestaurantsForProgram(id);
   });
 
-  readonly activeTableRows = computed(() => {
-    const tab = this.activeTab();
-    if (tab === 'durations') return this.store.durations();
-    if (tab === 'programs') return this.filteredPrograms();
-    if (tab === 'tiers') return this.filteredTiers();
-    return this.filteredBundles();
-  });
-
-  readonly paginatedDurations = this.pg.paginated(computed(() => this.store.durations()));
-  readonly paginatedPrograms = this.pg.paginated(this.filteredPrograms);
-  readonly paginatedTiers = this.pg.paginated(this.filteredTiers);
-  readonly paginatedMealBundles = this.pg.paginated(this.filteredBundles);
-  readonly totalPages = this.pg.totalPages(this.activeTableRows);
-  readonly paginationItems = computed(() => {
-    const tab = this.activeTab();
-    if (tab === 'durations') return this.locale.isRtl() ? 'مدة' : 'durations';
-    if (tab === 'programs') return this.locale.isRtl() ? 'برنامج' : 'programs';
-    if (tab === 'tiers') return this.locale.isRtl() ? 'تصنيف' : 'tiers';
-    return this.locale.isRtl() ? 'باقة وجبات' : 'meal bundles';
-  });
-
-  readonly addLabel = computed(() => {
-    const c = this.copy();
-    const tab = this.activeTab();
-    if (tab === 'programs') return c.addProgram;
-    if (tab === 'mealBundles') return c.addBundle;
-    if (tab === 'durations') return c.addDuration;
-    return '';
-  });
-
-  readonly showCreateActions = computed(() => this.activeTab() !== 'tiers');
-
-  setTab(tab: ProgramsTab): void {
-    this.activeTab.set(tab);
-    this.pg.resetPage();
-    if (tab === 'durations') {
-      this.searchQuery.set('');
-    }
+  // Retrieves all tier averages (Basic, Platinum, Elite) for the currently selected program and a given bundle
+  getAveragesForSelectedProgramAndBundle(bundleId: string) {
+    const progId = this.selectedProgramId();
+    if (!progId) return [];
+    return this.store.tierAverages().filter((t) => t.programId === progId && t.bundleId === bundleId);
   }
+
+  selectProgram(id: string): void {
+    this.selectedProgramId.set(this.selectedProgramId() === id ? null : id);
+  }
+
+  // Check if a specific bundle is priced/ready for the selected program
+  getBundleReadinessForSelectedProgram(bundleId: string): { priced: boolean; restaurantCount: number } {
+    const progId = this.selectedProgramId();
+    if (!progId) return { priced: false, restaurantCount: 0 };
+
+    const prices = this.store.restaurantPrices().filter(
+      (p) => p.programId === progId && p.bundleId === bundleId,
+    );
+    return {
+      priced: prices.length > 0,
+      restaurantCount: prices.length,
+    };
+  }
+
+  // Overall readiness percentage for the selected program (0-100)
+  readonly selectedProgramReadiness = computed(() => {
+    const progId = this.selectedProgramId();
+    if (!progId) return 0;
+    const bundles = this.store.bundles();
+    if (bundles.length === 0) return 0;
+    const priced = bundles.filter((b) => {
+      return this.store.restaurantPrices().some(
+        (p) => p.programId === progId && p.bundleId === b.id,
+      );
+    }).length;
+    return Math.round((priced / bundles.length) * 100);
+  });
 
   tierLabel(tier: RestaurantTier): string {
     return TIER_LABELS[this.locale.locale()][tier] ?? tier;
@@ -201,14 +177,6 @@ export class ProgramsWorkspacePageComponent {
     if (tier === 'elite') return 'bg-amber-50 text-amber-800 ring-amber-600/20';
     if (tier === 'platinum') return 'bg-violet-50 text-violet-700 ring-violet-600/20';
     return 'bg-slate-100 text-slate-700 ring-slate-600/20';
-  }
-
-  tierAccess(row: CustomerTierRow): string {
-    return this.copy()[row.accessKey];
-  }
-
-  tierPricingScope(row: CustomerTierRow): string {
-    return this.copy()[row.pricingKey];
   }
 
   programName(p: { nameAr: string; nameEn: string }): string {
@@ -242,9 +210,8 @@ export class ProgramsWorkspacePageComponent {
     return d.isCustom ? c.customDurationLabel : `${d.days} ${c.days}`;
   }
 
-  openCreate(): void {
-    const tab = this.activeTab();
-    this.drawerEntity.set(tab === 'durations' ? 'duration' : tab === 'mealBundles' ? 'bundle' : 'program');
+  openCreateEntity(type: CatalogEntityType): void {
+    this.drawerEntity.set(type);
     this.drawerMode.set('create');
     this.drawerItemId.set(null);
     this.drawerOpen.set(true);
@@ -298,9 +265,5 @@ export class ProgramsWorkspacePageComponent {
   private showToast(message: string): void {
     this.toast.set(message);
     setTimeout(() => this.toast.set(null), 3000);
-  }
-
-  onPageChange(page: number): void {
-    this.pg.onPageChange(page, this.totalPages());
   }
 }

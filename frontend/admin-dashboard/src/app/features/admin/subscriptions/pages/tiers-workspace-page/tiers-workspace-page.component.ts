@@ -8,6 +8,13 @@ import {
   lucideRefreshCw,
   lucideFilter,
   lucideX,
+  lucideCheck,
+  lucideChartBar,
+  lucideExternalLink,
+  lucideCircleAlert,
+  lucideSparkles,
+  lucideChefHat,
+  lucideTrendingUp,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
@@ -25,7 +32,20 @@ import { MmDetailToastComponent } from '@/shared/components/accounts';
   selector: 'mm-tiers-workspace-page',
   standalone: true,
   imports: [DecimalPipe, NgClass, RouterLink, NgIcon, MmOperationsKpiCardComponent, MmDetailToastComponent, HasPermissionDirective, MmTablePaginationComponent],
-  providers: [provideIcons({ lucideAward, lucideShieldAlert, lucideRefreshCw, lucideFilter, lucideX })],
+  providers: [provideIcons({
+    lucideAward,
+    lucideShieldAlert,
+    lucideRefreshCw,
+    lucideFilter,
+    lucideX,
+    lucideCheck,
+    lucideChartBar,
+    lucideExternalLink,
+    lucideCircleAlert,
+    lucideSparkles,
+    lucideChefHat,
+    lucideTrendingUp,
+  })],
   templateUrl: './tiers-workspace-page.component.html',
   host: { class: 'block' },
 })
@@ -47,6 +67,10 @@ export class TiersWorkspacePageComponent {
   readonly outlierAction = signal<OutlierActionType>('keep');
   readonly outlierReason = signal('');
   readonly toast = signal<string | null>(null);
+
+  // Modal open flags
+  readonly distributionModalOpen = signal(false);
+  readonly boundsModalOpen = signal(false);
   readonly pg = createTablePagination(5);
   readonly currentPage = this.pg.currentPage;
   readonly pageSize = this.pg.pageSize;
@@ -103,8 +127,27 @@ export class TiersWorkspacePageComponent {
       basicMaxDailyKd: this.boundsBasic(),
       eliteMinDailyKd: this.boundsElite(),
     });
+    this.boundsModalOpen.set(false);
     this.toast.set(this.copy().saved);
     setTimeout(() => this.toast.set(null), 3000);
+  }
+
+  openDistribution(): void {
+    this.distributionModalOpen.set(true);
+  }
+
+  closeDistribution(): void {
+    this.distributionModalOpen.set(false);
+  }
+
+  openBounds(): void {
+    this.boundsBasic.set(this.store.singleRestaurantBounds().basicMaxDailyKd);
+    this.boundsElite.set(this.store.singleRestaurantBounds().eliteMinDailyKd);
+    this.boundsModalOpen.set(true);
+  }
+
+  closeBounds(): void {
+    this.boundsModalOpen.set(false);
   }
 
   openOutlier(row: ClassificationRow): void {
@@ -128,5 +171,25 @@ export class TiersWorkspacePageComponent {
 
   onPageChange(page: number): void {
     this.pg.onPageChange(page, this.totalPages());
+  }
+
+  resetFilters(): void {
+    this.programFilter.set('all');
+    this.bundleFilter.set('all');
+    this.tierFilter.set('all');
+    this.flaggedOnly.set(false);
+  }
+
+  readonly hasActiveFilters = computed(() =>
+    this.programFilter() !== 'all' ||
+    this.bundleFilter() !== 'all' ||
+    this.tierFilter() !== 'all' ||
+    this.flaggedOnly(),
+  );
+
+  tierAccentColor(tier: RestaurantTier): string {
+    if (tier === 'elite') return 'amber';
+    if (tier === 'platinum') return 'violet';
+    return 'slate';
   }
 }
