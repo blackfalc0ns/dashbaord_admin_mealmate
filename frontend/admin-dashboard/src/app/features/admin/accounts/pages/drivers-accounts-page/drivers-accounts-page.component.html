@@ -1,16 +1,16 @@
 <section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
-  <div class="flex w-full flex-col gap-4">
+  <div class="flex w-full flex-col gap-5">
 
     <!-- ═══ KPI Cards Grid ═══ -->
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <!-- KPI 1: Active Drivers -->
-      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+      <div class="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]">
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <span class="text-xs font-bold text-slate-500">{{ copy().activeDrivers }}</span>
             <span class="text-2xl font-extrabold text-emerald-600">{{ kpis().active }}</span>
           </div>
-          <div class="flex size-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
+          <div class="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
             <ng-icon name="lucideShieldCheck" size="20" />
           </div>
         </div>
@@ -20,13 +20,13 @@
       </div>
 
       <!-- KPI 2: Suspended Drivers -->
-      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+      <div class="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]">
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <span class="text-xs font-bold text-slate-500">{{ copy().suspendedDrivers }}</span>
-            <span class="text-2xl font-extrabold text-red-600">{{ kpis().suspended }}</span>
+            <span class="text-2xl font-extrabold text-rose-600">{{ kpis().suspended }}</span>
           </div>
-          <div class="flex size-10 items-center justify-center rounded-lg bg-red-50 text-red-600 ring-1 ring-red-100">
+          <div class="flex size-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600 ring-1 ring-rose-100">
             <ng-icon name="lucideShieldAlert" size="20" />
           </div>
         </div>
@@ -36,13 +36,13 @@
       </div>
 
       <!-- KPI 3: Expired Documents -->
-      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+      <div class="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]">
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <span class="text-xs font-bold text-slate-500">{{ copy().expiredDocuments }}</span>
             <span class="text-2xl font-extrabold text-amber-600">{{ kpis().expired }}</span>
           </div>
-          <div class="flex size-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600 ring-1 ring-amber-100">
+          <div class="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 ring-1 ring-amber-100">
             <ng-icon name="lucideClock" size="20" />
           </div>
         </div>
@@ -52,13 +52,13 @@
       </div>
 
       <!-- KPI 4: Profile Image Review -->
-      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+      <div class="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]">
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <span class="text-xs font-bold text-slate-500">{{ copy().profileImageReview }}</span>
             <span class="text-2xl font-extrabold text-blue-600">{{ kpis().imageReview }}</span>
           </div>
-          <div class="flex size-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600 ring-1 ring-blue-100">
+          <div class="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 ring-1 ring-blue-100">
             <ng-icon name="lucideUser" size="20" />
           </div>
         </div>
@@ -68,184 +68,171 @@
       </div>
     </div>
 
-    <!-- ═══ Filters & Search Card (Separate from Table) ═══ -->
-    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <!-- Search Input (Compact) -->
-        <div class="relative w-full sm:max-w-xs">
+    <!-- ═══ Combined Filters + Table Card ═══ -->
+    <div class="rounded-3xl border border-slate-200/60 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03),0_8px_32px_-8px_rgba(15,23,42,0.08)] overflow-hidden">
+
+      <!-- Header -->
+      <div class="px-5 py-3.5 border-b border-slate-100/70">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 rounded-2xl bg-slate-50 ring-1 ring-slate-200 flex items-center justify-center">
+              <ng-icon name="lucideCar" size="16" class="text-slate-700" />
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-slate-900 leading-none">
+                {{ locale.isRtl() ? 'الكباتن (السائقون)' : 'Delivery Drivers' }}
+              </h2>
+              <p class="text-[10px] text-slate-500 mt-1">
+                {{ locale.isRtl() ? 'إدارة السائقين ومركباتهم ووثائقهم ومناطق الخدمة' : 'Manage drivers, vehicles, documents, and service regions' }}
+              </p>
+            </div>
+          </div>
+          <span class="rounded-full bg-white ring-1 ring-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 font-mono shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+            {{ filteredDrivers().length }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Filters bar -->
+      <div class="border-b border-slate-100/70 px-4 py-3 bg-slate-50/40 flex flex-wrap items-center gap-2">
+        <!-- Search Input -->
+        <div class="relative w-full sm:w-64 me-auto">
           <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
-            <ng-icon name="lucideSearch" size="16" />
+            <ng-icon name="lucideSearch" size="13" />
           </span>
           <input
             type="text"
             [placeholder]="copy().searchPlaceholder"
-            class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-xs transition-all focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            class="h-8 w-full rounded-lg border border-slate-200 bg-white ps-8 pe-3 text-[11px] transition-all focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 placeholder:text-slate-400"
             (input)="onSearch($event)"
           />
         </div>
 
-        <!-- Filter Buttons (Chips) -->
-        <div class="flex flex-wrap items-center gap-2">
-          <!-- Status Filter -->
-          <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeStatusFilter() === 'all'"
-              [class.text-slate-900]="activeStatusFilter() === 'all'"
-              [class.shadow-sm]="activeStatusFilter() === 'all'"
-              [class.text-slate-500]="activeStatusFilter() !== 'all'"
-              (click)="onStatusFilter('all')"
-            >
-              {{ copy().all }}
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeStatusFilter() === 'Active'"
-              [class.text-slate-900]="activeStatusFilter() === 'Active'"
-              [class.shadow-sm]="activeStatusFilter() === 'Active'"
-              [class.text-slate-500]="activeStatusFilter() !== 'Active'"
-              (click)="onStatusFilter('Active')"
-            >
-              {{ copy().active }}
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeStatusFilter() === 'ProfileImageReviewRequired'"
-              [class.text-slate-900]="activeStatusFilter() === 'ProfileImageReviewRequired'"
-              [class.shadow-sm]="activeStatusFilter() === 'ProfileImageReviewRequired'"
-              [class.text-slate-500]="activeStatusFilter() !== 'ProfileImageReviewRequired'"
-              (click)="onStatusFilter('ProfileImageReviewRequired')"
-            >
-              {{ copy().imageReview }}
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeStatusFilter() === 'ExpiredDocuments'"
-              [class.text-slate-900]="activeStatusFilter() === 'ExpiredDocuments'"
-              [class.shadow-sm]="activeStatusFilter() === 'ExpiredDocuments'"
-              [class.text-slate-500]="activeStatusFilter() !== 'ExpiredDocuments'"
-              (click)="onStatusFilter('ExpiredDocuments')"
-            >
-              {{ copy().expiredDocs }}
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeStatusFilter() === 'Suspended'"
-              [class.text-slate-900]="activeStatusFilter() === 'Suspended'"
-              [class.shadow-sm]="activeStatusFilter() === 'Suspended'"
-              [class.text-slate-500]="activeStatusFilter() !== 'Suspended'"
-              (click)="onStatusFilter('Suspended')"
-            >
-              {{ copy().suspended }}
-            </button>
-          </div>
+        <!-- Status Filter (segmented) -->
+        <div class="inline-flex rounded-lg bg-white ring-1 ring-slate-200 p-0.5">
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeStatusFilter() === 'all' ? 'bg-slate-100 text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onStatusFilter('all')">
+            {{ copy().all }}
+          </button>
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeStatusFilter() === 'Active' ? 'bg-emerald-100 text-emerald-800 shadow-sm ring-1 ring-emerald-300' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onStatusFilter('Active')">
+            {{ copy().active }}
+          </button>
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeStatusFilter() === 'ProfileImageReviewRequired' ? 'bg-blue-100 text-blue-800 shadow-sm ring-1 ring-blue-300' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onStatusFilter('ProfileImageReviewRequired')">
+            {{ copy().imageReview }}
+          </button>
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeStatusFilter() === 'ExpiredDocuments' ? 'bg-amber-100 text-amber-800 shadow-sm ring-1 ring-amber-300' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onStatusFilter('ExpiredDocuments')">
+            {{ copy().expiredDocs }}
+          </button>
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeStatusFilter() === 'Suspended' ? 'bg-rose-100 text-rose-800 shadow-sm ring-1 ring-rose-300' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onStatusFilter('Suspended')">
+            {{ copy().suspended }}
+          </button>
         </div>
       </div>
-    </div>
 
-    <!-- ═══ Professional Data Table Card ═══ -->
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <!-- Table -->
       <div class="overflow-x-auto">
-        <table class="w-full border-collapse text-start text-xs">
+        <table class="w-full min-w-[860px] text-sm">
           <thead>
-            <tr class="border-b border-slate-100 bg-slate-50/75 text-slate-500 font-bold">
+            <tr class="text-[9px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/60 border-b border-slate-100">
               <th class="px-4 py-3 text-start">{{ copy().driverAndInfo }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().phoneAndEmail }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().vehicleAndPlate }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().serviceRegion }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().status }}</th>
-              <th class="px-4 py-3 text-end">{{ copy().actions }}</th>
+              <th class="px-3 py-3 text-start">{{ copy().phoneAndEmail }}</th>
+              <th class="px-3 py-3 text-start">{{ copy().vehicleAndPlate }}</th>
+              <th class="px-3 py-3 text-start">{{ copy().serviceRegion }}</th>
+              <th class="px-3 py-3 text-start">{{ copy().status }}</th>
+              <th class="px-3 py-3 text-end">{{ copy().actions }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
             @for (item of paginatedDrivers(); track item.id) {
-              <tr class="hover:bg-slate-50/50 transition-colors">
-                <!-- Driver & Info -->
+              <tr class="hover:bg-slate-50/60 transition-colors">
                 <td class="px-4 py-3">
                   <div class="flex items-center gap-2.5">
-                    <div class="relative size-8 shrink-0 overflow-hidden rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center">
+                    <div class="relative w-8 h-8 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-slate-100 to-slate-50 ring-1 ring-slate-200 flex items-center justify-center">
                       @if (item.profileImageUrl) {
-                        <img [src]="item.profileImageUrl" alt="Driver Profile" class="size-full object-cover" />
+                        <img [src]="item.profileImageUrl" alt="Driver Profile" class="w-full h-full object-cover" />
                       } @else {
-                        <span class="text-xs font-bold text-slate-500">{{ item.fullName.charAt(0) }}</span>
+                        <span class="text-[11px] font-bold text-slate-600">{{ item.fullName.charAt(0) }}</span>
                       }
                     </div>
-                    <div class="flex flex-col gap-0.5">
-                      <span class="font-extrabold text-slate-900 text-sm">{{ item.fullName }}</span>
-                      <span class="text-slate-400 text-[10px]">{{ item.id }}</span>
+                    <div class="min-w-0">
+                      <p class="text-xs font-bold text-slate-900 truncate">{{ item.fullName }}</p>
+                      <p class="text-[10px] text-slate-400 font-mono truncate">{{ item.id }}</p>
                     </div>
                   </div>
                 </td>
 
-                <!-- Phone & Email -->
-                <td class="px-4 py-3">
+                <td class="px-3 py-3">
                   <div class="flex flex-col">
-                    <span class="font-bold text-slate-700" dir="ltr">{{ item.phoneNumber }}</span>
-                    <span class="text-[10px] text-slate-400">{{ item.email }}</span>
+                    <span class="text-[11px] font-bold text-slate-700" dir="ltr">{{ item.phoneNumber }}</span>
+                    <span class="text-[10px] text-slate-400 truncate">{{ item.email }}</span>
                   </div>
                 </td>
 
-                <!-- Vehicle & Plate -->
-                <td class="px-4 py-3 text-slate-500 font-medium">
+                <td class="px-3 py-3">
                   <div class="flex flex-col">
-                    <span class="font-bold text-slate-700">{{ t(item.vehicleTypeAr, item.vehicleTypeEn) }}</span>
-                    <span class="text-[10px] text-slate-400">{{ item.vehiclePlateNumber }}</span>
+                    <span class="text-[11px] font-bold text-slate-700">{{ t(item.vehicleTypeAr, item.vehicleTypeEn) }}</span>
+                    <span class="text-[10px] font-mono text-slate-400" dir="ltr">{{ item.vehiclePlateNumber }}</span>
                   </div>
                 </td>
 
-                <!-- Service Region -->
-                <td class="px-4 py-3 text-slate-600 font-semibold">
+                <td class="px-3 py-3 text-[11px] text-slate-700 font-semibold">
                   {{ t(item.regionAr, item.regionEn) }}
                 </td>
 
-                <!-- Status -->
-                <td class="px-4 py-3">
-                  <span
-                    class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1"
-                    [ngClass]="{
-                      'bg-emerald-50 text-emerald-700 ring-emerald-600/20': item.statusTone === 'success',
-                      'bg-amber-50 text-amber-700 ring-amber-600/20': item.statusTone === 'warning',
-                      'bg-red-50 text-red-700 ring-red-600/20': item.statusTone === 'danger',
-                      'bg-blue-50 text-blue-700 ring-blue-600/20': item.statusTone === 'info',
-                      'bg-slate-50 text-slate-700 ring-slate-600/20': item.statusTone === 'neutral'
-                    }"
-                  >
-                    <span class="size-1.5 rounded-full"
-                      [class.bg-emerald-500]="item.statusTone === 'success'"
-                      [class.bg-amber-500]="item.statusTone === 'warning'"
-                      [class.bg-red-500]="item.statusTone === 'danger'"
-                      [class.bg-blue-500]="item.statusTone === 'info'"
-                      [class.bg-slate-400]="item.statusTone === 'neutral'"
-                    ></span>
+                <td class="px-3 py-3">
+                  <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset"
+                        [ngClass]="{
+                          'bg-emerald-50 text-emerald-700 ring-emerald-600/15': item.statusTone === 'success',
+                          'bg-amber-50 text-amber-700 ring-amber-600/15': item.statusTone === 'warning',
+                          'bg-rose-50 text-rose-700 ring-rose-600/15': item.statusTone === 'danger',
+                          'bg-blue-50 text-blue-700 ring-blue-600/15': item.statusTone === 'info',
+                          'bg-slate-50 text-slate-700 ring-slate-600/15': item.statusTone === 'neutral'
+                        }">
+                    <span class="w-1.5 h-1.5 rounded-full"
+                          [ngClass]="{
+                            'bg-emerald-500': item.statusTone === 'success',
+                            'bg-amber-500': item.statusTone === 'warning',
+                            'bg-rose-500': item.statusTone === 'danger',
+                            'bg-blue-500': item.statusTone === 'info',
+                            'bg-slate-400': item.statusTone === 'neutral'
+                          }"></span>
                     {{ t(item.statusAr, item.statusEn) }}
                   </span>
                 </td>
 
-                <!-- Actions -->
-                <td class="px-4 py-3 text-end">
+                <td class="px-3 py-3 text-end">
                   <button
                     type="button"
-                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition-all"
                     (click)="openDetails(item)"
                   >
                     <span>{{ copy().viewProfile }}</span>
-                    <ng-icon name="lucideChevronRight" size="12" class="rtl:rotate-180" />
+                    <ng-icon name="lucideChevronRight" size="11" class="rtl:rotate-180" />
                   </button>
                 </td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="6" class="px-4 py-12 text-center">
-                  <div class="flex flex-col items-center justify-center gap-2">
-                    <div class="flex size-12 items-center justify-center rounded-full bg-slate-50 text-slate-400">
-                      <ng-icon name="lucideSlidersHorizontal" size="24" />
+                <td colspan="6" class="px-4 py-10">
+                  <div class="flex flex-col items-center justify-center gap-2 text-slate-400">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
+                      <ng-icon name="lucideSlidersHorizontal" size="20" />
                     </div>
-                    <span class="text-sm font-bold text-slate-500">{{ copy().noDriversFound }}</span>
+                    <p class="text-sm font-bold text-slate-500">{{ copy().noDriversFound }}</p>
                   </div>
                 </td>
               </tr>

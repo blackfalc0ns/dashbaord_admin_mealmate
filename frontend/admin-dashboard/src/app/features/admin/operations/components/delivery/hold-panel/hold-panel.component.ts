@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideSearch } from '@ng-icons/lucide';
+import { lucideSearch, lucideCirclePause, lucidePhone, lucideCheck } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { HOLD_STATUS_LABELS, OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
@@ -12,8 +13,8 @@ import { HoldCaseStatus } from '../../../models/delivery.model';
 @Component({
   selector: 'mm-hold-panel',
   standalone: true,
-  imports: [NgIcon, MmTablePaginationComponent],
-  providers: [provideIcons({ lucideSearch })],
+  imports: [NgClass, NgIcon, MmTablePaginationComponent],
+  providers: [provideIcons({ lucideSearch, lucideCirclePause, lucidePhone, lucideCheck })],
   templateUrl: './hold-panel.component.html',
 })
 export class HoldPanelComponent {
@@ -55,6 +56,28 @@ export class HoldPanelComponent {
 
   statusLabel(status: HoldCaseStatus): string {
     return HOLD_STATUS_LABELS[this.locale.locale()][status] ?? status;
+  }
+
+  statusClass(status: HoldCaseStatus): string {
+    switch (status) {
+      case 'resolved':
+        return 'bg-emerald-50 text-emerald-700 ring-emerald-600/15';
+      case 'contact_pending':
+        return 'bg-sky-50 text-sky-700 ring-sky-600/15';
+      default:
+        return 'bg-amber-50 text-amber-700 ring-amber-600/15';
+    }
+  }
+
+  statusDotClass(status: HoldCaseStatus): string {
+    switch (status) {
+      case 'resolved':
+        return 'bg-emerald-500';
+      case 'contact_pending':
+        return 'bg-sky-500';
+      default:
+        return 'bg-amber-500';
+    }
   }
 
   resolve(caseId: string): void {

@@ -1,44 +1,106 @@
 <div class="flex flex-col gap-4">
   @if (toast()) {
-    <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">{{ toast() }}</div>
+    <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">{{ toast() }}</div>
   }
-  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-    <div class="relative max-w-xs">
-      <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
-        <ng-icon name="lucideSearch" size="16" />
-      </span>
-      <input type="text" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 ps-9 pe-3 text-sm" [placeholder]="copy().searchPlaceholder" (input)="onSearch($event)" />
+
+  <div class="rounded-3xl border border-slate-200/60 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03),0_8px_32px_-8px_rgba(15,23,42,0.08)] overflow-hidden">
+
+    <!-- Header -->
+    <div class="px-5 py-3.5 border-b border-slate-100/70">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-2xl bg-slate-50 ring-1 ring-slate-200 flex items-center justify-center">
+            <ng-icon name="lucideCirclePause" size="16" class="text-slate-700" />
+          </div>
+          <div>
+            <h2 class="text-sm font-bold text-slate-900 leading-none">
+              {{ locale.isRtl() ? 'حالات التوصيل المُعلَّقة' : 'On-Hold Delivery Cases' }}
+            </h2>
+            <p class="text-[10px] text-slate-500 mt-1">
+              {{ locale.isRtl() ? 'الطلبات المتوقفة تحتاج تواصل مع العميل أو تصعيد' : 'Stopped orders needing customer contact or escalation' }}
+            </p>
+          </div>
+        </div>
+        <span class="rounded-full bg-white ring-1 ring-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 font-mono shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+          {{ filteredCases().length }}
+        </span>
+      </div>
     </div>
-  </div>
-  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+
+    <!-- Filters bar -->
+    <div class="border-b border-slate-100/70 px-4 py-3 bg-slate-50/40 flex flex-wrap items-center gap-2">
+      <div class="relative w-full sm:w-64">
+        <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+          <ng-icon name="lucideSearch" size="13" />
+        </span>
+        <input
+          type="text"
+          class="h-8 w-full rounded-lg border border-slate-200 bg-white ps-8 pe-3 text-[11px] transition-all focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 placeholder:text-slate-400"
+          [placeholder]="copy().searchPlaceholder"
+          (input)="onSearch($event)"
+        />
+      </div>
+    </div>
+
+    <!-- Table -->
     @if (filteredCases().length === 0) {
-      <p class="p-8 text-center text-sm text-slate-500">{{ copy().noHoldCases }}</p>
+      <div class="p-10">
+        <div class="flex flex-col items-center justify-center gap-2 text-slate-400">
+          <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
+            <ng-icon name="lucideCirclePause" size="20" />
+          </div>
+          <p class="text-sm font-bold text-slate-500">{{ copy().noHoldCases }}</p>
+        </div>
+      </div>
     } @else {
       <div class="overflow-x-auto">
-        <table class="w-full min-w-[800px] text-sm">
-          <thead class="border-b bg-slate-50 text-xs font-bold uppercase text-slate-500">
-            <tr>
+        <table class="w-full min-w-[820px] text-sm">
+          <thead>
+            <tr class="text-[9px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/60 border-b border-slate-100">
               <th class="px-4 py-3 text-start">{{ copy().orderId }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().customer }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().holdReason }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().contactAttempts }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().status }}</th>
-              <th class="px-4 py-3 text-start"></th>
+              <th class="px-3 py-3 text-start">{{ copy().customer }}</th>
+              <th class="px-3 py-3 text-start">{{ copy().holdReason }}</th>
+              <th class="px-3 py-3 text-center">{{ copy().contactAttempts }}</th>
+              <th class="px-3 py-3 text-start">{{ copy().status }}</th>
+              <th class="px-3 py-3 text-end"></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
             @for (c of paginatedCases(); track c.caseId) {
-              <tr class="hover:bg-slate-50/80">
-                <td class="px-4 py-3 font-mono text-xs font-bold">{{ c.orderId }}</td>
-                <td class="px-4 py-3">{{ c.customerDisplayName }}</td>
-                <td class="px-4 py-3 max-w-xs truncate">{{ c.holdReason }}</td>
-                <td class="px-4 py-3 text-center font-bold">{{ c.contactAttempts }}</td>
-                <td class="px-4 py-3">{{ statusLabel(c.status) }}</td>
+              <tr class="hover:bg-slate-50/60 transition-colors">
                 <td class="px-4 py-3">
+                  <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-700 ring-1 ring-slate-200">{{ c.orderId }}</span>
+                </td>
+                <td class="px-3 py-3 text-xs font-bold text-slate-900">{{ c.customerDisplayName }}</td>
+                <td class="px-3 py-3 text-[11px] text-slate-600 max-w-xs truncate">{{ c.holdReason }}</td>
+                <td class="px-3 py-3 text-center">
+                  <span class="inline-flex items-center justify-center rounded-full bg-slate-100 ring-1 ring-slate-200 min-w-[22px] h-[22px] px-1 font-mono text-[10px] font-bold text-slate-700">{{ c.contactAttempts }}</span>
+                </td>
+                <td class="px-3 py-3">
+                  <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset" [ngClass]="statusClass(c.status)">
+                    <span class="w-1.5 h-1.5 rounded-full" [ngClass]="statusDotClass(c.status)"></span>
+                    {{ statusLabel(c.status) }}
+                  </span>
+                </td>
+                <td class="px-3 py-3 text-end">
                   @if (c.status !== 'resolved') {
-                    <div class="flex gap-1">
-                      <button type="button" class="rounded-lg bg-sky-600 px-2 py-1 text-[10px] font-bold text-white" (click)="logContact(c.caseId)">{{ copy().logContact }}</button>
-                      <button type="button" class="rounded-lg border px-2 py-1 text-[10px] font-bold" (click)="resolve(c.caseId)">{{ copy().resolve }}</button>
+                    <div class="flex justify-end gap-1">
+                      <button
+                        type="button"
+                        class="inline-flex items-center gap-1 rounded-lg border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-bold text-sky-700 hover:bg-sky-100 transition-all"
+                        (click)="logContact(c.caseId)"
+                      >
+                        <ng-icon name="lucidePhone" size="10" />
+                        {{ copy().logContact }}
+                      </button>
+                      <button
+                        type="button"
+                        class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700 hover:bg-emerald-100 transition-all"
+                        (click)="resolve(c.caseId)"
+                      >
+                        <ng-icon name="lucideCheck" size="10" />
+                        {{ copy().resolve }}
+                      </button>
                     </div>
                   }
                 </td>

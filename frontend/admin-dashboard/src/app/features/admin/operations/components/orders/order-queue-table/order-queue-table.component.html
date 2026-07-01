@@ -1,40 +1,42 @@
 <div class="overflow-x-auto">
   <table class="w-full min-w-[800px] text-sm">
-    <thead class="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase text-slate-500">
-      <tr>
+    <thead>
+      <tr class="text-[9px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/60 border-b border-slate-100">
         <th class="px-4 py-3 text-start">{{ copy().orderId }}</th>
-        <th class="px-4 py-3 text-start">{{ copy().customer }}</th>
-        <th class="px-4 py-3 text-start">{{ copy().restaurant }}</th>
-        <th class="px-4 py-3 text-start">{{ copy().deliveryDate }}</th>
-        <th class="px-4 py-3 text-start">{{ copy().sla }}</th>
-        <th class="px-4 py-3 text-start">{{ copy().phase }}</th>
-        <th class="px-4 py-3 text-start">{{ copy().actions }}</th>
+        <th class="px-3 py-3 text-start">{{ copy().customer }}</th>
+        <th class="px-3 py-3 text-start">{{ copy().restaurant }}</th>
+        <th class="px-3 py-3 text-start">{{ copy().deliveryDate }}</th>
+        <th class="px-3 py-3 text-start">{{ copy().sla }}</th>
+        <th class="px-3 py-3 text-start">{{ copy().phase }}</th>
+        <th class="px-3 py-3 text-end">{{ copy().actions }}</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-slate-100">
       @for (row of paginatedRows(); track row.orderId) {
         <tr
-          class="cursor-pointer transition hover:bg-slate-50/80"
+          class="cursor-pointer hover:bg-slate-50/60 transition-colors"
           [routerLink]="['/admin/operations/orders', row.orderId]"
         >
-          <td class="px-4 py-3 font-mono text-xs font-bold text-slate-700">{{ row.orderId }}</td>
-          <td class="px-4 py-3 font-medium text-slate-900">{{ row.customerDisplayName }}</td>
-          <td class="px-4 py-3 text-slate-700">{{ row.restaurantName }}</td>
-          <td class="px-4 py-3 text-slate-600">{{ row.deliveryDate }}</td>
-          <td class="px-4 py-3"><mm-sla-countdown [hoursRemaining]="row.hoursUntilDelivery" /></td>
-          <td class="px-4 py-3"><mm-order-lifecycle-badge [phase]="row.phase" /></td>
-          <td class="px-4 py-3" (click)="$event.stopPropagation()">
+          <td class="px-4 py-3">
+            <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-700 ring-1 ring-slate-200">{{ row.orderId }}</span>
+          </td>
+          <td class="px-3 py-3 text-xs font-bold text-slate-900">{{ row.customerDisplayName }}</td>
+          <td class="px-3 py-3 text-[11px] text-slate-700">{{ row.restaurantName }}</td>
+          <td class="px-3 py-3 text-[11px] text-slate-600 font-medium">{{ row.deliveryDate }}</td>
+          <td class="px-3 py-3"><mm-sla-countdown [hoursRemaining]="row.hoursUntilDelivery" /></td>
+          <td class="px-3 py-3"><mm-order-lifecycle-badge [phase]="row.phase" /></td>
+          <td class="px-3 py-3 text-end" (click)="$event.stopPropagation()">
             <div class="relative inline-block">
               <details class="group">
-                <summary class="cursor-pointer list-none rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-50">
+                <summary class="cursor-pointer list-none inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition-all">
                   {{ copy().actionMenu }}
                 </summary>
-                <div class="absolute z-10 mt-1 min-w-[10rem] rounded-lg border border-slate-200 bg-white py-1 shadow-lg end-0">
+                <div class="absolute z-10 mt-1 min-w-[11rem] rounded-xl border border-slate-200 bg-white py-1 shadow-[0_8px_32px_-8px_rgba(15,23,42,0.15)] end-0">
                   @if (canOpenReplacement(row)) {
                     <ng-container *mmHasPermission="perms.order72hOpenReplacement">
                       <button
                         type="button"
-                        class="block w-full px-3 py-1.5 text-start text-xs hover:bg-slate-50"
+                        class="block w-full px-3 py-1.5 text-start text-[11px] font-semibold text-slate-700 hover:bg-slate-50"
                         (click)="requestAction(row.orderId, 'replacement', $event)"
                       >
                         {{ copy().openReplacement }}
@@ -45,7 +47,7 @@
                     <ng-container *mmHasPermission="perms.order72hManualReassign">
                       <button
                         type="button"
-                        class="block w-full px-3 py-1.5 text-start text-xs hover:bg-slate-50"
+                        class="block w-full px-3 py-1.5 text-start text-[11px] font-semibold text-slate-700 hover:bg-slate-50"
                         (click)="requestAction(row.orderId, 'reassign', $event)"
                       >
                         {{ copy().manualReassign }}
@@ -55,7 +57,7 @@
                   <ng-container *mmHasPermission="perms.order72hException">
                     <button
                       type="button"
-                      class="block w-full px-3 py-1.5 text-start text-xs hover:bg-slate-50"
+                      class="block w-full px-3 py-1.5 text-start text-[11px] font-semibold text-slate-700 hover:bg-slate-50"
                       (click)="requestAction(row.orderId, 'exception', $event)"
                     >
                       {{ copy().applyException }}
