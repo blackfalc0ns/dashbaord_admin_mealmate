@@ -1,16 +1,16 @@
 <section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
-  <div class="flex w-full flex-col gap-4">
+  <div class="flex w-full flex-col gap-5">
 
     <!-- ═══ KPI Cards Grid ═══ -->
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <!-- KPI 1: Total Pending Restaurants -->
-      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+      <div class="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]">
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <span class="text-xs font-bold text-slate-500">{{ copy().pendingRestaurants }}</span>
             <span class="text-2xl font-extrabold text-slate-900">{{ kpis().restaurants }}</span>
           </div>
-          <div class="flex size-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600 ring-1 ring-amber-100">
+          <div class="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 ring-1 ring-amber-100">
             <ng-icon name="lucideUser" size="20" />
           </div>
         </div>
@@ -20,13 +20,13 @@
       </div>
 
       <!-- KPI 2: Total Pending Drivers -->
-      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+      <div class="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]">
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <span class="text-xs font-bold text-slate-500">{{ copy().pendingDrivers }}</span>
             <span class="text-2xl font-extrabold text-slate-900">{{ kpis().drivers }}</span>
           </div>
-          <div class="flex size-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600 ring-1 ring-blue-100">
+          <div class="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 ring-1 ring-blue-100">
             <ng-icon name="lucideCar" size="20" />
           </div>
         </div>
@@ -36,13 +36,13 @@
       </div>
 
       <!-- KPI 3: Ready to Approve -->
-      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+      <div class="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]">
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <span class="text-xs font-bold text-slate-500">{{ copy().readyToApprove }}</span>
             <span class="text-2xl font-extrabold text-emerald-600">{{ kpis().ready }}</span>
           </div>
-          <div class="flex size-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
+          <div class="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
             <ng-icon name="lucideShieldCheck" size="20" />
           </div>
         </div>
@@ -52,13 +52,13 @@
       </div>
 
       <!-- KPI 4: Missing Documents -->
-      <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+      <div class="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-all hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_8px_20px_-8px_rgba(15,23,42,0.08)]">
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <span class="text-xs font-bold text-slate-500">{{ copy().missingDocuments }}</span>
-            <span class="text-2xl font-extrabold text-red-600">{{ kpis().missing }}</span>
+            <span class="text-2xl font-extrabold text-rose-600">{{ kpis().missing }}</span>
           </div>
-          <div class="flex size-10 items-center justify-center rounded-lg bg-red-50 text-red-600 ring-1 ring-red-100">
+          <div class="flex size-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600 ring-1 ring-rose-100">
             <ng-icon name="lucideShieldAlert" size="20" />
           </div>
         </div>
@@ -68,196 +68,179 @@
       </div>
     </div>
 
-    <!-- ═══ Filters & Search Card (Separate from Table) ═══ -->
-    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <!-- Search Input (Compact) -->
-        <div class="relative w-full sm:max-w-xs">
+    <!-- ═══ Combined Filters + Table Card ═══ -->
+    <div class="rounded-3xl border border-slate-200/60 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03),0_8px_32px_-8px_rgba(15,23,42,0.08)] overflow-hidden">
+
+      <!-- Header -->
+      <div class="px-5 py-3.5 border-b border-slate-100/70">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 rounded-2xl bg-slate-50 ring-1 ring-slate-200 flex items-center justify-center">
+              <ng-icon name="lucideUser" size="16" class="text-slate-700" />
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-slate-900 leading-none">
+                {{ locale.isRtl() ? 'طلبات الانضمام المعلّقة' : 'Pending Account Requests' }}
+              </h2>
+              <p class="text-[10px] text-slate-500 mt-1">
+                {{ locale.isRtl() ? 'راجع الطلبات وفعّلها بعد التحقق من الوثائق' : 'Review requests and approve after documents verification' }}
+              </p>
+            </div>
+          </div>
+          <span class="rounded-full bg-white ring-1 ring-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 font-mono shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+            {{ filteredAccounts().length }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Filters bar -->
+      <div class="border-b border-slate-100/70 px-4 py-3 bg-slate-50/40 flex flex-wrap items-center gap-2">
+        <!-- Search Input -->
+        <div class="relative w-full sm:w-64 me-auto">
           <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
-            <ng-icon name="lucideSearch" size="16" />
+            <ng-icon name="lucideSearch" size="13" />
           </span>
           <input
             type="text"
             [placeholder]="copy().searchPlaceholder"
-            class="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-xs transition-all focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            class="h-8 w-full rounded-lg border border-slate-200 bg-white ps-8 pe-3 text-[11px] transition-all focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 placeholder:text-slate-400"
             (input)="onSearch($event)"
           />
         </div>
 
-        <!-- Filter Buttons (Chips) -->
-        <div class="flex flex-wrap items-center gap-2">
-          <!-- Type Filter -->
-          <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeTypeFilter() === 'all'"
-              [class.text-slate-900]="activeTypeFilter() === 'all'"
-              [class.shadow-sm]="activeTypeFilter() === 'all'"
-              [class.text-slate-500]="activeTypeFilter() !== 'all'"
-              (click)="onTypeFilter('all')"
-            >
-              {{ copy().all }}
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeTypeFilter() === 'restaurant'"
-              [class.text-slate-900]="activeTypeFilter() === 'restaurant'"
-              [class.shadow-sm]="activeTypeFilter() === 'restaurant'"
-              [class.text-slate-500]="activeTypeFilter() !== 'restaurant'"
-              (click)="onTypeFilter('restaurant')"
-            >
-              {{ copy().restaurants }}
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeTypeFilter() === 'driver'"
-              [class.text-slate-900]="activeTypeFilter() === 'driver'"
-              [class.shadow-sm]="activeTypeFilter() === 'driver'"
-              [class.text-slate-500]="activeTypeFilter() !== 'driver'"
-              (click)="onTypeFilter('driver')"
-            >
-              {{ copy().drivers }}
-            </button>
-          </div>
+        <!-- Type Filter (segmented) -->
+        <div class="inline-flex rounded-lg bg-white ring-1 ring-slate-200 p-0.5">
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeTypeFilter() === 'all' ? 'bg-slate-100 text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onTypeFilter('all')">
+            {{ copy().all }}
+          </button>
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeTypeFilter() === 'restaurant' ? 'bg-amber-100 text-amber-800 shadow-sm ring-1 ring-amber-300' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onTypeFilter('restaurant')">
+            {{ copy().restaurants }}
+          </button>
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeTypeFilter() === 'driver' ? 'bg-blue-100 text-blue-800 shadow-sm ring-1 ring-blue-300' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onTypeFilter('driver')">
+            {{ copy().drivers }}
+          </button>
+        </div>
 
-          <!-- Status Filter -->
-          <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeStatusFilter() === 'all'"
-              [class.text-slate-900]="activeStatusFilter() === 'all'"
-              [class.shadow-sm]="activeStatusFilter() === 'all'"
-              [class.text-slate-500]="activeStatusFilter() !== 'all'"
-              (click)="onStatusFilter('all')"
-            >
-              {{ copy().allStatuses }}
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeStatusFilter() === 'ready'"
-              [class.text-slate-900]="activeStatusFilter() === 'ready'"
-              [class.shadow-sm]="activeStatusFilter() === 'ready'"
-              [class.text-slate-500]="activeStatusFilter() !== 'ready'"
-              (click)="onStatusFilter('ready')"
-            >
-              {{ copy().ready }}
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeStatusFilter() === 'review'"
-              [class.text-slate-900]="activeStatusFilter() === 'review'"
-              [class.shadow-sm]="activeStatusFilter() === 'review'"
-              [class.text-slate-500]="activeStatusFilter() !== 'review'"
-              (click)="onStatusFilter('review')"
-            >
-              {{ copy().review }}
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 font-semibold transition-all"
-              [class.bg-white]="activeStatusFilter() === 'missing'"
-              [class.text-slate-900]="activeStatusFilter() === 'missing'"
-              [class.shadow-sm]="activeStatusFilter() === 'missing'"
-              [class.text-slate-500]="activeStatusFilter() !== 'missing'"
-              (click)="onStatusFilter('missing')"
-            >
-              {{ copy().missing }}
-            </button>
-          </div>
+        <!-- Status Filter (segmented) -->
+        <div class="inline-flex rounded-lg bg-white ring-1 ring-slate-200 p-0.5">
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeStatusFilter() === 'all' ? 'bg-slate-100 text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onStatusFilter('all')">
+            {{ copy().allStatuses }}
+          </button>
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeStatusFilter() === 'ready' ? 'bg-emerald-100 text-emerald-800 shadow-sm ring-1 ring-emerald-300' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onStatusFilter('ready')">
+            {{ copy().ready }}
+          </button>
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeStatusFilter() === 'review' ? 'bg-amber-100 text-amber-800 shadow-sm ring-1 ring-amber-300' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onStatusFilter('review')">
+            {{ copy().review }}
+          </button>
+          <button type="button"
+                  class="rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+                  [ngClass]="activeStatusFilter() === 'missing' ? 'bg-rose-100 text-rose-800 shadow-sm ring-1 ring-rose-300' : 'text-slate-500 hover:text-slate-700'"
+                  (click)="onStatusFilter('missing')">
+            {{ copy().missing }}
+          </button>
         </div>
       </div>
-    </div>
 
-    <!-- ═══ Professional Data Table Card ═══ -->
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <!-- Table -->
       <div class="overflow-x-auto">
-        <table class="w-full border-collapse text-start text-xs">
+        <table class="w-full min-w-[760px] text-sm">
           <thead>
-            <tr class="border-b border-slate-100 bg-slate-50/75 text-slate-500 font-bold">
+            <tr class="text-[9px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/60 border-b border-slate-100">
               <th class="px-4 py-3 text-start">{{ copy().nameAndInfo }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().type }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().submittedAt }}</th>
-              <th class="px-4 py-3 text-start">{{ copy().verificationStatus }}</th>
-              <th class="px-4 py-3 text-end">{{ copy().actions }}</th>
+              <th class="px-3 py-3 text-start">{{ copy().type }}</th>
+              <th class="px-3 py-3 text-start">{{ copy().submittedAt }}</th>
+              <th class="px-3 py-3 text-start">{{ copy().verificationStatus }}</th>
+              <th class="px-3 py-3 text-end">{{ copy().actions }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
             @for (item of paginatedAccounts(); track item.id) {
-              <tr class="hover:bg-slate-50/50 transition-colors">
-                <!-- Name & Info -->
+              <tr class="hover:bg-slate-50/60 transition-colors">
                 <td class="px-4 py-3">
-                  <div class="flex flex-col gap-0.5">
-                    <span class="font-extrabold text-slate-900 text-sm">{{ t(item.nameAr, item.nameEn) }}</span>
-                    <span class="text-slate-400 text-[10px]">{{ item.email }}</span>
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 ring-1 ring-slate-200 flex items-center justify-center shrink-0">
+                      <ng-icon [name]="item.type === 'restaurant' ? 'lucideUser' : 'lucideCar'" size="13" class="text-slate-600" />
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-xs font-bold text-slate-900 truncate">{{ t(item.nameAr, item.nameEn) }}</p>
+                      <p class="text-[10px] text-slate-500 truncate">{{ item.email }}</p>
+                    </div>
                   </div>
                 </td>
 
-                <!-- Type -->
-                <td class="px-4 py-3">
+                <td class="px-3 py-3">
                   @if (item.type === 'restaurant') {
-                    <span class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 ring-1 ring-amber-600/10">
+                    <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 ring-1 ring-amber-600/15">
                       <ng-icon name="lucideUser" size="10" />
                       {{ copy().restaurant }}
                     </span>
                   } @else {
-                    <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 ring-1 ring-blue-600/10">
+                    <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 ring-1 ring-blue-600/15">
                       <ng-icon name="lucideCar" size="10" />
                       {{ copy().driver }}
                     </span>
                   }
                 </td>
 
-                <!-- Submitted At -->
-                <td class="px-4 py-3 text-slate-500 font-medium">
+                <td class="px-3 py-3 text-[11px] text-slate-500 font-medium">
                   {{ t(item.submittedAtAr, item.submittedAtEn) }}
                 </td>
 
-                <!-- Verification Status -->
-                <td class="px-4 py-3">
-                  <span
-                    class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1"
-                    [ngClass]="{
-                      'bg-emerald-50 text-emerald-700 ring-emerald-600/20': item.statusTone === 'success',
-                      'bg-amber-50 text-amber-700 ring-amber-600/20': item.statusTone === 'warning',
-                      'bg-red-50 text-red-700 ring-red-600/20': item.statusTone === 'danger'
-                    }"
-                  >
-                    <span class="size-1.5 rounded-full"
-                      [class.bg-emerald-500]="item.statusTone === 'success'"
-                      [class.bg-amber-500]="item.statusTone === 'warning'"
-                      [class.bg-red-500]="item.statusTone === 'danger'"
-                    ></span>
+                <td class="px-3 py-3">
+                  <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset"
+                        [ngClass]="{
+                          'bg-emerald-50 text-emerald-700 ring-emerald-600/15': item.statusTone === 'success',
+                          'bg-amber-50 text-amber-700 ring-amber-600/15': item.statusTone === 'warning',
+                          'bg-rose-50 text-rose-700 ring-rose-600/15': item.statusTone === 'danger'
+                        }">
+                    <span class="w-1.5 h-1.5 rounded-full"
+                          [ngClass]="{
+                            'bg-emerald-500': item.statusTone === 'success',
+                            'bg-amber-500': item.statusTone === 'warning',
+                            'bg-rose-500': item.statusTone === 'danger'
+                          }"></span>
                     {{ t(item.statusAr, item.statusEn) }}
                   </span>
                 </td>
 
-                <!-- Actions -->
-                <td class="px-4 py-3 text-end">
+                <td class="px-3 py-3 text-end">
                   <button
                     type="button"
-                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition-all"
                     (click)="openDetails(item)"
                   >
                     <span>{{ copy().reviewDetails }}</span>
-                    <ng-icon name="lucideChevronRight" size="12" class="rtl:rotate-180" />
+                    <ng-icon name="lucideChevronRight" size="11" class="rtl:rotate-180" />
                   </button>
                 </td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="5" class="px-4 py-12 text-center">
-                  <div class="flex flex-col items-center justify-center gap-2">
-                    <div class="flex size-12 items-center justify-center rounded-full bg-slate-50 text-slate-400">
-                      <ng-icon name="lucideSlidersHorizontal" size="24" />
+                <td colspan="5" class="px-4 py-10">
+                  <div class="flex flex-col items-center justify-center gap-2 text-slate-400">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
+                      <ng-icon name="lucideSlidersHorizontal" size="20" />
                     </div>
-                    <span class="text-sm font-bold text-slate-500">{{ copy().noPendingRequests }}</span>
-                    <span class="text-xs text-slate-400">{{ copy().adjustSearch }}</span>
+                    <p class="text-sm font-bold text-slate-500">{{ copy().noPendingRequests }}</p>
+                    <p class="text-[11px] text-slate-400">{{ copy().adjustSearch }}</p>
                   </div>
                 </td>
               </tr>
