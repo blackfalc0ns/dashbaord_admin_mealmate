@@ -1,6 +1,6 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideSearch } from '@ng-icons/lucide';
+import { lucideSearch, lucideScrollText } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { OPERATIONS_I18N } from '@/core/i18n/translations/operations.i18n';
@@ -13,7 +13,7 @@ import { OrderExceptionType } from '../../models';
   selector: 'mm-operations-audit-page',
   standalone: true,
   imports: [NgIcon, MmTablePaginationComponent],
-  providers: [provideIcons({ lucideSearch })],
+  providers: [provideIcons({ lucideSearch, lucideScrollText })],
   templateUrl: './operations-audit-page.component.html',
   host: { class: 'block' },
 })

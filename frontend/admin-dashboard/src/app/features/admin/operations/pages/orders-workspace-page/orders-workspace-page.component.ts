@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -22,6 +23,7 @@ import { MmOperationsKpiCardComponent } from '@/shared/components/operations';
   selector: 'mm-orders-workspace-page',
   standalone: true,
   imports: [
+    NgClass,
     NgIcon,
     OrderQueueTableComponent,
     OrderActionDrawerComponent,
@@ -80,6 +82,45 @@ export class OrdersWorkspacePageComponent {
   );
 
   readonly orderItemLabel = computed(() => (this.locale.isRtl() ? 'طلب' : 'orders'));
+
+  readonly viewFilters: { id: OrderWorkspaceView; countKey: 'all' | 'needsAction' | 'confirmation' | 'replacement' | 'prep' }[] = [
+    { id: 'all', countKey: 'all' },
+    { id: 'needs-action', countKey: 'needsAction' },
+    { id: 'confirmation', countKey: 'confirmation' },
+    { id: 'replacement', countKey: 'replacement' },
+    { id: 'prep', countKey: 'prep' },
+  ];
+
+  viewLabel(id: OrderWorkspaceView): string {
+    const c = this.copy();
+    switch (id) {
+      case 'all':
+        return c.todayOrders;
+      case 'needs-action':
+        return c.needsAction;
+      case 'confirmation':
+        return c.awaitingConfirm;
+      case 'replacement':
+        return c.replacement;
+      case 'prep':
+        return c.prep24;
+    }
+  }
+
+  viewChipActiveClass(id: OrderWorkspaceView): string {
+    switch (id) {
+      case 'needs-action':
+        return 'bg-rose-100 text-rose-800 shadow-sm ring-1 ring-rose-300';
+      case 'confirmation':
+        return 'bg-amber-100 text-amber-800 shadow-sm ring-1 ring-amber-300';
+      case 'replacement':
+        return 'bg-violet-100 text-violet-800 shadow-sm ring-1 ring-violet-300';
+      case 'prep':
+        return 'bg-sky-100 text-sky-800 shadow-sm ring-1 ring-sky-300';
+      default:
+        return 'bg-slate-100 text-slate-800 shadow-sm';
+    }
+  }
 
   constructor() {
     this.route.queryParamMap.subscribe((params) => {

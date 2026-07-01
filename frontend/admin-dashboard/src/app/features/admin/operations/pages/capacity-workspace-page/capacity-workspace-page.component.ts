@@ -9,6 +9,12 @@ import {
   lucideShieldAlert,
   lucideLockOpen,
   lucideUtensils,
+  lucideChartBar,
+  lucideHistory,
+  lucideStore,
+  lucideInfo,
+  lucideX,
+  lucideChevronRight,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
@@ -33,6 +39,12 @@ type CapacityFilter = 'all' | CapacityStatus;
       lucideShieldAlert,
       lucideLockOpen,
       lucideUtensils,
+      lucideChartBar,
+      lucideHistory,
+      lucideStore,
+      lucideInfo,
+      lucideX,
+      lucideChevronRight,
     }),
   ],
   templateUrl: './capacity-workspace-page.component.html',
@@ -45,6 +57,7 @@ export class CapacityWorkspacePageComponent {
   readonly searchQuery = signal('');
   readonly activeFilter = signal<CapacityFilter>('all');
   readonly selectedRestaurantId = signal<string | null>(null);
+  readonly detailModalOpen = signal<boolean>(false);
   readonly toast = signal<string | null>(null);
   readonly pg = createTablePagination(5);
   readonly currentPage = this.pg.currentPage;
@@ -83,11 +96,8 @@ export class CapacityWorkspacePageComponent {
 
   readonly selectedRow = computed(() => {
     const selected = this.selectedRestaurantId();
-    return (
-      this.state.capacityRows().find((row) => row.restaurantId === selected) ??
-      this.rows()[0] ??
-      null
-    );
+    if (!selected) return null;
+    return this.state.capacityRows().find((row) => row.restaurantId === selected) ?? null;
   });
 
   readonly selectedAudit = computed(() => {
@@ -115,6 +125,11 @@ export class CapacityWorkspacePageComponent {
 
   select(row: RestaurantCapacityRow): void {
     this.selectedRestaurantId.set(row.restaurantId);
+    this.detailModalOpen.set(true);
+  }
+
+  closeDetail(): void {
+    this.detailModalOpen.set(false);
   }
 
   utilization(row: RestaurantCapacityRow): number {
@@ -139,6 +154,23 @@ export class CapacityWorkspacePageComponent {
         suspended: 'bg-slate-100 text-slate-600 ring-slate-200',
       } satisfies Record<CapacityStatus, string>
     )[status];
+  }
+
+  filterChipActiveClass(id: CapacityFilter): string {
+    switch (id) {
+      case 'active':
+        return 'bg-emerald-100 text-emerald-800 shadow-sm ring-1 ring-emerald-300';
+      case 'at_risk':
+        return 'bg-amber-100 text-amber-800 shadow-sm ring-1 ring-amber-300';
+      case 'busy_auto':
+        return 'bg-rose-100 text-rose-800 shadow-sm ring-1 ring-rose-300';
+      case 'busy_manual':
+        return 'bg-violet-100 text-violet-800 shadow-sm ring-1 ring-violet-300';
+      case 'suspended':
+        return 'bg-slate-200 text-slate-800 shadow-sm ring-1 ring-slate-300';
+      default:
+        return 'bg-slate-100 text-slate-800 shadow-sm';
+    }
   }
 
   progressClass(row: RestaurantCapacityRow): string {

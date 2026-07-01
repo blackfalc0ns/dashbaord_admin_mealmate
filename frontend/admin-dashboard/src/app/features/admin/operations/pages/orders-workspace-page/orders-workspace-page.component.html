@@ -1,19 +1,18 @@
 <section [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" class="mm-page min-h-full text-slate-900">
-  <div class="flex w-full flex-col gap-4">
+  <div class="flex w-full flex-col gap-5">
     @if (toast()) {
-      <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800">{{ toast() }}</div>
+      <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">{{ toast() }}</div>
     }
 
+    <!-- ═══ KPI Cards Strip (informational only) ═══ -->
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
       <mm-operations-kpi-card
         [label]="copy().needsAction"
         [description]="copy().needsActionDesc"
         [value]="kpis().needsAction"
         icon="lucideCircleAlert"
-        valueClass="text-red-600"
-        iconWrapClass="bg-red-50 text-red-600 ring-red-100"
-        [active]="activeView() === 'needs-action'"
-        (clicked)="setView('needs-action')"
+        valueClass="text-rose-600"
+        iconWrapClass="bg-rose-50 text-rose-600 ring-rose-100"
       />
       <mm-operations-kpi-card
         [label]="copy().awaitingConfirm"
@@ -22,8 +21,6 @@
         icon="lucideClock"
         valueClass="text-amber-600"
         iconWrapClass="bg-amber-50 text-amber-600 ring-amber-100"
-        [active]="activeView() === 'confirmation'"
-        (clicked)="setView('confirmation')"
       />
       <mm-operations-kpi-card
         [label]="copy().replacement"
@@ -32,8 +29,6 @@
         icon="lucideRefreshCw"
         valueClass="text-violet-600"
         iconWrapClass="bg-violet-50 text-violet-600 ring-violet-100"
-        [active]="activeView() === 'replacement'"
-        (clicked)="setView('replacement')"
       />
       <mm-operations-kpi-card
         [label]="copy().prep24"
@@ -42,36 +37,84 @@
         icon="lucidePackage"
         valueClass="text-sky-600"
         iconWrapClass="bg-sky-50 text-sky-600 ring-sky-100"
-        [active]="activeView() === 'prep'"
-        (clicked)="setView('prep')"
       />
       <mm-operations-kpi-card
         [label]="copy().todayOrders"
         [description]="copy().todayOrdersDesc"
         [value]="kpis().all"
         icon="lucideLayoutDashboard"
-        [active]="activeView() === 'all'"
-        (clicked)="setView('all')"
       />
     </div>
 
-    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div class="relative max-w-xs">
-        <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
-          <ng-icon name="lucideSearch" size="16" />
-        </span>
-        <input
-          type="text"
-          class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 ps-9 pe-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-          [placeholder]="copy().searchPlaceholder"
-          (input)="onSearch($event)"
-        />
-      </div>
-    </div>
+    <!-- ═══ Combined Filters + Table Card ═══ -->
+    <div class="rounded-3xl border border-slate-200/60 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03),0_8px_32px_-8px_rgba(15,23,42,0.08)] overflow-hidden">
 
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <!-- Header -->
+      <div class="px-5 py-3.5 border-b border-slate-100/70">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 rounded-2xl bg-slate-50 ring-1 ring-slate-200 flex items-center justify-center">
+              <ng-icon name="lucideLayoutDashboard" size="16" class="text-slate-700" />
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-slate-900 leading-none">
+                {{ locale.isRtl() ? 'قائمة الطلبات' : 'Orders Queue' }}
+              </h2>
+              <p class="text-[10px] text-slate-500 mt-1">
+                {{ locale.isRtl() ? 'تتبع الطلبات خلال دورة حياتها ومعالجة الاستثناءات' : 'Track orders through their lifecycle and manage exceptions' }}
+              </p>
+            </div>
+          </div>
+          <span class="rounded-full bg-white ring-1 ring-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 font-mono shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+            {{ filteredRows().length }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Filters bar -->
+      <div class="border-b border-slate-100/70 px-4 py-3 bg-slate-50/40 flex flex-wrap items-center gap-2">
+        <!-- Search -->
+        <div class="relative w-full sm:w-64 me-auto">
+          <span class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-slate-400">
+            <ng-icon name="lucideSearch" size="13" />
+          </span>
+          <input
+            type="text"
+            class="h-8 w-full rounded-lg border border-slate-200 bg-white ps-8 pe-3 text-[11px] transition-all focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 placeholder:text-slate-400"
+            [placeholder]="copy().searchPlaceholder"
+            (input)="onSearch($event)"
+          />
+        </div>
+
+        <!-- View filter (segmented) with per-chip count -->
+        <div class="inline-flex rounded-lg bg-white ring-1 ring-slate-200 p-0.5 flex-wrap">
+          @for (f of viewFilters; track f.id) {
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-bold transition-all"
+              [ngClass]="activeView() === f.id ? viewChipActiveClass(f.id) : 'text-slate-500 hover:text-slate-700'"
+              (click)="setView(f.id)"
+            >
+              <span>{{ viewLabel(f.id) }}</span>
+              <span class="inline-flex items-center justify-center rounded-full min-w-[16px] h-[16px] px-1 text-[9px] font-mono font-bold"
+                    [ngClass]="activeView() === f.id ? 'bg-white/60 text-current' : 'bg-slate-100 text-slate-500'">
+                {{ kpis()[f.countKey] }}
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Table / Empty -->
       @if (filteredRows().length === 0) {
-        <p class="p-8 text-center text-sm text-slate-500">{{ emptyMessage() }}</p>
+        <div class="p-10">
+          <div class="flex flex-col items-center justify-center gap-2 text-slate-400">
+            <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
+              <ng-icon name="lucideCircleAlert" size="20" />
+            </div>
+            <p class="text-sm font-bold text-slate-500">{{ emptyMessage() }}</p>
+          </div>
+        </div>
       } @else {
         <mm-order-queue-table
           [rows]="filteredRows()"

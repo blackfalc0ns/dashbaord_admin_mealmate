@@ -218,6 +218,36 @@ export class AutoSelectionWorkspacePageComponent {
     this.pg.resetPage();
   }
 
+  filterChipActiveClass(id: AutoSelectionFilter): string {
+    switch (id) {
+      case 'completed':
+        return 'bg-emerald-100 text-emerald-800 shadow-sm ring-1 ring-emerald-300';
+      case 'pending':
+        return 'bg-amber-100 text-amber-800 shadow-sm ring-1 ring-amber-300';
+      case 'fallback':
+        return 'bg-sky-100 text-sky-800 shadow-sm ring-1 ring-sky-300';
+      case 'quota_override':
+        return 'bg-violet-100 text-violet-800 shadow-sm ring-1 ring-violet-300';
+      case 'failed':
+        return 'bg-rose-100 text-rose-800 shadow-sm ring-1 ring-rose-300';
+      default:
+        return 'bg-slate-100 text-slate-800 shadow-sm';
+    }
+  }
+
+  tierChipActiveClass(tier: 'all' | AutoSelectionRow['tier']): string {
+    switch (tier) {
+      case 'basic':
+        return 'bg-slate-200 text-slate-800 shadow-sm ring-1 ring-slate-300';
+      case 'platinum':
+        return 'bg-indigo-100 text-indigo-800 shadow-sm ring-1 ring-indigo-300';
+      case 'elite':
+        return 'bg-amber-100 text-amber-800 shadow-sm ring-1 ring-amber-300';
+      default:
+        return 'bg-slate-100 text-slate-800 shadow-sm';
+    }
+  }
+
   setTierFilter(tier: 'all' | AutoSelectionRow['tier']): void {
     this.activeTierFilter.set(tier);
     this.pg.resetPage();
