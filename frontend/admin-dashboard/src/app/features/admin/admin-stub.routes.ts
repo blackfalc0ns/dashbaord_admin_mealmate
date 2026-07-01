@@ -69,7 +69,14 @@ export const ADMIN_STUB_ROUTES: Routes = [
   },
   { path: 'accounts/documents', redirectTo: 'accounts/pending', pathMatch: 'full' },
   { path: 'marketing/referrals', loadComponent: loadPlaceholder },
-  { path: 'finance/cancellations', loadComponent: loadPlaceholder },
+  {
+    path: 'finance/cancellations',
+    canActivate: [adminPermissionGuard(AdminPermissions.financeView)],
+    loadComponent: () =>
+      import('./finance/pages/cancellations-workspace-page/cancellations-workspace-page.component').then(
+        (m) => m.CancellationsWorkspacePageComponent,
+      ),
+  },
   { path: 'finance/settlements', loadComponent: loadPlaceholder },
   { path: 'finance/reports', loadComponent: loadPlaceholder },
   { path: 'support/complaints', loadComponent: loadPlaceholder },
